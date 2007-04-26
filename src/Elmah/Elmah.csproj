@@ -196,10 +196,6 @@
                     BuildAction = "Content"
                 />
                 <File
-                    RelPath = "License.rtf"
-                    BuildAction = "None"
-                />
-                <File
                     RelPath = "ManifestResourceHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
