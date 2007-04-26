@@ -3,10 +3,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotDotNet.Elmah", "GotDotNe
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Setup", "Setup\Setup.vdproj", "{03D42CF2-6728-47E1-8760-FAABAC0D152A}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -19,9 +15,6 @@ Global
 		{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}.Debug.Build.0 = Debug|.NET
 		{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}.Release.ActiveCfg = Release|.NET
 		{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}.Release.Build.0 = Release|.NET
-		{03D42CF2-6728-47E1-8760-FAABAC0D152A}.Debug.ActiveCfg = Debug
-		{03D42CF2-6728-47E1-8760-FAABAC0D152A}.Debug.Build.0 = Debug
-		{03D42CF2-6728-47E1-8760-FAABAC0D152A}.Release.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
