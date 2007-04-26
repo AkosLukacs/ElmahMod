@@ -18,58 +18,7 @@ li {
 <body>
 
 <h1>ELMAH README</h1>
-<p>This document contains important information about compiling the ELMAH 
-binaries and installation (MSI) package. The compilation is a three-phase 
-process. In the first phase, you compile the ELMAH binaries. In the second 
-phase, you compile XML documentation into an HTML Help file. This is needed by 
-the third phase, which packages the binaries, sources and the help file into an 
-installation (MSI) package.</p>
-<p>The following components are required for a successful compilation:</p>
-<ul>
-    <li>Microsoft .NET Framework 1.1</li>
-    <li>Microsoft Visual Studio 2003</li>
-    <li><a href="http://ndoc.sourceforge.net/">NDoc</a> (Code Documentation 
-    Generator for .NET)</li>
-    <li>Orca (see the <a href="http://support.microsoft.com/kb/255905">Microsoft 
-    KB article Q255905</a> for instructions on obtaining and installing Orca)</li>
-</ul>
-<p>Below are the detailed steps for compiling the ELMAH binaries and 
-installation (MSI) package. Please follow these steps in the prescribed order:</p>
-<ol>
-    <li>Open the solution file <strong>Elmah.sln</strong> in Microsoft Visual 
-    Studio 2003.</li>
-    <li>From the main menu, select <strong>Build</strong> and then <strong>
-    Configuration Manager</strong>.</li>
-    <li>Once the <strong>Configuration Manager</strong> dialog box appears, 
-    select <strong>Release</strong> as the active solution configuration and 
-    click <strong>OK</strong>.</li>
-    <li>Select the <strong>GotDotNet.Elmah</strong> project from the <strong>
-    Solution Explorer</strong> and then build the project only (not the entire 
-    solution).</li>
-    <li>Open the file <strong>ELMAH.ndoc</strong> in NDoc.</li>
-    <li>On the main NDoc screen, select <strong>MSDN</strong> from the <strong>
-    Documentation Type</strong> combo box.</li>
-    <li>From the main NDoc menu, select <strong>Documentation</strong> and then
-    <strong>Build</strong>. This will produce compiled HTML Help file from the 
-    XML documentation file produced by building ELMAH binaries in step 4.</li>
-    <li>Return to the ELMAH solution opened up in Microsoft Visual Studio 2003 
-    and this time build the <strong>Setup</strong> project.</li>
-    <li>Run Orca (MSI database editor) and open the <strong>ELMAHSetup.msi</strong> 
-    file produced by the previous step.</li>
-    <li>Once the MSI is open, select <strong>View</strong> from the main menu 
-    and then <strong>Summary Information</strong>.</li>
-    <li>When <strong>Edit Summary Information</strong> dialog opens, navigate to 
-    the <strong>Package Code</strong> text box and replace the GUID with the 
-    value <strong>{5B73DC36-9803-4F05-9C00-E7EEE0585FB6}</strong> and click
-    <strong>OK</strong>. If you do not carry out this step, then installing the 
-    MSI on a system where ELMAH was already installed will generate the message 
-    &#x201c;Another version of this product is already installed&#x201d; and stall the setup. 
-    Normally</li>
-    <li>Close Orca and when prompted to save the changes, select <strong>Yes</strong>.</li>
-</ol>
-
-<p>Finished!</p>
-
+<p>To be completed&hellip;</p>
 </body>
 
 </html>
