@@ -14,7 +14,7 @@
 // 
 #endregion
 
-namespace GotDotNet.Elmah.ContentSyndication 
+namespace Elmah.ContentSyndication 
 {
     #region Imports
 

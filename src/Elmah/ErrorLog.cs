@@ -14,7 +14,7 @@
 // 
 #endregion
 
-namespace GotDotNet.Elmah
+namespace Elmah
 {
     #region Imports
     
@@ -90,7 +90,7 @@ namespace GotDotNet.Elmah
                     // create an instance of it.
                     //
 
-                    ErrorLog log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection("gotdotnet.elmah/errorLog");
+                    ErrorLog log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection("elmah/errorLog");
 
                     //
                     // If no object got created (probably because the right 

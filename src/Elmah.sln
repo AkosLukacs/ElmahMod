@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 8.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GotDotNet.Elmah", "GotDotNet.Elmah\GotDotNet.Elmah.csproj", "{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elmah", "Elmah\Elmah.csproj", "{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}"
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject

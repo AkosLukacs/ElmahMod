@@ -14,7 +14,7 @@
 // 
 #endregion
 
-namespace GotDotNet.Elmah
+namespace Elmah
 {
     #region Imports
     
@@ -26,45 +26,44 @@ namespace GotDotNet.Elmah
     #endregion
 
     /// <summary>
-    /// The exception that is thrown when to test the error logging 
-    /// subsystem. This exception is used for testing purposes only and 
-    /// should not be used for any other purpose.
+    /// The exception that is thrown when a non-fatal error occurs. 
+    /// This exception also serves as the base for all exceptions thrown by
+    /// this library.
     /// </summary>
-    
+
     [ Serializable ]
-    internal sealed class TestException : System.ApplicationException
+    public class ApplicationException : System.ApplicationException
     {
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestException"/> class.
+        /// Initializes a new instance of the <see cref="ApplicationException"/> class.
         /// </summary>
-
-        public TestException() : 
-            this("This is a test exception that can be safely ignored.") {}
+        
+        public ApplicationException() {}
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestException"/> class 
+        /// Initializes a new instance of the <see cref="ApplicationException"/> class 
         /// with a specified error message.
         /// </summary>
 
-        public TestException(string message) : 
+        public ApplicationException(string message) : 
             base(message) {}
-        
+
         /// <summary>
-        /// ializes a new instance of the <see cref="TestException"/> 
+        /// Initializes a new instance of the <see cref="ApplicationException"/> 
         /// class with a specified error message and a reference to the 
         /// inner exception that is the cause of this exception.
         /// </summary>
 
-        public TestException(string message, Exception innerException) : 
+        public ApplicationException(string message, Exception innerException) : 
             base(message, innerException) {}
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="TestException"/> class 
+        /// Initializes a new instance of the <see cref="ApplicationException"/> class 
         /// with serialized data.
         /// </summary>
 
-        private TestException(SerializationInfo info, StreamingContext context) : 
+        protected ApplicationException(SerializationInfo info, StreamingContext context) : 
             base(info, context) {}
     }
 }

@@ -1,10 +1,10 @@
 <project>
     <assemblies>
-        <assembly location=".\GotDotNet.Elmah\bin\GotDotNet.Elmah.dll" documentation=".\GotDotNet.Elmah\bin\GotDotNet.Elmah.xml" />
+        <assembly location=".\Elmah\bin\Elmah.dll" documentation=".\Elmah\bin\Elmah.xml" />
     </assemblies>
     <namespaces>
-        <namespace name="GotDotNet.Elmah"></namespace>
-        <namespace name="GotDotNet.Elmah.ContentSyndication"></namespace>
+        <namespace name="Elmah"></namespace>
+        <namespace name="Elmah.ContentSyndication"></namespace>
     </namespaces>
     <documenters>
         <documenter name="HtmlHelp2">

@@ -14,7 +14,7 @@
 // 
 #endregion
 
-namespace GotDotNet.Elmah
+namespace Elmah
 {
     #region Imports
     

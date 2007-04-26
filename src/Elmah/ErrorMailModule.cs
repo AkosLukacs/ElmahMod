@@ -14,7 +14,7 @@
 // 
 #endregion
 
-namespace GotDotNet.Elmah
+namespace Elmah
 {
     #region Imports
     
@@ -365,7 +365,7 @@ namespace GotDotNet.Elmah
 
         protected virtual object GetConfig()
         {
-            return ConfigurationSettings.GetConfig("gotdotnet.elmah/errorMail");
+            return ConfigurationSettings.GetConfig("elmah/errorMail");
         }
 
         /// <summary>
