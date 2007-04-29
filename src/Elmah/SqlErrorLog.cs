@@ -139,7 +139,7 @@ namespace Elmah
         /// implementation stores all errors for an indefinite time.
         /// </remarks>
 
-        public override void Log(Error error)
+        public override string Log(Error error)
         {
             if (error == null)
                 throw new ArgumentNullException("error");
@@ -162,8 +162,10 @@ namespace Elmah
 
                 SqlParameter parameter;
 
+                Guid id = Guid.NewGuid();
+
                 parameter = command.Parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier);
-                parameter.Value = Guid.NewGuid();
+                parameter.Value = id;
 
                 parameter = command.Parameters.Add("@Application", SqlDbType.NVarChar, 60);
                 parameter.Value = this.ApplicationName;
@@ -194,6 +196,8 @@ namespace Elmah
 
                 connection.Open();
                 command.ExecuteNonQuery();
+                
+                return id.ToString();
             }
         }
 

@@ -143,7 +143,7 @@ namespace Elmah
         /// If the log is full then the oldest error entry is removed.
         /// </remarks>
 
-        public override void Log(Error error)
+        public override string Log(Error error)
         {
             if (error == null)
                 throw new ArgumentNullException("error");
@@ -173,6 +173,8 @@ namespace Elmah
             {
                 _lock.ReleaseWriterLock();
             }
+            
+            return newId.ToString();
         }
 
         /// <summary>

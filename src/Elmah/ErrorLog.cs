@@ -50,7 +50,7 @@ namespace Elmah
         /// Logs an error in log for the application.
         /// </summary>
         
-        public abstract void Log(Error error);
+        public abstract string Log(Error error);
 
         /// <summary>
         /// Retrieves a single application error from log given its 
