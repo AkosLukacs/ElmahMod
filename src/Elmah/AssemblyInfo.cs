@@ -44,9 +44,6 @@ using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 [assembly: AssemblyVersion("1.0.5527.0")]
 [assembly: AssemblyFileVersion("1.0.5527.0")]
 
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("..\\..\\Key.snk")]
-
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
