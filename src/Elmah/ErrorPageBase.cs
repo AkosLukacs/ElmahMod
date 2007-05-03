@@ -57,7 +57,7 @@ namespace Elmah
 
         protected virtual string Title
         {
-            get { return StringEtc.MaskNull(_title); }
+            get { return Mask.NullString(_title); }
             set { _title = value; }
         }
 

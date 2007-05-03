@@ -51,7 +51,7 @@ namespace Elmah
             // the log.
             //
 
-            string errorId = StringEtc.MaskNull(this.Request.QueryString["id"]);
+            string errorId = Mask.NullString(this.Request.QueryString["id"]);
 
             if (errorId.Length == 0)
                 return;

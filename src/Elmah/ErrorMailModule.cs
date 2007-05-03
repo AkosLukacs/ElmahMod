@@ -213,8 +213,8 @@ namespace Elmah
             // MailSender and MailRecipient properties.
             //
 
-            string sender = StringEtc.MaskNull(this.MailSender);
-            string recipient = StringEtc.MaskNull(this.MailRecipient);
+            string sender = Mask.NullString(this.MailSender);
+            string recipient = Mask.NullString(this.MailRecipient);
 
             if (sender.Length == 0 || recipient.Length == 0)
             {
@@ -234,7 +234,7 @@ namespace Elmah
             // Format the mail subject.
             // 
 
-            string subjectFormat = StringEtc.MaskNull(this.MailSubjectFormat);
+            string subjectFormat = Mask.NullString(this.MailSubjectFormat);
         
             if (subjectFormat.Length == 0)
             {
@@ -402,7 +402,7 @@ namespace Elmah
             Debug.Assert(config != null);
             Debug.AssertStringNotEmpty(name);
 
-            string value = StringEtc.MaskNull((string) config[name]);
+            string value = Mask.NullString((string) config[name]);
 
             if (value.Length == 0)
             {

@@ -103,7 +103,7 @@ namespace Elmah
             _message = baseException.Message;
             _source = baseException.Source;
             _detail = e.ToString();
-            _user = StringEtc.MaskNull(Thread.CurrentPrincipal.Identity.Name);
+            _user = Mask.NullString(Thread.CurrentPrincipal.Identity.Name);
             _time = DateTime.Now;
 
             //
@@ -116,7 +116,7 @@ namespace Elmah
             if (httpException != null)
             {
                 _statusCode = httpException.GetHttpCode();
-                _webHostHtmlMessage = StringEtc.MaskNull(httpException.GetHtmlErrorMessage());
+                _webHostHtmlMessage = Mask.NullString(httpException.GetHtmlErrorMessage());
             }
 
             //
@@ -156,7 +156,7 @@ namespace Elmah
 
         public string ApplicationName
         { 
-            get { return StringEtc.MaskNull(_applicationName); }
+            get { return Mask.NullString(_applicationName); }
             set { _applicationName = value; }
         }
 
@@ -166,7 +166,7 @@ namespace Elmah
         
         public string HostName
         { 
-            get { return StringEtc.MaskNull(_hostName); }
+            get { return Mask.NullString(_hostName); }
             set { _hostName = value; }
         }
 
@@ -176,7 +176,7 @@ namespace Elmah
         
         public string Type
         { 
-            get { return StringEtc.MaskNull(_typeName); }
+            get { return Mask.NullString(_typeName); }
             set { _typeName = value; }
         }
 
@@ -186,7 +186,7 @@ namespace Elmah
         
         public string Source
         { 
-            get { return StringEtc.MaskNull(_source); }
+            get { return Mask.NullString(_source); }
             set { _source = value; }
         }
 
@@ -196,7 +196,7 @@ namespace Elmah
         
         public string Message 
         { 
-            get { return StringEtc.MaskNull(_message); }
+            get { return Mask.NullString(_message); }
             set { _message = value; }
         }
 
@@ -207,7 +207,7 @@ namespace Elmah
 
         public string Detail
         { 
-            get { return StringEtc.MaskNull(_detail); }
+            get { return Mask.NullString(_detail); }
             set { _detail = value; }
         }
 
@@ -218,7 +218,7 @@ namespace Elmah
         
         public string User 
         { 
-            get { return StringEtc.MaskNull(_user); }
+            get { return Mask.NullString(_user); }
             set { _user = value; }
         }
 
@@ -255,7 +255,7 @@ namespace Elmah
         
         public string WebHostHtmlMessage
         {
-            get { return StringEtc.MaskNull(_webHostHtmlMessage); }
+            get { return Mask.NullString(_webHostHtmlMessage); }
             set { _webHostHtmlMessage = value; }
         }
 
@@ -366,9 +366,9 @@ namespace Elmah
             _source = reader.GetAttribute("source");
             _detail = reader.GetAttribute("detail");
             _user = reader.GetAttribute("user");
-            string timeString = StringEtc.MaskNull(reader.GetAttribute("time"));
+            string timeString = Mask.NullString(reader.GetAttribute("time"));
             _time = timeString.Length == 0 ? new DateTime() : XmlConvert.ToDateTime(timeString);
-            string statusCodeString = StringEtc.MaskNull(reader.GetAttribute("statusCode"));
+            string statusCodeString = Mask.NullString(reader.GetAttribute("statusCode"));
             _statusCode = statusCodeString.Length == 0 ? 0 : XmlConvert.ToInt32(statusCodeString);
             _webHostHtmlMessage = reader.GetAttribute("webHostHtmlMessage");
         }

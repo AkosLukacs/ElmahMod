@@ -51,7 +51,7 @@ namespace Elmah
         [ Conditional("DEBUG") ]
         public static void AssertStringNotEmpty(string s)
         {
-            BaseDebug.Assert(StringEtc.MaskNull(s).Length != 0);
+            BaseDebug.Assert(Mask.NullString(s).Length != 0);
         }
         
         private Debug() {}

@@ -69,7 +69,7 @@ namespace Elmah
             // Get the type specification of the service provider.
             //
 
-            string typeSpec = StringEtc.MaskNull((string) config["type"]);
+            string typeSpec = Mask.NullString((string) config["type"]);
             
             if (typeSpec.Length == 0)
             {

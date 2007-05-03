@@ -73,11 +73,11 @@ namespace Elmah
             // connection string to be used.
             //
 
-            _connectionString = StringEtc.MaskNull((string) config["connectionString"]);
+            _connectionString = Mask.NullString((string) config["connectionString"]);
 
             if (_connectionString.Length == 0)
             {
-                string connectionStringAppKey = StringEtc.MaskNull((string) config["connectionStringAppKey"]);
+                string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
 
                 if (connectionStringAppKey.Length != 0)
                 {

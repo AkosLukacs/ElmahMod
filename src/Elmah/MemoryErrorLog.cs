@@ -113,7 +113,7 @@ namespace Elmah
             }
             else
             {
-                string sizeString = StringEtc.MaskNull((string) config["size"]);
+                string sizeString = Mask.NullString((string) config["size"]);
 
                 if (sizeString.Length == 0)
                 {

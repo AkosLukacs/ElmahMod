@@ -201,6 +201,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Mask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MemoryErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -222,11 +227,6 @@
                 />
                 <File
                     RelPath = "SqlErrorLog.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "StringEtc.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

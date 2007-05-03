@@ -34,16 +34,16 @@ namespace Elmah
     #endregion
 
     /// <summary>
-    /// Collection of utility methods that complement <see cref="String"/>.
+    /// Collection of utility methods for masking values.
     /// </summary>
     
-    internal sealed class StringEtc
+    internal sealed class Mask
     {
-        public static string MaskNull(string s)
+        public static string NullString(string s)
         {
             return s == null ? string.Empty : s;
         }
 
-        private StringEtc() {}
+        private Mask() {}
     }
 }
