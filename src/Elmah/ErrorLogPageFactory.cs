@@ -87,6 +87,10 @@ namespace Elmah
                     
                     throw new TestException();
 
+                case "about" :
+                    
+                    return new AboutPage();
+
                 default :
                 {
                     if (resource.Length == 0)

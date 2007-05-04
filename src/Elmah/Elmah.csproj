@@ -94,6 +94,11 @@
         <Files>
             <Include>
                 <File
+                    RelPath = "AboutPage.cs"
+                    SubType = "ASPXCodeBehind"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ApplicationException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
