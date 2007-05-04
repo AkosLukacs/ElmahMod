@@ -29,7 +29,7 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
     using System;
     using System.Reflection;
@@ -43,7 +43,7 @@ namespace Elmah
     using CacheItemPriority = System.Web.Caching.CacheItemPriority;
     using HttpRuntime = System.Web.HttpRuntime;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Displays a "Powered-by ELMAH" message that also contains the assembly

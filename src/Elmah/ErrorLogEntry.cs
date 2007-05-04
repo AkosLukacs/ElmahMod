@@ -29,11 +29,11 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Binds an <see cref="Error"/> instance with the <see cref="ErrorLog"/>
@@ -41,8 +41,8 @@ namespace Elmah
     /// </summary>
     
     [ Serializable ]
-	public class ErrorLogEntry
-	{
+    public class ErrorLogEntry
+    {
         private readonly string _id;
         private readonly ErrorLog _log;
         private readonly Error _error;

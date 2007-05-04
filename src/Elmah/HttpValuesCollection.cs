@@ -29,9 +29,9 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
     using NameValueCollection = System.Collections.Specialized.NameValueCollection;
     using XmlReader = System.Xml.XmlReader;
@@ -39,7 +39,7 @@ namespace Elmah
     using SerializationInfo = System.Runtime.Serialization.SerializationInfo;
     using StreamingContext = System.Runtime.Serialization.StreamingContext;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// A name-values collection implementation suitable for web-based collections 

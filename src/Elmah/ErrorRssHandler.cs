@@ -29,16 +29,16 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web;
     using ContentSyndication;
 
     using XmlSerializer = System.Xml.Serialization.XmlSerializer;
     using ArrayList = System.Collections.ArrayList;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Renders a XML using the RSS 0.91 vocabulary that displays, at most,
@@ -46,7 +46,7 @@ namespace Elmah
     /// </summary>
 
     internal sealed class ErrorRssHandler : IHttpHandler
-	{
+    {
         public void ProcessRequest(HttpContext context)
         {
             context.Response.ContentType = "application/xml";

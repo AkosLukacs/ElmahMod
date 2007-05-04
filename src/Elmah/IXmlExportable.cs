@@ -29,21 +29,21 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
     using XmlWriter = System.Xml.XmlWriter;
     using XmlReader = System.Xml.XmlReader;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Defines methods to convert an object to and from its XML representation.
     /// </summary>
 
     public interface IXmlExportable
-	{
+    {
         /// <summary>
         /// Reads the object state from its XML representation.
         /// </summary>
@@ -55,5 +55,5 @@ namespace Elmah
         /// </summary>
 
         void ToXml(XmlWriter writer);
-	}
+    }
 }

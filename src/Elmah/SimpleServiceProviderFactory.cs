@@ -29,22 +29,22 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
     using IDictionary = System.Collections.IDictionary;
     using ConfigurationSettings = System.Configuration.ConfigurationSettings;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// A simple factory for creating instances of types specified in a 
     /// section of the configuration file.
     /// </summary>
-	
+    
     internal sealed class SimpleServiceProviderFactory
-	{
+    {
         public static object CreateFromConfigSection(string sectionName)
         {
             Debug.AssertStringNotEmpty(sectionName);
@@ -89,5 +89,5 @@ namespace Elmah
         }
 
         private SimpleServiceProviderFactory() {}
-	}
+    }
 }

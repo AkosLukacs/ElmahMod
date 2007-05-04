@@ -29,20 +29,20 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web.UI;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Renders an HTML page displaying the detailed host-generated (ASP.NET)
     /// HTML recorded for an error from the error log.
     /// </summary>
-	
+    
     internal sealed class ErrorHtmlPage : ErrorPageBase
-	{
+    {
         protected override void Render(HtmlTextWriter writer)
         {
             if (writer == null)
@@ -73,5 +73,5 @@ namespace Elmah
                 writer.Write(errorEntry.Error.WebHostHtmlMessage);
             }
         }
-	}
+    }
 }

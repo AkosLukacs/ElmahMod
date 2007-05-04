@@ -29,9 +29,9 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web;
 
     using XmlReader = System.Xml.XmlReader;
@@ -41,7 +41,7 @@ namespace Elmah
     using XmlConvert = System.Xml.XmlConvert;
     using WriteState = System.Xml.WriteState;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Represents a logical application error (as opposed to the actual 
@@ -49,8 +49,8 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-	public class Error : IXmlExportable, ICloneable
-	{
+    public class Error : IXmlExportable, ICloneable
+    {
         private Exception _exception;
         private string _applicationName;
         private string _hostName;

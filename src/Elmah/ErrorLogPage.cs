@@ -29,23 +29,23 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
     using CultureInfo = System.Globalization.CultureInfo;
     using ArrayList = System.Collections.ArrayList;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Renders an HTML page displaying a page of errors from the error log.
     /// </summary>
 
     internal sealed class ErrorLogPage : ErrorPageBase
-	{
+    {
         private int _pageIndex;
         private int _pageSize; 
         private int _totalCount;
@@ -177,86 +177,86 @@ namespace Elmah
             base.RenderContents(writer);
         }
 
-	    private void RenderPageNavigators(HtmlTextWriter writer)
-	    {
+        private void RenderPageNavigators(HtmlTextWriter writer)
+        {
             Debug.Assert(writer != null);
 
-	        //
-	        // If not on the last page then render a link to the next page.
-	        //
+            //
+            // If not on the last page then render a link to the next page.
+            //
     
-	        writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.RenderBeginTag(HtmlTextWriterTag.P);
     
             int nextPageIndex = _pageIndex + 1;
             bool moreErrors = nextPageIndex * _pageSize < _totalCount;
     
-	        if (moreErrors)
-	        {
-	            RenderLinkToPage(writer, "Next errors", nextPageIndex);
-	        }
+            if (moreErrors)
+            {
+                RenderLinkToPage(writer, "Next errors", nextPageIndex);
+            }
 
             //
             // If not on the first page then render a link to the firs page.
             //
     
-	        if (_pageIndex > 0 && _totalCount > 0)
-	        {
-	            if (moreErrors)
-	                writer.Write("; ");
+            if (_pageIndex > 0 && _totalCount > 0)
+            {
+                if (moreErrors)
+                    writer.Write("; ");
 
-	            RenderLinkToPage(writer, "Back to first page", 0);
-	        }
+                RenderLinkToPage(writer, "Back to first page", 0);
+            }
     
-	        writer.RenderEndTag(); // </p>
+            writer.RenderEndTag(); // </p>
             writer.WriteLine();
-	    }
+        }
 
-	    private void RenderStockPageSizes(HtmlTextWriter writer)
-	    {
+        private void RenderStockPageSizes(HtmlTextWriter writer)
+        {
             Debug.Assert(writer != null);
 
-	        //
-	        // Write out a set of stock page size choices. Note that
-	        // selecting a stock page size re-starts the log 
-	        // display from the first page to get the right paging.
-	        //
+            //
+            // Write out a set of stock page size choices. Note that
+            // selecting a stock page size re-starts the log 
+            // display from the first page to get the right paging.
+            //
     
-	        writer.Write("Start with ");
+            writer.Write("Start with ");
     
-	        int[] stockSizes = new int[] { 10, 15, 20, 25, 30, 50, 100 };
+            int[] stockSizes = new int[] { 10, 15, 20, 25, 30, 50, 100 };
     
-	        for (int stockSizeIndex = 0; stockSizeIndex < stockSizes.Length; stockSizeIndex++)
-	        {
-	            int stockSize = stockSizes[stockSizeIndex];
+            for (int stockSizeIndex = 0; stockSizeIndex < stockSizes.Length; stockSizeIndex++)
+            {
+                int stockSize = stockSizes[stockSizeIndex];
 
-	            if (stockSizeIndex > 0)
-	            {
-	                writer.Write(stockSizeIndex + 1 < stockSizes.Length ? ", " : " or ");
-	            }
+                if (stockSizeIndex > 0)
+                {
+                    writer.Write(stockSizeIndex + 1 < stockSizes.Length ? ", " : " or ");
+                }
                     
-	            RenderLinkToPage(writer, stockSize.ToString(), 0, stockSize);
-	        }
+                RenderLinkToPage(writer, stockSize.ToString(), 0, stockSize);
+            }
     
-	        writer.Write(" errors per page.");
-	    }
+            writer.Write(" errors per page.");
+        }
 
-	    private void RenderStats(HtmlTextWriter writer)
-	    {
+        private void RenderStats(HtmlTextWriter writer)
+        {
             Debug.Assert(writer != null);
             
             int firstErrorNumber = _pageIndex * _pageSize + 1;
-	        int lastErrorNumber = firstErrorNumber + _errorEntryList.Count - 1;
+            int lastErrorNumber = firstErrorNumber + _errorEntryList.Count - 1;
             int totalPages = (int) Math.Ceiling((double) _totalCount / _pageSize);
     
-	        writer.Write("Errors {0} to {1} of total {2} (page {3} of {4}). ",
-	                     firstErrorNumber.ToString(), 
-	                     lastErrorNumber.ToString(),
-	                     _totalCount.ToString(),
+            writer.Write("Errors {0} to {1} of total {2} (page {3} of {4}). ",
+                         firstErrorNumber.ToString(), 
+                         lastErrorNumber.ToString(),
+                         _totalCount.ToString(),
                          (_pageIndex + 1).ToString(),
                          totalPages.ToString());
-	    }
+        }
 
-	    private void RenderTitle(HtmlTextWriter writer)
+        private void RenderTitle(HtmlTextWriter writer)
         {
             Debug.Assert(writer != null);
 

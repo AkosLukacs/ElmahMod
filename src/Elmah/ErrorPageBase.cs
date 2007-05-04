@@ -29,14 +29,14 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web.UI;
 
     using CultureInfo = System.Globalization.CultureInfo;
     
-	#endregion
+    #endregion
 
     /// <summary>
     /// Provides the base implementation and layout for most pages that render 

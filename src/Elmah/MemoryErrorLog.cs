@@ -29,9 +29,9 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
     using ReaderWriterLock = System.Threading.ReaderWriterLock;
     using Timeout = System.Threading.Timeout;
@@ -40,7 +40,7 @@ namespace Elmah
     using IDictionary = System.Collections.IDictionary;
     using CultureInfo = System.Globalization.CultureInfo;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// An <see cref="ErrorLog"/> implementation that uses memory as its 
@@ -52,7 +52,7 @@ namespace Elmah
     /// </remarks>
 
     public sealed class MemoryErrorLog : ErrorLog
-	{
+    {
         //
         // The collection that provides the actual storage for this log
         // implementation and a lock to guarantee concurrency correctness.
@@ -321,5 +321,5 @@ namespace Elmah
                 BaseAdd(entry.Id, entry);
             }
         }
-	}
+    }
 }

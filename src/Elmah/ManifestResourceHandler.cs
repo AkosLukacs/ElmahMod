@@ -29,15 +29,15 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web;
 
     using Stream = System.IO.Stream;
     using Encoding = System.Text.Encoding;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Reads a resource from the assembly manifest and returns its contents
@@ -45,7 +45,7 @@ namespace Elmah
     /// </summary>
 
     internal sealed class ManifestResourceHandler : IHttpHandler
-	{
+    {
         private string _resourceName;
         private string _contentType;
         private Encoding _responseEncoding;

@@ -29,9 +29,9 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
 
     using TextWriter = System.IO.TextWriter;
     using HttpUtility = System.Web.HttpUtility;
@@ -41,7 +41,7 @@ namespace Elmah
     using HtmlTextWriterTag = System.Web.UI.HtmlTextWriterTag;
     using HtmlTextWriterAttribute = System.Web.UI.HtmlTextWriterAttribute;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// Formats the HTML to display the details of a given error that is

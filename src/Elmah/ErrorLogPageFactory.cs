@@ -29,15 +29,15 @@
 
 namespace Elmah
 {
-	#region Imports
+    #region Imports
 
-	using System;
+    using System;
     using System.Web;
 
     using CultureInfo = System.Globalization.CultureInfo;
     using Encoding = System.Text.Encoding;
 
-	#endregion
+    #endregion
 
     /// <summary>
     /// HTTP handler factory that dispenses handlers for rendering views and 
