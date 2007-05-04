@@ -76,6 +76,11 @@ namespace Elmah
             writer.RenderEndTag();
             writer.Write(", version ");
             HttpUtility.HtmlEncode(Mask.EmptyString(about.Version, "0.0.0.0"), writer);
+            
+#if DEBUG
+            writer.Write(" (DEBUG)");
+#endif
+            
             writer.Write(". ");
             
             string copyright = about.Copyright;
