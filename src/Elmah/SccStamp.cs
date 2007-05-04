@@ -151,20 +151,24 @@ namespace Elmah
             if (stamps.Length == 0)
                 return null;
             
-            SccStamp latest = stamps[0];
-            
-            foreach (SccStamp stamp in stamps)
-            {
-                if (stamp.Revision > latest.Revision)
-                    latest = stamp;
-            }
-            
-            return latest;
+            stamps = (SccStamp[]) stamps.Clone();
+            SortByRevision(stamps, /* descending */ true);
+            return stamps[0];
         }
 
         public static void SortByRevision(SccStamp[] stamps)
         {
-            Array.Sort(stamps, new RevisionComparer());
+            SortByRevision(stamps, false);
+        }
+
+        public static void SortByRevision(SccStamp[] stamps, bool descending)
+        {
+            IComparer comparer = new RevisionComparer();
+            
+            if (descending)
+                comparer = new ReverseComparer(comparer);
+            
+            Array.Sort(stamps, comparer);
         }
 
         private sealed class RevisionComparer : IComparer
