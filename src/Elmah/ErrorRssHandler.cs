@@ -47,7 +47,7 @@ namespace Elmah
 	{
         public void ProcessRequest(HttpContext context)
         {
-            context.Response.ContentType = "text/xml";
+            context.Response.ContentType = "application/xml";
 
             //
             // Get the last set of errors for this application.
