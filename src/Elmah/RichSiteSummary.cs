@@ -25,6 +25,8 @@
 //
 #endregion
 
+[assembly: Elmah.Scc("$Id$")]
+
 namespace Elmah.ContentSyndication 
 {
     #region Imports

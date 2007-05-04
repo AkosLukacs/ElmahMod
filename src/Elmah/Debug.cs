@@ -24,6 +24,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 #endregion
+
+[assembly: Elmah.Scc("$Id$")]
+
 namespace Elmah
 {
 	#region Imports

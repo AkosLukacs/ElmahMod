@@ -30,32 +30,32 @@
 namespace Elmah
 {
     #region Imports
-    
-    using System;
 
-    using TextWriter = System.IO.TextWriter;
-    
+    using System;
+    using System.Diagnostics;
+
     #endregion
 
-    /// <summary>
-    /// Provides the base contract for implementations that render
-    /// text-based formatting for an error.
-    /// </summary>
-    
-    public abstract class ErrorTextFormatter
+    [ Serializable ]
+    [ AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true) ]
+    public class SccAttribute : Attribute
     {
-        /// <summary>
-        /// Gets the MIME type of the text format provided by the formatter
-        /// implementation.
-        /// </summary>
-        
-        public abstract string MimeType { get; }
+        private string _id;
 
-        /// <summary>
-        /// Formats a text representation of the given <see cref="Error"/> 
-        /// instance using a <see cref="TextWriter"/>.
-        /// </summary>
+        public SccAttribute(string id)
+        {
+            _id = id;
+        }
 
-        public abstract void Format(TextWriter writer, Error error);
+        public string Id
+        {
+            get { return Mask.NullString(_id); }
+            set { _id = value; }
+        }
+
+        public override string ToString()
+        {
+            return Id;
+        }
     }
 }

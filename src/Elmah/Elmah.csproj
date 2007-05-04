@@ -221,6 +221,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SccAttribute.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SccStamp.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SimpleServiceProviderFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
