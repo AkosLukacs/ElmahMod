@@ -45,6 +45,8 @@ namespace Elmah
     public abstract class ErrorLog
     {
         [ ThreadStatic ] private static ErrorLog _defaultLog;
+        
+        private string _appName;
 
         /// <summary>
         /// Logs an error in log for the application.
@@ -81,7 +83,17 @@ namespace Elmah
         
         public virtual string ApplicationName
         {
-            get { return HttpRuntime.AppDomainAppId; }   
+            get
+            {
+                if (_appName == null)
+                {
+                    string path = HttpRuntime.AppDomainAppVirtualPath;
+                    string[] parts = path.Split('/');
+                    _appName = Mask.EmptyString(parts[parts.Length - 1], "/"); 
+                }
+
+                return _appName;
+            }
         }
 
         /// <summary>

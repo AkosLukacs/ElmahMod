@@ -44,6 +44,11 @@ namespace Elmah
             return s == null ? string.Empty : s;
         }
 
+        public static string EmptyString(string s, string filler)
+        {
+            return Mask.NullString(s).Length == 0 ? filler : s;
+        }
+        
         private Mask() {}
     }
 }

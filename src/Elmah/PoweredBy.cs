@@ -30,6 +30,7 @@ namespace Elmah
 	#region Imports
 
     using System;
+    using System.Reflection;
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
@@ -49,7 +50,7 @@ namespace Elmah
 
     public sealed class PoweredBy : WebControl
     {
-        private FileVersionInfo _versionInfo;
+        private AboutSet _about;
 
         /// <summary>
         /// Renders the contents of the control into the specified writer.
@@ -64,20 +65,31 @@ namespace Elmah
             // Write out the assembly title, version number and copyright.
             //
 
+            AboutSet about = this.About;
+
             writer.Write("Powered by ");
-            HttpUtility.HtmlEncode(this.VersionInfo.ProductName, writer);
+            writer.AddAttribute("href", "http://code.google.com/p/elmah/");
+            writer.RenderBeginTag(HtmlTextWriterTag.A);
+            HttpUtility.HtmlEncode(Mask.EmptyString(about.Product, "(product)"), writer);
+            writer.RenderEndTag();
             writer.Write(", version ");
-            HttpUtility.HtmlEncode(this.VersionInfo.FileVersion, writer);
+            HttpUtility.HtmlEncode(Mask.EmptyString(about.Version, "0.0.0.0"), writer);
             writer.Write(". ");
-            HttpUtility.HtmlEncode(this.VersionInfo.LegalCopyright, writer);
-            writer.Write(' ');
+            
+            string copyright = about.Copyright;
+            
+            if (copyright.Length > 0)
+            {
+                HttpUtility.HtmlEncode(copyright, writer);
+                writer.Write(' ');
+            }
         }
 
-        private FileVersionInfo VersionInfo
+        private AboutSet About
         {
             get
             {
-                string cacheKey = GetType().Name;
+                string cacheKey = GetType().FullName;
 
                 //
                 // If cache is available then check if the version 
@@ -85,33 +97,57 @@ namespace Elmah
                 //
 
                 if (this.Cache != null)
-                {
-                    _versionInfo = (FileVersionInfo) this.Cache[cacheKey];
-                }
+                    _about = (AboutSet) this.Cache[cacheKey];
 
                 //
                 // Not found in the cache? Go out and get the version 
                 // information of the assembly housing this component.
                 //
                 
-                if (_versionInfo == null)
+                if (_about == null)
                 {
-                    Assembly thisAssembly = this.GetType().Assembly;
-                    _versionInfo = FileVersionInfo.GetVersionInfo(thisAssembly.Location);
+                    //
+                    // NOTE: The assembly information is picked up from the 
+                    // applied attributes rather that the more convenient
+                    // FileVersionInfo because the latter required elevated
+                    // permissions and may throw a security exception if
+                    // called from a partially trusted environment, such as
+                    // the medium trust level in ASP.NET.
+                    //
+                    
+                    AboutSet about = new AboutSet();                    
+                    Assembly assembly = this.GetType().Assembly;
+                    
+                    AssemblyFileVersionAttribute version = (AssemblyFileVersionAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute));
+                    
+                    if (version != null)
+                        about.Version = version.Version;
 
+                    AssemblyProductAttribute product = (AssemblyProductAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute));
+                    
+                    if (product != null)
+                        about.Product = product.Product;
+
+                    AssemblyCopyrightAttribute copyright = (AssemblyCopyrightAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyCopyrightAttribute));
+                    
+                    if (copyright != null)
+                        about.Copyright = copyright.Copyright;
+                    
                     //
                     // Cache for next time if the cache is available.
                     //
 
                     if (this.Cache != null)
                     {
-                        this.Cache.Add(cacheKey, _versionInfo, 
-                            null, Cache.NoAbsoluteExpiration,
+                        this.Cache.Add(cacheKey, about,
+                            /* absoluteExpiration */ null, Cache.NoAbsoluteExpiration,
                             TimeSpan.FromMinutes(2), CacheItemPriority.Normal, null);
                     }
+                    
+                    _about = about;
                 }
 
-                return _versionInfo;
+                return _about;
             }
         }
 
@@ -134,6 +170,31 @@ namespace Elmah
                 {
                     return HttpRuntime.Cache;
                 }
+            }
+        }
+
+        private sealed class AboutSet
+        {
+            private string _product;
+            private string _version;
+            private string _copyright;
+
+            public string Product
+            {
+                get { return Mask.NullString(_product); }
+                set { _product = value; }
+            }
+
+            public string Version
+            {
+                get { return Mask.NullString(_version); }
+                set { _version = value; }
+            }
+
+            public string Copyright
+            {
+                get { return Mask.NullString(_copyright); }
+                set { _copyright = value; }
             }
         }
     }
