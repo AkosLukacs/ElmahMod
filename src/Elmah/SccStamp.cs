@@ -33,6 +33,7 @@ namespace Elmah
 
     using System;
     using System.Collections;
+    using System.Globalization;
     using System.Reflection;
     using System.Text.RegularExpressions;
 
@@ -131,7 +132,8 @@ namespace Elmah
             foreach (SccAttribute attribute in attributes)
             {
                 string id = attribute.Id.Trim();
-                if (id.Length > 0)
+
+                if (id.Length > 0 && string.Compare("$Id$", id, true, CultureInfo.InvariantCulture) != 0)
                     list.Add(new SccStamp(id));
             }
 
