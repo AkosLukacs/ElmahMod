@@ -281,7 +281,7 @@ namespace Elmah
             }
 
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
-            writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.RenderBeginTag(HtmlTextWriterTag.H1);
             writer.Write("Error Log for ");
 
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "ApplicationName");

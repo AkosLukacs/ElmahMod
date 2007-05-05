@@ -118,7 +118,7 @@ namespace Elmah
             //
 
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
-            writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.RenderBeginTag(HtmlTextWriterTag.H1);
             Server.HtmlEncode(error.Message, writer);
             writer.RenderEndTag(); // </p>
             writer.WriteLine();

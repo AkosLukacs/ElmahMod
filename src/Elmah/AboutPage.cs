@@ -32,7 +32,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Globalization;
     using System.Web.UI;
 
     #endregion
@@ -45,7 +44,7 @@ namespace Elmah
                 throw new ArgumentNullException("writer");
             
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
-            writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.RenderBeginTag(HtmlTextWriterTag.H1);
             writer.Write("About ELMAH");
             writer.RenderEndTag(); // </p>
             writer.WriteLine();
