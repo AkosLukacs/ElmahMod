@@ -117,9 +117,10 @@ th
     font-weight: bold;
 }
 
-#PageTitle
+h1
 {
     font-family: Verdana;
+    font-weight: normal;
     color: #0A6CCE;
     font-size: 175%;
     padding-bottom: 0.5em;
