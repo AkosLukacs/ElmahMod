@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
     
     using System;
+    using System.Globalization;
     using System.Web;
     using System.Web.Mail;
     using System.IO;
@@ -50,6 +51,10 @@ namespace Elmah
 
     public class ErrorMailModule : IHttpModule
     {
+        private string _smtpServer;
+        private int _smtpPort;
+        private string _authUserName;
+        private string _authPassword;
         private string _mailSender;
         private string _mailRecipient;
         private string _mailSubjectFormat;
@@ -85,6 +90,10 @@ namespace Elmah
             string mailSender = GetSetting(config, "from", mailRecipient);
             string mailSubjectFormat = GetSetting(config, "subject", string.Empty);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
+            string smtpServer = GetSetting(config, "smtpServer");
+            int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
+            string authUserName = GetSetting(config, "userName");
+            string authPassword = GetSetting(config, "password");
 
             //
             // Hook into the Error event of the application.
@@ -101,6 +110,10 @@ namespace Elmah
             _mailSender = mailSender;
             _mailSubjectFormat = mailSubjectFormat;
             _reportAsynchronously = reportAsynchronously;
+            _smtpServer = smtpServer;
+            _smtpPort = smtpPort;
+            _authUserName = authUserName;
+            _authPassword = authPassword;
         }
 
         /// <summary>
@@ -145,6 +158,43 @@ namespace Elmah
             get { return _mailSubjectFormat; }
         }
         
+        /// <summary>
+        /// Gets the SMTP server host name used when sending the mail.
+        /// </summary>
+
+        protected string SmtpServer
+        {
+            get { return _smtpServer; }
+        }
+
+        /// <summary>
+        /// Gets the SMTP port used when sending the mail.
+        /// </summary>
+
+        protected int SmtpPort
+        {
+            get { return _smtpPort; }
+        }
+
+        /// <summary>
+        /// Gets the user name to use if the SMTP server requires authentication.
+        /// </summary>
+
+        protected string AuthUserName
+        {
+            get { return _authUserName; }
+        }
+
+        /// <summary>
+        /// Gets the clear-text password to use if the SMTP server requires 
+        /// authentication.
+        /// </summary>
+
+        protected string AuthPassword
+        {
+            get { return _authPassword; }
+        }
+
         /// <summary>
         /// The handler called when an unhandled exception bubbles up to 
         /// the module.
@@ -265,6 +315,40 @@ namespace Elmah
                     throw new ApplicationException(string.Format(
                         "The error mail module does not know how to handle the {1} media type that is created by the {0} formatter.",
                         formatter.GetType().FullName, formatter.MimeType));
+                }
+            }
+            
+            //
+            // If the mail needs to be delivered to a particular SMTP server
+            // then set-up the corresponding CDO configuration fields of the 
+            // mail message.
+            //
+            
+            string smtpServer = Mask.NullString(this.SmtpServer);
+
+            if (smtpServer.Length > 0)
+            {
+                IDictionary fields = mail.Fields;
+
+                fields.Add(CdoConfigurationFields.SendUsing, /* cdoSendUsingPort */ 2);
+                fields.Add(CdoConfigurationFields.SmtpServer, smtpServer);
+                fields.Add(CdoConfigurationFields.SmtpServerPort, this.SmtpPort);
+
+                //
+                // If the SMTP server requires authentication (indicated by 
+                // non-blank user name and password settings) then set-up 
+                // the corresponding CDO configuration fields of the mail 
+                // message.
+                //
+            
+                string userName = Mask.NullString(this.AuthUserName);
+                string password = Mask.NullString(this.AuthPassword);
+
+                if (userName.Length > 0 && password.Length > 0)
+                {
+                    fields.Add(CdoConfigurationFields.SmtpAuthenticate, 1);
+                    fields.Add(CdoConfigurationFields.SendUserName, userName);
+                    fields.Add(CdoConfigurationFields.SendPassword, password);
                 }
             }
 

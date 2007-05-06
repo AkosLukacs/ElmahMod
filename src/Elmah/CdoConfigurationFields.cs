@@ -25,32 +25,19 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8804.0")]
-[assembly: AssemblyFileVersion("1.0.8806.1939")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah
+{
+    internal sealed class CdoConfigurationFields
+    {
+        public static readonly string SendUsing = "http://schemas.microsoft.com/cdo/configuration/sendusing";
+        public static readonly string SmtpServer = "http://schemas.microsoft.com/cdo/configuration/smtpserver";
+        public static readonly string SmtpServerPort = "http://schemas.microsoft.com/cdo/configuration/smtpserverport";
+        public static readonly string SmtpAuthenticate = "http://schemas.microsoft.com/cdo/configuration/smtpauthenticate";
+        public static readonly string SendUserName = "http://schemas.microsoft.com/cdo/configuration/sendusername";
+        public static readonly string SendPassword = "http://schemas.microsoft.com/cdo/configuration/sendpassword";
+        
+        private CdoConfigurationFields() {}
+    }
+}
