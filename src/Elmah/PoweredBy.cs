@@ -75,8 +75,14 @@ namespace Elmah
             HttpUtility.HtmlEncode(Mask.EmptyString(about.Product, "(product)"), writer);
             writer.RenderEndTag();
             writer.Write(", version ");
-            HttpUtility.HtmlEncode(Mask.EmptyString(about.Version, "0.0.0.0"), writer);
+
+            string version = about.GetFileVersionString();
             
+            if (version.Length == 0)
+                version = about.GetVersionString();
+
+            HttpUtility.HtmlEncode(Mask.EmptyString(version, "?.?.?.?"), writer);
+
 #if DEBUG
             writer.Write(" (DEBUG)");
 #endif
@@ -124,11 +130,12 @@ namespace Elmah
                     
                     AboutSet about = new AboutSet();                    
                     Assembly assembly = this.GetType().Assembly;
+                    about.Version = assembly.GetName().Version;
                     
                     AssemblyFileVersionAttribute version = (AssemblyFileVersionAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyFileVersionAttribute));
                     
                     if (version != null)
-                        about.Version = version.Version;
+                        about.FileVersion = new Version(version.Version);
 
                     AssemblyProductAttribute product = (AssemblyProductAttribute) Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute));
                     
@@ -180,10 +187,12 @@ namespace Elmah
             }
         }
 
+        [ Serializable ]
         private sealed class AboutSet
         {
             private string _product;
-            private string _version;
+            private Version _version;
+            private Version _fileVersion;
             private string _copyright;
 
             public string Product
@@ -192,10 +201,26 @@ namespace Elmah
                 set { _product = value; }
             }
 
-            public string Version
+            public Version Version
             {
-                get { return Mask.NullString(_version); }
+                get { return _version; }
                 set { _version = value; }
+            }
+
+            public string GetVersionString()
+            {
+                return _version != null ? _version.ToString() : string.Empty;
+            }
+
+            public Version FileVersion
+            {
+                get { return _fileVersion; }
+                set { _fileVersion = value; }
+            }
+
+            public string GetFileVersionString()
+            {
+                return _fileVersion != null ? _fileVersion.ToString() : string.Empty;
             }
 
             public string Copyright
