@@ -133,6 +133,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorFilterModule.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorHtmlPage.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
@@ -188,6 +193,11 @@
                 />
                 <File
                     RelPath = "ErrorTextFormatter.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ExceptionFiltering.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

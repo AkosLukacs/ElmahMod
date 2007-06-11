@@ -49,7 +49,7 @@ namespace Elmah
     /// occurs in an ASP.NET web application.
     /// </summary>
 
-    public class ErrorMailModule : IHttpModule
+    public class ErrorMailModule : IHttpModule, IExceptionFiltering
     {
         private string _smtpServer;
         private int _smtpPort;
@@ -59,6 +59,8 @@ namespace Elmah
         private string _mailRecipient;
         private string _mailSubjectFormat;
         private bool _reportAsynchronously;
+
+        public event ExceptionFilterEventHandler Filtering;
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
@@ -202,22 +204,41 @@ namespace Elmah
 
         protected virtual void OnError(object sender, EventArgs e)
         {
+            HttpContext context = ((HttpApplication) sender).Context;
+            
+            //
+            // Fire an event to check if listeners want to filter out
+            // reporting of the uncaught exception.
+            //
+
+            Exception ex = context.Server.GetLastError();
+            ExceptionFilterEventArgs filterArgs = new ExceptionFilterEventArgs(ex, context);
+            if (filterArgs.Dismissed)
+                return;
+            
             //
             // Get the last error and then report it synchronously or 
             // asynchronously based on the configuration.
             //
 
-            HttpApplication application = (HttpApplication) sender;
-            Error error = GetLastError(application);
+            Error error = GetLastError(context);
 
             if (_reportAsynchronously)
-            {
                 ReportErrorAsync(error);
-            }
             else
-            {
                 ReportError(error);
-            }
+        }
+        
+        /// <summary>
+        /// Raises the <see cref="Filtering"/> event.
+        /// </summary>
+
+        protected virtual void OnFiltering(ExceptionFilterEventArgs args)
+        {
+            ExceptionFilterEventHandler handler = Filtering;
+            
+            if (handler != null)
+                handler(this, args);
         }
 
         /// <summary>
@@ -402,9 +423,7 @@ namespace Elmah
                 try
                 {
                     using (StreamWriter attachementWriter = File.CreateText(path))
-                    {
                         attachementWriter.Write(error.WebHostHtmlMessage);
-                    }
 
                     mail.Attachments.Add(new MailAttachment(path));
                 }
@@ -428,9 +447,7 @@ namespace Elmah
         protected virtual void DisposeMail(MailMessage mail)
         {
             foreach (MailAttachment attachment in mail.Attachments)
-            {
                 File.Delete(attachment.Filename);
-            }
         }
 
         /// <summary>
@@ -466,16 +483,16 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Builds an <see cref="Error"/> object from the last application
+        /// Builds an <see cref="Error"/> object from the last context
         /// exception generated.
         /// </summary>
 
-        protected virtual Error GetLastError(HttpApplication application)
+        protected virtual Error GetLastError(HttpContext context)
         {
-            if (application == null)
-                throw new ArgumentNullException("application");
+            if (context == null)
+                throw new ArgumentNullException("context");
 
-            return new Error(application.Server.GetLastError(), application.Context);
+            return new Error(context.Server.GetLastError(), context);
         }
 
         private static string GetSetting(IDictionary config, string name)

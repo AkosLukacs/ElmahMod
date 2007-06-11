@@ -43,9 +43,10 @@ namespace Elmah
     /// ASP.NET Web application to an error log.
     /// </summary>
     
-    public class ErrorLogModule : IHttpModule
+    public class ErrorLogModule : IExceptionFiltering, IHttpModule
     {
-
+        public event ExceptionFilterEventHandler Filtering;
+        
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
         /// </summary>
@@ -96,6 +97,21 @@ namespace Elmah
             if (e == null)
                 throw new ArgumentNullException("e");
 
+            //
+            // Fire an event to check if listeners want to filter out
+            // logging of the uncaught exception.
+            //
+
+            ExceptionFilterEventArgs args = new ExceptionFilterEventArgs(e, context);
+            OnFiltering(args);
+            
+            if (args.Dismissed)
+                return;
+            
+            //
+            // Log away...
+            //
+
             try
             {
                 this.ErrorLog.Log(new Error(e, context));
@@ -113,6 +129,18 @@ namespace Elmah
 
                 Trace.WriteLine(localException);
             }
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Filtering"/> event.
+        /// </summary>
+
+        protected virtual void OnFiltering(ExceptionFilterEventArgs args)
+        {
+            ExceptionFilterEventHandler handler = Filtering;
+            
+            if (handler != null)
+                handler(this, args);
         }
     }
 }
