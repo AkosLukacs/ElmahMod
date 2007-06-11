@@ -56,8 +56,10 @@ namespace Elmah
             
             for (int i = 0; i < modules.Count; i++)
             {
-                IExceptionFiltering filtering = (IExceptionFiltering) modules[i];
-                filtering.Filtering += new ExceptionFilterEventHandler(OnErrorModuleFiltering);
+                IExceptionFiltering filtering = modules[i] as IExceptionFiltering;
+
+                if (filtering != null)
+                    filtering.Filtering += new ExceptionFilterEventHandler(OnErrorModuleFiltering);
             }
         }
 
