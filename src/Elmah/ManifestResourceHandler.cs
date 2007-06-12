@@ -90,23 +90,19 @@ namespace Elmah
                 response.ContentType = _contentType;
 
                 if (_responseEncoding != null)
-                {
                     response.ContentEncoding = _responseEncoding;
-                }
 
                 //
                 // Finally, write out the bytes!
                 //
 
-                int bytesWritten = 0;
+                int readLength = stream.Read(buffer, 0, buffer.Length);
 
-                do
+                while (readLength > 0)
                 {
-                    int readCount = stream.Read(buffer, 0, buffer.Length);
-                    response.OutputStream.Write(buffer, 0, readCount);
-                    bytesWritten += readCount;
+                    response.OutputStream.Write(buffer, 0, readLength);
+                    readLength = stream.Read(buffer, 0, buffer.Length);
                 }
-                while (bytesWritten < stream.Length);
             }
         }
 
