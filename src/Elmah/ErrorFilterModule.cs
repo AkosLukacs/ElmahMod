@@ -32,7 +32,10 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Configuration;
+    using System.Diagnostics;
     using System.Web;
+    using Elmah.Assertions;
 
     #endregion
 
@@ -43,6 +46,8 @@ namespace Elmah
     
     public class ErrorFilterModule : IHttpModule
     {
+        private IAssertion _assertion = StaticAssertion.False;
+        
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
         /// </summary>
@@ -51,6 +56,13 @@ namespace Elmah
         {
             if (application == null)
                 throw new ArgumentNullException("application");
+            
+            ErrorFilterConfiguration config = (ErrorFilterConfiguration) ConfigurationSettings.GetConfig("elmah/errorFilter");
+            
+            if (config == null)
+                return;
+            
+            _assertion = config.Assertion;
 
             HttpModuleCollection modules = application.Modules;
             
@@ -71,12 +83,84 @@ namespace Elmah
         {
         }
 
+        public virtual IAssertion Assertion
+        {
+            get { return _assertion; }
+        }
+
         protected virtual void OnErrorModuleFiltering(object sender, ExceptionFilterEventArgs args)
         {
             if (args == null)
                 throw new ArgumentNullException("args");
             
-            // TODO: Add filtering by configuraiton
+            if (args.Exception == null)
+                throw new ArgumentException(null, "args");
+            
+            // TODO: Consider making this robust in case an exception is thrown during testing of the assertion.
+            
+            if (Assertion.Test(new AssertionHelperContext(args.Exception, args.Context)))
+                args.Dismiss();
+        }
+
+        internal sealed class AssertionHelperContext
+        {
+            private readonly Exception _exception;
+            private readonly object _context;
+            private Exception _baseException;
+            private int _httpStatusCode;
+            private bool _statusCodeInitialized;
+
+            public AssertionHelperContext(Exception e, object context)
+            {
+                Debug.Assert(e != null);
+                
+                _exception = e;
+                _context = context;
+            }
+
+            public Exception Exception
+            {
+                get { return _exception; }
+            }
+
+            public Exception BaseException
+            {
+                get
+                {
+                    if (_baseException == null)
+                        _baseException = Exception.GetBaseException();
+                    
+                    return _baseException;
+                }
+            }
+
+            public bool HasHttpStatusCode
+            {
+                get { return HttpStatusCode != 0; }
+            }
+
+            public int HttpStatusCode
+            {
+                get
+                {
+                    if (!_statusCodeInitialized)
+                    {
+                        _statusCodeInitialized = true;
+                        
+                        HttpException exception = Exception as HttpException;
+
+                        if (exception != null)
+                            _httpStatusCode = exception.GetHttpCode();
+                    }
+                    
+                    return _httpStatusCode;
+                }
+            }
+
+            public object Context
+            {
+                get { return _context; }
+            }
         }
     }
 }

@@ -114,6 +114,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConfigurationSectionHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Database.sql"
                     BuildAction = "Content"
                 />
@@ -133,7 +138,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorFilterConfiguration.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorFilterModule.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ErrorFilterSectionHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -272,6 +287,66 @@
                 />
                 <File
                     RelPath = "XmlFileErrorLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\AssertionFactory.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\ComparisonAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\ComparisonResults.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\CompositeAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\DataBinder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\DataBoundAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\IAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\LogicalAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\RegexMatchAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\StaticAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\TypeAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\UnaryNotAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

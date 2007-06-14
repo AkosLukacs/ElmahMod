@@ -25,32 +25,26 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8804.0")]
-[assembly: AssemblyFileVersion("1.0.8914.2028")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah.Assertions
+{
+    /// <summary>
+    /// Provides evaluation of a context to determine whether it matches
+    /// certain criteria or not.
+    /// </summary>
+    
+    public interface IAssertion
+    {
+        /// <remarks>
+        /// The context is typed generically as System.Object when it could have
+        /// been restricted to System.Web.HttpContext and also avoid unnecessary
+        /// casting downstream. However, using object allows simple
+        /// assertions to be unit-tested without having to stub out a lot of
+        /// the classes from System.Web (most of which cannot be stubbed anyhow
+        /// due to lack of virtual and instance methods).
+        /// </remarks>
+
+        bool Test(object context);
+    }
+}

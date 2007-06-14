@@ -25,32 +25,39 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8804.0")]
-[assembly: AssemblyFileVersion("1.0.8914.2028")]
-
-#if DEBUG
-[assembly: AssemblyConfiguration("Debug")]
-#else
-[assembly: AssemblyConfiguration("Release")]
-#endif
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah
+{
+    #region Imports
+
+    using System;
+    using Elmah.Assertions;
+
+    #endregion
+
+    public class ErrorFilterConfiguration : ICloneable
+    {
+        private IAssertion _assertion = StaticAssertion.False;
+
+        public IAssertion Assertion
+        {
+            get { return _assertion; }
+        }
+
+        internal void SetAssertion(IAssertion assertion)
+        {
+            _assertion = assertion != null ? assertion : StaticAssertion.False;
+        }
+
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
+        protected virtual object Clone()
+        {
+            return MemberwiseClone();
+        }
+    }
+}
