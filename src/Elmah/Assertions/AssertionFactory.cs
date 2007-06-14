@@ -32,8 +32,10 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
+    using System.Configuration;
     using System.Reflection;
     using System.Runtime.Remoting;
+    using System.Web;
     using System.Xml;
     
     #endregion
@@ -115,9 +117,12 @@ namespace Elmah.Assertions
             {
                 string assemblyName, ns;
 
-                if (!SoapServices.DecodeXmlNamespaceForClrTypeNamespace(xmlns, out ns, out assemblyName))
-                    throw new Exception(string.Format("Error decoding CLR type namespace and assembly from the XML namespace '{0}'.", xmlns)); // TODO: Throw a more specific exception
-
+                if (!DecodeClrTypeNamespaceFromXmlNamespace(xmlns, out ns, out assemblyName))
+                    throw new ConfigurationException(string.Format("Error decoding CLR type namespace and assembly from the XML namespace '{0}'.", xmlns));
+                
+                // TODO: Throw exception here if assembly name is empty.
+                // TODO: Review for case of empty namespace.
+                
                 Assembly assembly = Assembly.Load(assemblyName);
                 factoryType = assembly.GetType(ns + ".AssertionFactory", /* throwOnError */ true);
             }
@@ -130,6 +135,57 @@ namespace Elmah.Assertions
             return handler(config);
         }
         
+
+        /// <remarks>
+        /// Ideally, we would be able to use SoapServices.DecodeXmlNamespaceForClrTypeNamespace
+        /// but that requires a link demand permission that will fail in partially trusted
+        /// environments such as ASP.NET medium trust.
+        /// </remarks>
+        
+        private static bool DecodeClrTypeNamespaceFromXmlNamespace(string xmlns, out string typeNamespace, out string assemblyName)
+        {
+            Debug.Assert(xmlns != null);
+
+            assemblyName = null;
+            typeNamespace = "";
+
+            const string assemblyNS = "http://schemas.microsoft.com/clr/assem/";
+            const string namespaceNS = "http://schemas.microsoft.com/clr/ns/";
+            const string fullNS = "http://schemas.microsoft.com/clr/nsassem/";
+            
+            if (OrdinalStringStartsWith(xmlns, assemblyNS))
+            {
+                assemblyName = HttpUtility.UrlDecode(xmlns.Substring(assemblyNS.Length));
+                return assemblyName.Length > 0;
+            }
+            else if (OrdinalStringStartsWith(xmlns, namespaceNS))
+            {
+                typeNamespace = xmlns.Substring(namespaceNS.Length);
+                return typeNamespace.Length > 0;
+            }
+            else if (OrdinalStringStartsWith(xmlns, fullNS))
+            {
+                int index = xmlns.IndexOf("/", fullNS.Length);
+                typeNamespace = xmlns.Substring(fullNS.Length, index - fullNS.Length);
+                assemblyName = HttpUtility.UrlDecode(xmlns.Substring(index + 1));
+
+                return assemblyName.Length > 0 && typeNamespace.Length > 0;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        private static bool OrdinalStringStartsWith(string s, string prefix)
+        {
+            Debug.Assert(s != null);
+            Debug.Assert(prefix != null);
+            
+            return s.Length >= prefix.Length && 
+                string.CompareOrdinal(s.Substring(0, prefix.Length), prefix) == 0;
+        }
+ 
         private AssertionFactory()
         {
             throw new NotSupportedException();
