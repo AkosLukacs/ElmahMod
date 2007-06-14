@@ -227,10 +227,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Key.snk"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "ManifestResourceHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
