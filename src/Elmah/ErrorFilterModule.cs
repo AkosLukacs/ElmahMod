@@ -64,11 +64,9 @@ namespace Elmah
             
             _assertion = config.Assertion;
 
-            HttpModuleCollection modules = application.Modules;
-            
-            for (int i = 0; i < modules.Count; i++)
+            foreach (IHttpModule module in HttpModuleRegistry.GetModules(application))
             {
-                IExceptionFiltering filtering = modules[i] as IExceptionFiltering;
+                IExceptionFiltering filtering = module as IExceptionFiltering;
 
                 if (filtering != null)
                     filtering.Filtering += new ExceptionFilterEventHandler(OnErrorModuleFiltering);

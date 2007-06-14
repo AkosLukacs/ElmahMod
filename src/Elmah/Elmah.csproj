@@ -217,6 +217,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HttpModuleRegistry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "HttpValuesCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

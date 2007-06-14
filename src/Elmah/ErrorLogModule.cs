@@ -55,6 +55,8 @@ namespace Elmah
         {
             if (application == null)
                 throw new ArgumentNullException("application");
+            
+            HttpModuleRegistry.RegisterInPartialTrust(application, this);
 
             application.Error += new EventHandler(OnError);
         }

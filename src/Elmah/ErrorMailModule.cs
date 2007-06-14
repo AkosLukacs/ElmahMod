@@ -70,6 +70,8 @@ namespace Elmah
         {
             if (application == null)
                 throw new ArgumentNullException("application");
+            
+            HttpModuleRegistry.RegisterInPartialTrust(application, this);
 
             //
             // Get the configuration section of this module.
@@ -80,9 +82,7 @@ namespace Elmah
             IDictionary config = (IDictionary) GetConfig();
 
             if (config == null)
-            {
                 return;
-            }
 
             //
             // Extract the settings.
@@ -102,7 +102,7 @@ namespace Elmah
             //
 
             application.Error += new EventHandler(OnError);
-
+            
             //
             // Finally, commit the state of the module if we got this far.
             // Anything beyond this point should not cause an exception.
