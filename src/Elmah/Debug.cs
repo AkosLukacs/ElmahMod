@@ -31,10 +31,8 @@ namespace Elmah
 {
     #region Imports
 
-    using System;
-
-    using BaseDebug = System.Diagnostics.Debug;
-    using ConditionalAttribute = System.Diagnostics.ConditionalAttribute;
+    using System.Diagnostics;
+    using SysDebug = System.Diagnostics.Debug;
 
     #endregion
 
@@ -48,13 +46,14 @@ namespace Elmah
         [ Conditional("DEBUG") ]
         public static void Assert(bool condition)
         {
-            BaseDebug.Assert(condition);
+            SysDebug.Assert(condition);
         }
 
         [ Conditional("DEBUG") ]
         public static void AssertStringNotEmpty(string s)
         {
-            BaseDebug.Assert(Mask.NullString(s).Length != 0);
+            Assert(s != null);
+            Assert(s.Length != 0);
         }
         
         private Debug() {}
