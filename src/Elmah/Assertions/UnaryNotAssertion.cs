@@ -29,14 +29,6 @@
 
 namespace Elmah.Assertions
 {
-    #region Imports
-
-    using System;
-    using System.Configuration;
-    using System.Xml;
-
-    #endregion
-
     public sealed class UnaryNotAssertion : IAssertion
     {
         private readonly IAssertion _operand;

@@ -34,7 +34,6 @@ namespace Elmah.Assertions
     using System;
     using System.Configuration;
     using System.Reflection;
-    using System.Runtime.Remoting;
     using System.Web;
     using System.Xml;
     
