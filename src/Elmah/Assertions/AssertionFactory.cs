@@ -116,11 +116,11 @@ namespace Elmah.Assertions
             {
                 string assemblyName, ns;
 
-                if (!DecodeClrTypeNamespaceFromXmlNamespace(xmlns, out ns, out assemblyName))
+                if (!DecodeClrTypeNamespaceFromXmlNamespace(xmlns, out ns, out assemblyName) ||
+                    ns.Length == 0 || assemblyName.Length == 0)
+                {
                     throw new ConfigurationException(string.Format("Error decoding CLR type namespace and assembly from the XML namespace '{0}'.", xmlns));
-                
-                // TODO: Throw exception here if assembly name is empty.
-                // TODO: Review for case of empty namespace.
+                }
                 
                 Assembly assembly = Assembly.Load(assemblyName);
                 factoryType = assembly.GetType(ns + ".AssertionFactory", /* throwOnError */ true);
