@@ -145,8 +145,8 @@ namespace Elmah.Assertions
         {
             Debug.Assert(xmlns != null);
 
-            assemblyName = null;
-            typeNamespace = "";
+            assemblyName = string.Empty;
+            typeNamespace = string.Empty;
 
             const string assemblyNS = "http://schemas.microsoft.com/clr/assem/";
             const string namespaceNS = "http://schemas.microsoft.com/clr/ns/";
