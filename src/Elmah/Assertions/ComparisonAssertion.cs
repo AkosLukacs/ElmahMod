@@ -32,6 +32,7 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
+    using System.Configuration;
     using System.Globalization;
     using System.Xml;
 
@@ -57,20 +58,36 @@ namespace Elmah.Assertions
             _predicate = predicate;
 
             //
-            // Get the expected value and its type from the configuration.
+            // Get the expected value and its type.
             //
             
             XmlAttributeCollection attributes = config.Attributes;
             
             string valueString = ConfigurationSectionHelper.GetValueAsString(attributes["value"]);
             
-            TypeCode valueType = TypeCode.String;
-            string valueTypeName = ConfigurationSectionHelper.GetValueAsString(attributes["valueType"]);
+            TypeCode type = TypeCode.String;
+            string typeName = ConfigurationSectionHelper.GetValueAsString(attributes["type"]);
             
-            if (valueTypeName.Length > 0)
-                valueType = (TypeCode) Enum.Parse(typeof(TypeCode), valueTypeName);
+            if (typeName.Length > 0)
+            {
+                type = (TypeCode) Enum.Parse(typeof(TypeCode), typeName);
+                
+                if (type == TypeCode.DBNull ||
+                    type == TypeCode.Empty ||
+                    type == TypeCode.Object)
+                {
+                    throw new ConfigurationException(string.Format(
+                        "The {0} value type is invalid for a comparison assertion.", 
+                        type.ToString()));
+                }
+            }
+            
+            //
+            // Convert the expected value to the comparison type and 
+            // save it as a field.
+            //
 
-            _expectedValue = Convert.ChangeType(valueString, valueType);
+            _expectedValue = Convert.ChangeType(valueString, type);
         }
 
         public virtual object ExpectedValue
