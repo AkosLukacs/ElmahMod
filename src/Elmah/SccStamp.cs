@@ -133,7 +133,7 @@ namespace Elmah
             {
                 string id = attribute.Id.Trim();
 
-                if (id.Length > 0 && string.Compare("$Id$", id, true, CultureInfo.InvariantCulture) != 0)
+                if (id.Length > 0 && string.Compare("$Id" + /* IMPORTANT! */ "$", id, true, CultureInfo.InvariantCulture) != 0)
                     list.Add(new SccStamp(id));
             }
 
