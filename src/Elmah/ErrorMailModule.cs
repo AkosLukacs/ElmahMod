@@ -416,6 +416,8 @@ namespace Elmah
                 // this code will have sufficient rights to create the
                 // temporary file in that area.
                 //
+                // TODO: Find an alternative to CodegenDir since it is not available in partially trusted environments.
+                //
 
                 string fileName = "WebHostHtmlMessage-" + Guid.NewGuid().ToString() + ".htm";
                 string path = Path.Combine(HttpRuntime.CodegenDir, fileName);
