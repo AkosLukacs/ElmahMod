@@ -98,6 +98,11 @@ namespace Elmah.Assertions
             return new TypeAssertion(config, true);
         }
 
+        public static IAssertion assert_regex(XmlElement config)
+        {
+            return new RegexMatchAssertion(config);
+        }
+        
         public static IAssertion Create(XmlElement config)
         {
             if (config == null)
