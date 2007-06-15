@@ -45,7 +45,7 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-    public class ApplicationException : System.ApplicationException
+    public class ApplicationException : Exception
     {
 
         /// <summary>
