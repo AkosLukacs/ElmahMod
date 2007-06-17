@@ -57,7 +57,7 @@ namespace Elmah
             get { return ErrorLog.Default; }
         }
 
-        protected virtual string Title
+        protected virtual string PageTitle
         {
             get { return Mask.NullString(_title); }
             set { _title = value; }
@@ -90,7 +90,7 @@ namespace Elmah
             //
 
             writer.RenderBeginTag(HtmlTextWriterTag.Title);
-            Server.HtmlEncode(this.Title, writer);
+            Server.HtmlEncode(this.PageTitle, writer);
             writer.RenderEndTag();
             writer.WriteLine();
 

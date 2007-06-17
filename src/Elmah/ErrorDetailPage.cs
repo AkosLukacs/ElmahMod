@@ -77,7 +77,7 @@ namespace Elmah
             // Setup the title of the page.
             //
 
-            this.Title = string.Format("Error: {0} [{1}]", _errorEntry.Error.Type, _errorEntry.Id);
+            this.PageTitle = string.Format("Error: {0} [{1}]", _errorEntry.Error.Type, _errorEntry.Id);
 
             base.OnLoad(e);
         }

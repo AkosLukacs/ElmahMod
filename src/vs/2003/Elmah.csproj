@@ -28,7 +28,7 @@
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "DEBUG;TRACE"
+                    DefineConstants = "DEBUG;TRACE;NET_1_1"
                     DocumentationFile = "Elmah.xml"
                     DebugSymbols = "true"
                     FileAlignment = "4096"
@@ -36,7 +36,7 @@
                     NoStdLib = "false"
                     NoWarn = "1591"
                     Optimize = "false"
-                    OutputPath = "..\..\bin\Debug\"
+                    OutputPath = "..\..\..\bin\net-1.1\Debug\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "false"
@@ -48,7 +48,7 @@
                     BaseAddress = "285212672"
                     CheckForOverflowUnderflow = "false"
                     ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE"
+                    DefineConstants = "TRACE;NET_1_1"
                     DocumentationFile = "Elmah.xml"
                     DebugSymbols = "true"
                     FileAlignment = "4096"
@@ -56,7 +56,7 @@
                     NoStdLib = "false"
                     NoWarn = "1591"
                     Optimize = "true"
-                    OutputPath = "..\..\bin\Release\"
+                    OutputPath = "..\..\..\bin\net-1.1\Release\"
                     RegisterForComInterop = "false"
                     RemoveIntegerChecks = "false"
                     TreatWarningsAsErrors = "true"
@@ -95,259 +95,311 @@
             <Include>
                 <File
                     RelPath = "AboutPage.cs"
+                    Link = "..\..\Elmah\AboutPage.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ApplicationException.cs"
+                    Link = "..\..\Elmah\ApplicationException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    Link = "..\..\Elmah\AssemblyInfo.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "CdoConfigurationFields.cs"
+                    Link = "..\..\Elmah\CdoConfigurationFields.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ConfigurationSectionHelper.cs"
+                    Link = "..\..\Elmah\ConfigurationSectionHelper.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Database.sql"
+                    Link = "..\..\Elmah\Database.sql"
                     BuildAction = "Content"
                 />
                 <File
                     RelPath = "Debug.cs"
+                    Link = "..\..\Elmah\Debug.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Error.cs"
+                    Link = "..\..\Elmah\Error.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorDetailPage.cs"
+                    Link = "..\..\Elmah\ErrorDetailPage.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorFilterConfiguration.cs"
+                    Link = "..\..\Elmah\ErrorFilterConfiguration.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorFilterModule.cs"
+                    Link = "..\..\Elmah\ErrorFilterModule.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorFilterSectionHandler.cs"
+                    Link = "..\..\Elmah\ErrorFilterSectionHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorHtmlPage.cs"
+                    Link = "..\..\Elmah\ErrorHtmlPage.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorLog.cs"
+                    Link = "..\..\Elmah\ErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorLog.css"
+                    Link = "..\..\Elmah\ErrorLog.css"
                     BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "ErrorLogEntry.cs"
+                    Link = "..\..\Elmah\ErrorLogEntry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorLogModule.cs"
+                    Link = "..\..\Elmah\ErrorLogModule.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorLogPage.cs"
+                    Link = "..\..\Elmah\ErrorLogPage.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorLogPageFactory.cs"
+                    Link = "..\..\Elmah\ErrorLogPageFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorMailHtmlFormatter.cs"
+                    Link = "..\..\Elmah\ErrorMailHtmlFormatter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorMailModule.cs"
+                    Link = "..\..\Elmah\ErrorMailModule.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorPageBase.cs"
+                    Link = "..\..\Elmah\ErrorPageBase.cs"
                     SubType = "ASPXCodeBehind"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorRssHandler.cs"
+                    Link = "..\..\Elmah\ErrorRssHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ErrorTextFormatter.cs"
+                    Link = "..\..\Elmah\ErrorTextFormatter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ExceptionFiltering.cs"
+                    Link = "..\..\Elmah\ExceptionFiltering.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "HttpModuleRegistry.cs"
+                    Link = "..\..\Elmah\HttpModuleRegistry.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "HttpValuesCollection.cs"
+                    Link = "..\..\Elmah\HttpValuesCollection.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "IXmlExportable.cs"
+                    Link = "..\..\Elmah\IXmlExportable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ManifestResourceHandler.cs"
+                    Link = "..\..\Elmah\ManifestResourceHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Mask.cs"
+                    Link = "..\..\Elmah\Mask.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "MemoryErrorLog.cs"
+                    Link = "..\..\Elmah\MemoryErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "PoweredBy.cs"
+                    Link = "..\..\Elmah\PoweredBy.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "ReverseComparer.cs"
+                    Link = "..\..\Elmah\ReverseComparer.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "RichSiteSummary.cs"
+                    Link = "..\..\Elmah\RichSiteSummary.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "SccAttribute.cs"
+                    Link = "..\..\Elmah\SccAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "SccStamp.cs"
+                    Link = "..\..\Elmah\SccStamp.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "SimpleServiceProviderFactory.cs"
+                    Link = "..\..\Elmah\SimpleServiceProviderFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "SqlErrorLog.cs"
+                    Link = "..\..\Elmah\SqlErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "TestException.cs"
+                    Link = "..\..\Elmah\TestException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "XmlFileErrorLog.cs"
+                    Link = "..\..\Elmah\XmlFileErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\AssertionFactory.cs"
+                    Link = "..\..\Elmah\Assertions\AssertionFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\ComparisonAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\ComparisonAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\ComparisonResults.cs"
+                    Link = "..\..\Elmah\Assertions\ComparisonResults.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\CompositeAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\CompositeAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\DataBinder.cs"
+                    Link = "..\..\Elmah\Assertions\DataBinder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\DataBoundAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\DataBoundAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\IAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\IAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\LogicalAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\LogicalAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\RegexMatchAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\RegexMatchAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\StaticAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\StaticAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\TypeAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\TypeAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Assertions\UnaryNotAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\UnaryNotAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -62,8 +62,8 @@ namespace Elmah
             
             if (stamps.Length > 0)
                 writer.Write("(SCC #{0}) ", stamps[0].Revision.ToString("N0"));
-            
-            writer.Write("build was compiled from the following sources:");
+
+            writer.Write("build was compiled from the following sources for CLR {0}:", typeof(ErrorLog).Assembly.ImageRuntimeVersion);
             writer.RenderEndTag(); // </p>
 
             writer.RenderBeginTag(HtmlTextWriterTag.Ul);

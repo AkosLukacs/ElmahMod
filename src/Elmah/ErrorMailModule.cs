@@ -34,14 +34,21 @@ namespace Elmah
     using System;
     using System.Globalization;
     using System.Web;
-    using System.Web.Mail;
     using System.IO;
+
+#if NET_1_1
+    using System.Web.Mail;
+#else
+    using System.Net.Mail;
+#endif
 
     using ConfigurationSettings = System.Configuration.ConfigurationSettings;
     using IDictionary = System.Collections.IDictionary;
     using ThreadPool = System.Threading.ThreadPool;
     using WaitCallback = System.Threading.WaitCallback;
-    
+    using Encoding = System.Text.Encoding;
+    using NetworkCredential = System.Net.NetworkCredential;
+
     #endregion
 
     /// <summary>
@@ -92,10 +99,10 @@ namespace Elmah
             string mailSender = GetSetting(config, "from", mailRecipient);
             string mailSubjectFormat = GetSetting(config, "subject", string.Empty);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
-            string smtpServer = GetSetting(config, "smtpServer");
+            string smtpServer = GetSetting(config, "smtpServer", string.Empty);
             int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
-            string authUserName = GetSetting(config, "userName");
-            string authPassword = GetSetting(config, "password");
+            string authUserName = GetSetting(config, "userName", string.Empty);
+            string authPassword = GetSetting(config, "password", string.Empty);
 
             //
             // Hook into the Error event of the application.
@@ -289,6 +296,8 @@ namespace Elmah
             string sender = Mask.NullString(this.MailSender);
             string recipient = Mask.NullString(this.MailRecipient);
 
+            // TODO: Under 2.0, the sender can be defaulted via <network> configuration so consider only checking recipient here.
+
             if (sender.Length == 0 || recipient.Length == 0)
             {
                 return;
@@ -300,8 +309,13 @@ namespace Elmah
 
             MailMessage mail = new MailMessage();
 
+#if NET_1_1
             mail.From = sender;
             mail.To = recipient;
+#else
+            mail.From = new MailAddress(sender);
+            mail.To.Add(recipient);
+#endif
 
             //
             // Format the mail subject.
@@ -328,9 +342,13 @@ namespace Elmah
 
             switch (formatter.MimeType)
             {
+#if NET_1_1
                 case "text/html" : mail.BodyFormat = MailFormat.Html; break;
                 case "text/plain" : mail.BodyFormat = MailFormat.Text; break;
-
+#else
+                case "text/html": mail.IsBodyHtml = true; break;
+                case "text/plain": mail.IsBodyHtml = false; break;
+#endif
                 default :
                 {
                     throw new ApplicationException(string.Format(
@@ -338,7 +356,8 @@ namespace Elmah
                         formatter.GetType().FullName, formatter.MimeType));
                 }
             }
-            
+
+#if NET_1_1
             //
             // If the mail needs to be delivered to a particular SMTP server
             // then set-up the corresponding CDO configuration fields of the 
@@ -372,6 +391,7 @@ namespace Elmah
                     fields.Add(CdoConfigurationFields.SendPassword, password);
                 }
             }
+#endif
 
             //
             // Provide one last hook to pre-process the mail and then send 
@@ -409,6 +429,7 @@ namespace Elmah
 
             if (error.WebHostHtmlMessage.Length != 0)
             {
+#if NET_1_1
                 //
                 // Create a temporary file to hold the attachment. Note that 
                 // the temporary file is created in the location returned by
@@ -416,10 +437,8 @@ namespace Elmah
                 // this code will have sufficient rights to create the
                 // temporary file in that area.
                 //
-                // TODO: Find an alternative to CodegenDir since it is not available in partially trusted environments.
-                //
 
-                string fileName = "WebHostHtmlMessage-" + Guid.NewGuid().ToString() + ".htm";
+                string fileName = "YSOD-" + Guid.NewGuid().ToString() + ".html";
                 string path = Path.Combine(HttpRuntime.CodegenDir, fileName);
 
                 try
@@ -438,6 +457,10 @@ namespace Elmah
                     // important to get to deliver the error message!
                     //
                 }
+#else
+                mail.Attachments.Add(Attachment.CreateAttachmentFromString(error.WebHostHtmlMessage, 
+                    "YSOD.html", Encoding.UTF8, "text/html"));
+#endif
             }
         }
 
@@ -448,8 +471,10 @@ namespace Elmah
 
         protected virtual void DisposeMail(MailMessage mail)
         {
+#if NET_1_1
             foreach (MailAttachment attachment in mail.Attachments)
                 File.Delete(attachment.Filename);
+#endif
         }
 
         /// <summary>
@@ -463,7 +488,7 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Sends the e-mail using <see cref="SmtpMail"/>.
+        /// Sends the e-mail using SmtpMail or SmtpClient.
         /// </summary>
 
         protected virtual void SendMail(MailMessage mail)
@@ -471,7 +496,35 @@ namespace Elmah
             if (mail == null)
                 throw new ArgumentNullException("mail");
 
+#if NET_1_1
             SmtpMail.Send(mail);
+#else
+            //
+            // Under .NET Framework 2.0, the authentication settings
+            // go on the SmtpClient object rather than mail message
+            // so these have to be set up here.
+            //
+
+            SmtpClient client = new SmtpClient();
+
+            string host = SmtpServer ?? string.Empty;
+            if (host.Length > 0)
+                client.Host = host;
+
+            int port = SmtpPort;
+            if (port > 0)
+                client.Port = port;
+
+            string userName = AuthUserName ?? string.Empty;
+            string password = AuthPassword ?? string.Empty;
+
+            // TODO: Allow use of default credentials?
+
+            if (userName.Length > 0 && password.Length > 0)
+                client.Credentials = new NetworkCredential(userName, password);
+
+            client.Send(mail);
+#endif
         }
 
         /// <summary>

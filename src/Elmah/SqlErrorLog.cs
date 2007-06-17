@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Configuration;
     using System.Data;
     using System.Data.SqlClient;
 
@@ -64,28 +65,9 @@ namespace Elmah
         public SqlErrorLog(IDictionary config)
         {
             if (config == null)
-            {
                 throw new ArgumentNullException("config");
-            }
 
-            //
-            // Get the connection string. If it is empty, then check for
-            // another setting called connectionStringAppKey. The latter
-            // specifies the key in appSettings that contains the actual
-            // connection string to be used.
-            //
-
-            _connectionString = Mask.NullString((string) config["connectionString"]);
-
-            if (_connectionString.Length == 0)
-            {
-                string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
-
-                if (connectionStringAppKey.Length != 0)
-                {
-                    _connectionString = ConfigurationSettings.AppSettings[connectionStringAppKey];
-                }
-            }
+            _connectionString = GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
@@ -93,9 +75,7 @@ namespace Elmah
             //
 
             if (_connectionString.Length == 0)
-            {
                 throw new ApplicationException("Connection string is missing for the SQL error log.");
-            }
         }
 
         /// <summary>
@@ -326,6 +306,61 @@ namespace Elmah
         protected virtual Error NewError()
         {
             return new Error();
+        }
+
+        /// <summary>
+        /// Gets the connection string from the given configuration.
+        /// </summary>
+
+        private static string GetConnectionString(IDictionary config)
+        {
+            Debug.Assert(config != null);
+
+#if NET_2_0
+
+            //
+            // First look for a connection string name that can be 
+            // subsequently indexed into the <connectionStrings> section of 
+            // the configuration to get the actual connection string.
+            //
+
+            string connectionStringName = (string) config["connectionStringName"] ?? string.Empty;
+
+            if (connectionStringName.Length > 0)
+            {
+                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
+
+                if (settings == null)
+                    return string.Empty;
+
+                return settings.ConnectionString ?? string.Empty;
+            }
+
+#endif
+
+            //
+            // Connection string name not found so see if a connection 
+            // string was given directly.
+            //
+
+            string connectionString = Mask.NullString((string) config["connectionString"]);
+
+            if (connectionString.Length > 0)
+                return connectionString;
+
+            //
+            // As a last resort, check for another setting called 
+            // connectionStringAppKey. The specifies the key in 
+            // <appSettings> that contains the actual connection string to 
+            // be used.
+            //
+
+            string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
+
+            if (connectionStringAppKey.Length == 0)
+                return string.Empty;
+
+            return ConfigurationSettings.AppSettings[connectionStringAppKey];
         }
     }
 }
