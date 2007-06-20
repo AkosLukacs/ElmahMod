@@ -53,12 +53,7 @@ namespace Elmah
             SccStamp.SortByRevision(stamps, /* descending */ true);
 
             writer.RenderBeginTag(HtmlTextWriterTag.P);
-            writer.Write("This ");
-#if DEBUG
-            writer.Write("DEBUG ");
-#else
-            writer.Write("RELEASE ");
-#endif
+            writer.Write("This <strong>{0}</strong> ", Build.TypeUppercase);
             
             if (stamps.Length > 0)
                 writer.Write("(SCC #{0}) ", stamps[0].Revision.ToString("N0"));
