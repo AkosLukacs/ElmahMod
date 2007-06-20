@@ -38,7 +38,6 @@ namespace Elmah
 
     using Assembly = System.Reflection.Assembly;
     using HttpUtility = System.Web.HttpUtility;
-    using FileVersionInfo = System.Diagnostics.FileVersionInfo;
     using Cache = System.Web.Caching.Cache;
     using CacheItemPriority = System.Web.Caching.CacheItemPriority;
     using HttpRuntime = System.Web.HttpRuntime;
@@ -84,7 +83,7 @@ namespace Elmah
             HttpUtility.HtmlEncode(Mask.EmptyString(version, "?.?.?.?"), writer);
 
 #if DEBUG
-            writer.Write(" (DEBUG)");
+            writer.Write(" (" + Build.TypeUppercase + ")");
 #endif
             
             writer.Write(". ");

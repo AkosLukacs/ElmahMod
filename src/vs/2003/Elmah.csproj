@@ -112,6 +112,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Build.cs"
+                    Link = "..\..\Elmah\Build.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "CdoConfigurationFields.cs"
                     Link = "..\..\Elmah\CdoConfigurationFields.cs"
                     SubType = "Code"

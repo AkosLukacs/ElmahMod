@@ -25,33 +25,34 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8804.0")]
-[assembly: AssemblyFileVersion("1.0.8914.2028")]
-[assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
 
-//
-// Setup the configuration attribute as a semi-colon-delimited values
-// indicating the type of build (debug or release) and target 
-// framework.
-//
+namespace Elmah
+{
+    internal sealed class Build
+    {
+#if DEBUG
+        public const bool IsDebug = true;
+        public const bool IsRelease = !IsDebug;
+        public const string Type = "Debug";
+        public const string TypeUppercase = "DEBUG";
+        public const string TypeLowercase = "debug";
+#else
+        public const bool IsDebug = false;
+        public const bool IsRelease = !IsDebug;
+        public const string Type = "Release";
+        public const string TypeUppercase = "RELEASE";
+        public const string TypeLowercase = "release";
+#endif
+
+#if NET_1_1
+        public const string Runtime = "net-1.1";
+#elif NET_2_0
+        public const string Runtime = "net-2.0";
+#else
+        public const string Runtime = "unknown";
+#endif
+
+        public const string Configuration = TypeLowercase + "; " + Runtime;
+    }
+}

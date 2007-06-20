@@ -148,6 +148,9 @@
       <Link>Assertions\UnaryNotAssertion.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\Build.cs">
+      <Link>Build.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\CdoConfigurationFields.cs">
       <Link>CdoConfigurationFields.cs</Link>
       <SubType>Code</SubType>
