@@ -554,7 +554,10 @@ namespace Elmah
 
         private static NameValueCollection FaultIn(ref NameValueCollection collection)
         {
-            return collection != null ? collection : new HttpValuesCollection();
+            if (collection == null)
+                collection = new HttpValuesCollection();
+
+            return collection;
         }
     }
 }
