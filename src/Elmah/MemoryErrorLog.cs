@@ -193,9 +193,7 @@ namespace Elmah
             try
             {
                 if (_entries == null)
-                {
                     return null;
-                }
 
                 entry = _entries[id];
             }
@@ -205,9 +203,7 @@ namespace Elmah
             }
 
             if (entry == null)
-            {
                 return null;
-            }
 
             //
             // Return a copy that the caller can party on.
@@ -246,9 +242,7 @@ namespace Elmah
             try
             {
                 if (_entries == null)
-                {
                     return 0;
-                }
 
                 int lastIndex = Math.Max(0, _entries.Count - (pageIndex * pageSize)) - 1;
                 selectedEntries = new ErrorLogEntry[lastIndex + 1];

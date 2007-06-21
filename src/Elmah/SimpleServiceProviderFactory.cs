@@ -56,9 +56,7 @@ namespace Elmah
             IDictionary config = (IDictionary) ConfigurationSettings.GetConfig(sectionName);
 
             if (config == null)
-            {
                 return null;
-            }
 
             //
             // We modify the settings by removing items as we consume 
@@ -74,9 +72,7 @@ namespace Elmah
             string typeSpec = Mask.NullString((string) config["type"]);
             
             if (typeSpec.Length == 0)
-            {
                 return null;
-            }
 
             config.Remove("type");
 

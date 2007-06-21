@@ -175,14 +175,7 @@ namespace Elmah
                 // hierarchy.
                 //
 
-                if (this.Page != null)
-                {
-                    return this.Page.Cache;
-                }
-                else
-                {
-                    return HttpRuntime.Cache;
-                }
+                return this.Page != null? this.Page.Cache : HttpRuntime.Cache;
             }
         }
 

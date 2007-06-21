@@ -265,16 +265,14 @@ namespace Elmah
 
                 string errorXml = (string) command.ExecuteScalar();
 
-                StringReader errorStringReader = new StringReader(errorXml);
-                XmlTextReader errorXmlReader = new XmlTextReader(errorStringReader);
+                StringReader sr = new StringReader(errorXml);
+                XmlTextReader reader = new XmlTextReader(sr);
 
-                if (!errorXmlReader.IsStartElement("error"))
-                {
+                if (!reader.IsStartElement("error"))
                     throw new ApplicationException("The error XML is not in the expected format.");
-                }
 
                 Error error = NewError();
-                error.FromXml(errorXmlReader);
+                error.FromXml(reader);
 
                 return new ErrorLogEntry(this, id, error);
             }
