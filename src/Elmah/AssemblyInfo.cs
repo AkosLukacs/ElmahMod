@@ -41,17 +41,11 @@ using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 [assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.0.8804.0")]
-[assembly: AssemblyFileVersion("1.0.8914.2028")]
+[assembly: AssemblyVersion("1.0.8921.0")]
+[assembly: AssemblyFileVersion("1.0.8921.0833")]
 [assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
 
 [assembly: CLSCompliant(true)] 
 [assembly: ComVisible(false)]
 
 [assembly: Elmah.Scc("$Id$")]
-
-//
-// Setup the configuration attribute as a semi-colon-delimited values
-// indicating the type of build (debug or release) and target 
-// framework.
-//

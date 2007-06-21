@@ -55,7 +55,13 @@ namespace Elmah
         public const string Runtime = "unknown";
 #endif
 
-        public const string Configuration = TypeLowercase + "; " + Runtime;
+        public const string Configuration = TypeLowercase + "; " + Status + "; " + Runtime;
+
+        /// <summary>
+        /// Gets a string representing the version of the CLR saved in 
+        /// the file containing the manifest. Under 1.0, this returns
+        /// the hard-wired string "v1.0.3705".
+        /// </summary>
 
         public static string ImageRuntimeVersion
         {
@@ -74,5 +80,12 @@ namespace Elmah
 #endif
             }
         }
+
+        /// <summary>
+        /// This is the status or milestone of the build. Examples are
+        /// M1, M2, ..., Mn, BETA1, BETA2, RC1, RC2, RTM.
+        /// </summary>
+
+        public const string Status = "BETA1";
     }
 }

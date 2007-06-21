@@ -83,7 +83,7 @@ namespace Elmah
             HttpUtility.HtmlEncode(Mask.EmptyString(version, "?.?.?.?"), writer);
 
 #if DEBUG
-            writer.Write(" (" + Build.TypeUppercase + ")");
+            writer.Write(" (" + Build.Configuration + ")");
 #endif
             
             writer.Write(". ");
