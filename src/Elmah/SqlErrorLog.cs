@@ -35,15 +35,11 @@ namespace Elmah
     using System.Configuration;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
-    using ConfigurationSettings = System.Configuration.ConfigurationSettings;
     using StringReader = System.IO.StringReader;
     using StringWriter = System.IO.StringWriter;
-    using XmlTextReader = System.Xml.XmlTextReader;
-    using XmlTextWriter = System.Xml.XmlTextWriter;
-    using Formatting = System.Xml.Formatting;
-    using XmlReader = System.Xml.XmlReader;
     using IList = System.Collections.IList;
 
     #endregion
@@ -127,14 +123,29 @@ namespace Elmah
                 throw new ArgumentNullException("error");
 
             StringWriter sw = new StringWriter();
+
+#if NET_2_0
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.NewLineOnAttributes = true;
+            XmlWriter writer = XmlWriter.Create(sw, settings);
+#else
             XmlTextWriter writer = new XmlTextWriter(sw);
             writer.Formatting = Formatting.Indented;
+#endif
 
-            writer.WriteStartElement("error");
-            error.ToXml(writer);
-            writer.WriteEndElement();
-            writer.Flush();
-            
+            try
+            {
+                writer.WriteStartElement("error");
+                error.ToXml(writer);
+                writer.WriteEndElement();
+                writer.Flush();
+            }
+            finally
+            {
+                writer.Close();
+            }
+
             string errorXml = sw.ToString();
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
