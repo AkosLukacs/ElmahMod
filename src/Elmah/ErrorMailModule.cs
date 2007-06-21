@@ -324,11 +324,10 @@ namespace Elmah
             string subjectFormat = Mask.NullString(this.MailSubjectFormat);
         
             if (subjectFormat.Length == 0)
-            {
                 subjectFormat = "Error ({1}): {0}";
-            }
 
-            mail.Subject = string.Format(subjectFormat, error.Message, error.Type);
+            mail.Subject = string.Format(subjectFormat, error.Message, error.Type).
+                Replace('\r', ' ').Replace('\n', ' ');
 
             //
             // Format the mail body.
