@@ -48,7 +48,9 @@ namespace Elmah
     {
         [ ThreadStatic ] private static ErrorLog _defaultLog;
         
+#if !NET_1_1 && !NET_1_0
         private string _appName;
+#endif
 
         /// <summary>
         /// Logs an error in log for the application.
@@ -87,6 +89,9 @@ namespace Elmah
         {
             get
             {
+#if NET_1_1 || NET_1_0
+                return HttpRuntime.AppDomainAppId;
+#else
                 if (_appName == null)
                 {
                     string path = HttpRuntime.AppDomainAppVirtualPath;
@@ -95,6 +100,7 @@ namespace Elmah
                 }
 
                 return _appName;
+#endif
             }
         }
 

@@ -316,8 +316,7 @@ namespace Elmah
         {
             Debug.Assert(config != null);
 
-#if NET_2_0
-
+#if !NET_1_1 && !NET_1_0
             //
             // First look for a connection string name that can be 
             // subsequently indexed into the <connectionStrings> section of 
@@ -335,7 +334,6 @@ namespace Elmah
 
                 return settings.ConnectionString ?? string.Empty;
             }
-
 #endif
 
             //

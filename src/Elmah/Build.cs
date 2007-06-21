@@ -45,7 +45,9 @@ namespace Elmah
         public const string TypeLowercase = "release";
 #endif
 
-#if NET_1_1
+#if NET_1_0
+        public const string Runtime = "net-1.0";
+#elif NET_1_1
         public const string Runtime = "net-1.1";
 #elif NET_2_0
         public const string Runtime = "net-2.0";
@@ -54,5 +56,23 @@ namespace Elmah
 #endif
 
         public const string Configuration = TypeLowercase + "; " + Runtime;
+
+        public static string ImageRuntimeVersion
+        {
+            get
+            {
+#if NET_1_0
+                //
+                // As Assembly.ImageRuntimeVersion property was not available
+                // under .NET Framework 1.0, we just return the version 
+                // hard-coded based on conditional compilation symbol.
+                //
+
+                return "v1.0.3705";
+#else
+                return typeof(ErrorLog).Assembly.ImageRuntimeVersion;
+#endif
+            }
+        }
     }
 }

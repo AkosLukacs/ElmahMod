@@ -116,6 +116,14 @@ namespace Elmah
         
         private static bool IsHighlyTrusted() 
         {
+#if NET_1_0
+            //
+            // ASP.NET 1.0 applications always required and ran under full 
+            // trust so we just return true here.
+            //
+
+            return true;
+#else
             try
             {
                 AspNetHostingPermission permission = new AspNetHostingPermission(AspNetHostingPermissionLevel.High);
@@ -126,6 +134,7 @@ namespace Elmah
             {
                 return false;
             }
+#endif
         }
 
         private HttpModuleRegistry()

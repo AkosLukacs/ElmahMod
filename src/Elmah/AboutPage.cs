@@ -46,7 +46,7 @@ namespace Elmah
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
             writer.RenderBeginTag(HtmlTextWriterTag.H1);
             writer.Write("About ELMAH");
-            writer.RenderEndTag(); // </p>
+            writer.RenderEndTag(); // </h1>
             writer.WriteLine();
 
             SccStamp[] stamps = SccStamp.FindAll(typeof(ErrorLog).Assembly);
@@ -58,7 +58,8 @@ namespace Elmah
             if (stamps.Length > 0)
                 writer.Write("(SCC #{0}) ", stamps[0].Revision.ToString("N0"));
 
-            writer.Write("build was compiled from the following sources for CLR {0}:", typeof(ErrorLog).Assembly.ImageRuntimeVersion);
+            writer.Write("build was compiled from the following sources for CLR {0}:", Build.ImageRuntimeVersion);
+
             writer.RenderEndTag(); // </p>
 
             writer.RenderBeginTag(HtmlTextWriterTag.Ul);

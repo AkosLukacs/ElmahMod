@@ -154,7 +154,7 @@ namespace Elmah
             if (files.Length < 1)
                 return 0;
 
-            Array.Sort(files, Comparer.DefaultInvariant);
+            InvariantStringArray.Sort(files);
             Array.Reverse(files);
             
             /* Find the proper page */

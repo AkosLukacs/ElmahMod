@@ -36,7 +36,7 @@ namespace Elmah
     using System.Web;
     using System.IO;
 
-#if NET_1_1
+#if NET_1_0 || NET_1_1
     using System.Web.Mail;
 #else
     using System.Net.Mail;
@@ -309,7 +309,7 @@ namespace Elmah
 
             MailMessage mail = new MailMessage();
 
-#if NET_1_1
+#if NET_1_0 || NET_1_1
             mail.From = sender;
             mail.To = recipient;
 #else
@@ -342,7 +342,7 @@ namespace Elmah
 
             switch (formatter.MimeType)
             {
-#if NET_1_1
+#if NET_1_0 || NET_1_1
                 case "text/html" : mail.BodyFormat = MailFormat.Html; break;
                 case "text/plain" : mail.BodyFormat = MailFormat.Text; break;
 #else
@@ -429,7 +429,7 @@ namespace Elmah
 
             if (error.WebHostHtmlMessage.Length != 0)
             {
-#if NET_1_1
+#if NET_1_0 || NET_1_1
                 //
                 // Create a temporary file to hold the attachment. Note that 
                 // the temporary file is created in the location returned by
@@ -496,7 +496,7 @@ namespace Elmah
             if (mail == null)
                 throw new ArgumentNullException("mail");
 
-#if NET_1_1
+#if NET_1_0 || NET_1_1
             SmtpMail.Send(mail);
 #else
             //

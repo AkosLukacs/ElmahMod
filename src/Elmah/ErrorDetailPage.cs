@@ -288,7 +288,7 @@ namespace Elmah
             //
 
             string[] keys = collection.AllKeys;
-            Array.Sort(keys, Comparer.DefaultInvariant);
+            InvariantStringArray.Sort(keys);
 
             for (int keyIndex = 0; keyIndex < keys.Length; keyIndex++)
             {
