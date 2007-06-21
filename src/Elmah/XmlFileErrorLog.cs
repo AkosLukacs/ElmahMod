@@ -56,10 +56,20 @@ namespace Elmah
         
         public XmlFileErrorLog(IDictionary config)
         {
-            _logPath = Mask.NullString(config["LogPath"] as string);
-            
+            _logPath = Mask.NullString(config["logPath"] as string);
+
             if (_logPath.Length == 0)
-                throw new ApplicationException("Log path is missing for the XML file-based error log.");
+            {
+                //
+                // For compatibility reasons with older version of this
+                // implementation, we also try "LogPath".
+                //
+
+                _logPath = Mask.NullString(config["LogPath"] as string);
+
+                if (_logPath.Length == 0)
+                    throw new ApplicationException("Log path is missing for the XML file-based error log.");
+            }
         }
 
         /// <summary>
