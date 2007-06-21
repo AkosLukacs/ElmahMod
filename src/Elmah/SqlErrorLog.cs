@@ -126,55 +126,36 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            StringWriter errorStringWriter = new StringWriter();
-            XmlTextWriter errorXmlWriter = new XmlTextWriter(errorStringWriter);
-            errorXmlWriter.Formatting = Formatting.Indented;
+            StringWriter sw = new StringWriter();
+            XmlTextWriter writer = new XmlTextWriter(sw);
+            writer.Formatting = Formatting.Indented;
 
-            errorXmlWriter.WriteStartElement("error");
-            error.ToXml(errorXmlWriter);
-            errorXmlWriter.WriteEndElement();
-            errorXmlWriter.Flush();
+            writer.WriteStartElement("error");
+            error.ToXml(writer);
+            writer.WriteEndElement();
+            writer.Flush();
             
-            string errorXml = errorStringWriter.ToString();
+            string errorXml = sw.ToString();
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
             using (SqlCommand command = new SqlCommand("ELMAH_LogError", connection))
             {
                 command.CommandType = CommandType.StoredProcedure;
 
-                SqlParameter parameter;
-
                 Guid id = Guid.NewGuid();
 
-                parameter = command.Parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier);
-                parameter.Value = id;
-
-                parameter = command.Parameters.Add("@Application", SqlDbType.NVarChar, 60);
-                parameter.Value = this.ApplicationName;
+                SqlParameterCollection parameters = command.Parameters;
                 
-                parameter = command.Parameters.Add("@Host", SqlDbType.NVarChar, 30);
-                parameter.Value = error.HostName;
-
-                parameter = command.Parameters.Add("@Type", SqlDbType.NVarChar, 100);
-                parameter.Value = error.Type;
-                
-                parameter = command.Parameters.Add("@Source", SqlDbType.NVarChar, 60);
-                parameter.Value = error.Source;
-
-                parameter = command.Parameters.Add("@Message", SqlDbType.NVarChar, 500);
-                parameter.Value = error.Message;
-                
-                parameter = command.Parameters.Add("@User", SqlDbType.NVarChar, 50);
-                parameter.Value = error.User;
-
-                parameter = command.Parameters.Add("@AllXml", SqlDbType.NText);
-                parameter.Value = errorXml;
-
-                parameter = command.Parameters.Add("@StatusCode", SqlDbType.Int);
-                parameter.Value = error.StatusCode;
-                
-                parameter = command.Parameters.Add("@TimeUtc", SqlDbType.DateTime);
-                parameter.Value = error.Time.ToUniversalTime();
+                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
+                parameters.Add("@Host", SqlDbType.NVarChar, 30).Value = error.HostName;
+                parameters.Add("@Type", SqlDbType.NVarChar, 100).Value = error.Type;
+                parameters.Add("@Source", SqlDbType.NVarChar, 60).Value = error.Source;
+                parameters.Add("@Message", SqlDbType.NVarChar, 500).Value = error.Message;
+                parameters.Add("@User", SqlDbType.NVarChar, 50).Value = error.User;
+                parameters.Add("@AllXml", SqlDbType.NText).Value = errorXml;
+                parameters.Add("@StatusCode", SqlDbType.Int).Value = error.StatusCode;
+                parameters.Add("@TimeUtc", SqlDbType.DateTime).Value = error.Time.ToUniversalTime();
 
                 connection.Open();
                 command.ExecuteNonQuery();
@@ -201,19 +182,14 @@ namespace Elmah
             {
                 command.CommandType = CommandType.StoredProcedure;
 
-                SqlParameter parameter;
+                SqlParameterCollection parameters = command.Parameters;
 
-                parameter = command.Parameters.Add("@Application", SqlDbType.NVarChar, 60);
-                parameter.Value = this.ApplicationName;
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
+                parameters.Add("@PageIndex", SqlDbType.Int).Value = pageIndex;
+                parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
 
-                parameter = command.Parameters.Add("@PageIndex", SqlDbType.Int);
-                parameter.Value = pageIndex;
-                
-                parameter = command.Parameters.Add("@PageSize", SqlDbType.Int);
-                parameter.Value = pageSize;
-
-                SqlParameter totalParameter = command.Parameters.Add("@TotalCount", SqlDbType.Int);
-                totalParameter.Direction = ParameterDirection.Output;
+                SqlParameter total = parameters.Add("@TotalCount", SqlDbType.Int);
+                total.Direction = ParameterDirection.Output;
 
                 connection.Open();
 
@@ -229,9 +205,7 @@ namespace Elmah
                         error.FromXml(reader);
 
                         if (errorEntryList != null)
-                        {
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
-                        }
                     }
                 }
                 finally
@@ -239,7 +213,7 @@ namespace Elmah
                     reader.Close();
                 }
 
-                return (int) totalParameter.Value;
+                return (int) total.Value;
             }
         }
 
@@ -272,13 +246,9 @@ namespace Elmah
             {
                 command.CommandType = CommandType.StoredProcedure;
 
-                SqlParameter parameter;
-
-                parameter = command.Parameters.Add("@Application", SqlDbType.NVarChar, 60);
-                parameter.Value = this.ApplicationName;
-
-                parameter = command.Parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier);
-                parameter.Value = errorGuid;
+                SqlParameterCollection parameters = command.Parameters;
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
+                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = errorGuid;
                 
                 connection.Open();
 
