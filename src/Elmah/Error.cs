@@ -411,13 +411,9 @@ namespace Elmah
                 }
 
                 if (reader.IsEmptyElement)
-                {
                     reader.Read();
-                }
                 else
-                {
                     ((IXmlExportable) collection).FromXml(reader);
-                }
             }
         }
 
@@ -480,7 +476,7 @@ namespace Elmah
             WriteCollection(writer, "cookies", _cookies);
         }
 
-        private void WriteCollection(XmlWriter writer, string name, NameValueCollection collection)
+        private static void WriteCollection(XmlWriter writer, string name, NameValueCollection collection)
         {
             Debug.Assert(writer != null);
             Debug.AssertStringNotEmpty(name);
@@ -493,15 +489,13 @@ namespace Elmah
             }
         }
 
-        private void WriteXmlAttribute(XmlWriter writer, string name, string value)
+        private static void WriteXmlAttribute(XmlWriter writer, string name, string value)
         {
             Debug.Assert(writer != null);
             Debug.AssertStringNotEmpty(name);
 
             if (value != null && value.Length != 0)
-            {
                 writer.WriteAttributeString(name, value);
-            }
         }
 
         /// <summary>
@@ -528,24 +522,18 @@ namespace Elmah
             return copy;
         }
 
-        private NameValueCollection CopyCollection(NameValueCollection collection)
+        private static NameValueCollection CopyCollection(NameValueCollection collection)
         {
             if (collection == null || collection.Count == 0)
-            {
                 return null;
-            }
-            else
-            {
-                return new HttpValuesCollection(collection);
-            }
+
+            return new HttpValuesCollection(collection);
         }
 
-        private NameValueCollection CopyCollection(HttpCookieCollection cookies)
+        private static NameValueCollection CopyCollection(HttpCookieCollection cookies)
         {
             if (cookies == null || cookies.Count == 0)
-            {
                 return null;
-            }
 
             NameValueCollection copy = new HttpValuesCollection(cookies.Count);
 
@@ -566,12 +554,7 @@ namespace Elmah
 
         private static NameValueCollection FaultIn(ref NameValueCollection collection)
         {
-            if (collection == null)
-            {
-                collection = new HttpValuesCollection();
-            }
-
-            return collection;
+            return collection != null ? collection : new HttpValuesCollection();
         }
     }
 }
