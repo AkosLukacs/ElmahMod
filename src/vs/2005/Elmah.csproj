@@ -207,6 +207,9 @@
       <Link>ErrorLogPageFactory.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorLogSectionHandler.cs">
+      <Link>ErrorLogSectionHandler.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorMailHtmlFormatter.cs">
       <Link>ErrorMailHtmlFormatter.cs</Link>
       <SubType>Code</SubType>
@@ -214,6 +217,9 @@
     <Compile Include="..\..\Elmah\ErrorMailModule.cs">
       <Link>ErrorMailModule.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\ErrorMailSectionHandler.cs">
+      <Link>ErrorMailSectionHandler.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\ErrorPageBase.cs">
       <Link>ErrorPageBase.cs</Link>

@@ -205,6 +205,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorLogSectionHandler.cs"
+                    Link = "..\..\Elmah\ErrorLogSectionHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorMailHtmlFormatter.cs"
                     Link = "..\..\Elmah\ErrorMailHtmlFormatter.cs"
                     SubType = "Code"
@@ -213,6 +219,12 @@
                 <File
                     RelPath = "ErrorMailModule.cs"
                     Link = "..\..\Elmah\ErrorMailModule.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ErrorMailSectionHandler.cs"
+                    Link = "..\..\Elmah\ErrorMailSectionHandler.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
