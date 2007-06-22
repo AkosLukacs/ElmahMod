@@ -56,30 +56,28 @@ namespace Elmah
     /// occurs in an ASP.NET web application.
     /// </summary>
 
-    public class ErrorMailModule : IHttpModule, IExceptionFiltering
+    public class ErrorMailModule : HttpModuleBase, IExceptionFiltering
     {
-        private string _smtpServer;
-        private int _smtpPort;
-        private string _authUserName;
-        private string _authPassword;
         private string _mailSender;
         private string _mailRecipient;
         private string _mailSubjectFormat;
         private bool _reportAsynchronously;
+        private string _smtpServer;
+        private int _smtpPort;
+        private string _authUserName;
+        private string _authPassword;
 
         public event ExceptionFilterEventHandler Filtering;
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
         /// </summary>
-
-        public virtual void Init(HttpApplication application)
+        
+        protected override void OnInit(HttpApplication application)
         {
             if (application == null)
                 throw new ArgumentNullException("application");
             
-            HttpModuleRegistry.RegisterInPartialTrust(application, this);
-
             //
             // Get the configuration section of this module.
             // If it's not there then there is nothing to initialize or do.
@@ -124,13 +122,15 @@ namespace Elmah
             _authUserName = authUserName;
             _authPassword = authPassword;
         }
-
+        
         /// <summary>
-        /// Disposes of the resources (other than memory) used by the module.
+        /// Determines whether the module will be registered for discovery
+        /// in partial trust environments or not.
         /// </summary>
-
-        public virtual void Dispose()
+        
+        protected override bool SupportDiscoverability
         {
+            get { return true; }
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Elmah
             //
             // Start by checking if we have a sender and a recipient.
             // These values may be null if someone overrides the
-            // implementation of Init but does not override the
+            // implementation of OnInit but does not override the
             // MailSender and MailRecipient properties.
             //
 
@@ -527,7 +527,7 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Gets the configuration object used by <see cref="Init"/> to read
+        /// Gets the configuration object used by <see cref="OnInit"/> to read
         /// the settings for module.
         /// </summary>
 

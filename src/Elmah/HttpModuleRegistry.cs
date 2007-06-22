@@ -40,7 +40,8 @@ namespace Elmah
 
     internal sealed class HttpModuleRegistry
     {
-        private static readonly string _key = typeof(HttpModuleRegistry).FullName;
+        private static Hashtable _moduleListByApp;
+        private static object _lock = new object();
 
         public static bool RegisterInPartialTrust(HttpApplication application, IHttpModule module)
         {
@@ -53,27 +54,99 @@ namespace Elmah
             if (IsHighlyTrusted())
                 return false;
             
-            HttpApplicationState state = application.Application;
-            state.Lock();
-            
-            try
+            lock (_lock)
             {
-                IList moduleList = (IList) state[_key];
+                //
+                // Allocate map of modules per application on demand.
+                //
+
+                if (_moduleListByApp == null)
+                    _moduleListByApp = new Hashtable();
+
+                //
+                // Get the list of modules fot the application. If this is
+                // the first registration for the supplied application object
+                // then setup a new and empty list.
+                //
+
+                IList moduleList = (IList) _moduleListByApp[application];
                 
                 if (moduleList == null)
                 {
                     moduleList = new ArrayList(4);
-                    state.Add(_key, moduleList);
+                    _moduleListByApp.Add(application, moduleList);
                 }
-
-                if (moduleList.Contains(module))
+                else if (moduleList.Contains(module))
                     throw new ApplicationException("Duplicate module registration.");
-                
+
+                //
+                // Add the module to list of registered modules for the 
+                // given application object.
+                //
+
                 moduleList.Add(module);
             }
-            finally
+
+            //
+            // Setup a closure to automatically unregister the module
+            // when the application fires its Disposed event.
+            //
+
+            ModuleRemovalClosure removalClosure = new ModuleRemovalClosure(module);
+            application.Disposed += new EventHandler(removalClosure.OnApplicationDisposed);
+
+            return true;
+        }
+
+        private static bool UnregisterInPartialTrust(HttpApplication application, IHttpModule module)
+        {
+            Debug.Assert(application != null);
+            Debug.Assert(module != null);
+
+            if (module == null)
+                throw new ArgumentNullException("module");
+
+            if (IsHighlyTrusted())
+                return false;
+
+            lock (_lock)
             {
-                state.UnLock();
+                //
+                // Get the module list for the given application object.
+                //
+
+                if (_moduleListByApp == null)
+                    return false;
+                
+                IList moduleList = (IList) _moduleListByApp[application];
+                
+                if (moduleList == null)
+                    return false;
+
+                //
+                // Remove the module from the list if it's in there.
+                //
+
+                int index = moduleList.IndexOf(module);
+
+                if (index < 0)
+                    return false;
+
+                moduleList.RemoveAt(index);
+
+                //
+                // If the list is empty then remove the application entry.
+                // If this results in the entire map becoming empty then
+                // release it.
+                //
+
+                if (moduleList.Count == 0)
+                {
+                    _moduleListByApp.Remove(application);
+
+                    if (_moduleListByApp.Count == 0)
+                        _moduleListByApp = null;
+                }
             }
 
             return true;
@@ -98,19 +171,19 @@ namespace Elmah
                 //
             }
             
-            HttpApplicationState state = application.Application;
-            state.Lock();
-            
-            try
+            lock (_lock)
             {
-                IList moduleList = (IList) state[_key];
+                if (_moduleListByApp == null)
+                    return new IHttpModule[0];
+
+                IList moduleList = (IList) _moduleListByApp[application];
+
+                if (moduleList == null)
+                    return new IHttpModule[0];
+                
                 IHttpModule[] modules = new IHttpModule[moduleList.Count];
                 moduleList.CopyTo(modules, 0);
                 return modules;
-            }
-            finally
-            {
-                state.UnLock();
             }
         }
         
@@ -140,6 +213,21 @@ namespace Elmah
         private HttpModuleRegistry()
         {
             throw new NotSupportedException();
+        }
+
+        internal sealed class ModuleRemovalClosure
+        {
+            private readonly IHttpModule _module;
+
+            public ModuleRemovalClosure(IHttpModule module)
+            {
+                _module = module;
+            }
+
+            public void OnApplicationDisposed(object sender, EventArgs e)
+            {
+                UnregisterInPartialTrust((HttpApplication) sender, _module);
+            }
         }
     }
 }

@@ -43,30 +43,20 @@ namespace Elmah
     /// ASP.NET Web application to an error log.
     /// </summary>
     
-    public class ErrorLogModule : IExceptionFiltering, IHttpModule
+    public class ErrorLogModule : HttpModuleBase, IExceptionFiltering
     {
         public event ExceptionFilterEventHandler Filtering;
-        
+
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
         /// </summary>
-
-        public virtual void Init(HttpApplication application)
+        
+        protected override void OnInit(HttpApplication application)
         {
             if (application == null)
                 throw new ArgumentNullException("application");
             
-            HttpModuleRegistry.RegisterInPartialTrust(application, this);
-
             application.Error += new EventHandler(OnError);
-        }
-
-        /// <summary>
-        /// Disposes of the resources (other than memory) used by the module.
-        /// </summary>
-        
-        public virtual void Dispose()
-        {
         }
 
         /// <summary>
@@ -143,6 +133,16 @@ namespace Elmah
             
             if (handler != null)
                 handler(this, args);
+        }
+
+        /// <summary>
+        /// Determines whether the module will be registered for discovery
+        /// in partial trust environments or not.
+        /// </summary>
+
+        protected override bool SupportDiscoverability
+        {
+            get { return true; }
         }
     }
 }
