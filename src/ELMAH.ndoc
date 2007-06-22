@@ -1,6 +1,6 @@
-<project>
+﻿<project>
     <assemblies>
-        <assembly location=".\Elmah\bin\Elmah.dll" documentation=".\Elmah\bin\Elmah.xml" />
+        <assembly location="..\bin\net-1.1\Debug\Elmah.dll" documentation="..\bin\net-1.1\Debug\Elmah.xml" />
     </assemblies>
     <namespaces>
         <namespace name="Elmah"></namespace>
@@ -15,7 +15,7 @@
             <property name="RegisterTitleWithNamespace" value="False" />
             <property name="ParentCollectionNamespace" value="" />
             <property name="RegisterTitleAsCollection" value="False" />
-            <property name="OutputDirectory" value=".\doc\" />
+            <property name="OutputDirectory" value="..\doc\" />
             <property name="HtmlHelpName" value="Documentation" />
             <property name="IncludeFavorites" value="False" />
             <property name="Title" value="An NDoc Documented Class Library" />
@@ -56,7 +56,7 @@
             <property name="UseNDocXmlFile" value="" />
         </documenter>
         <documenter name="JavaDoc">
-            <property name="OutputDirectory" value=".\doc\" />
+            <property name="OutputDirectory" value="..\doc\" />
             <property name="ShowMissingSummaries" value="False" />
             <property name="ShowMissingRemarks" value="False" />
             <property name="ShowMissingParams" value="False" />
@@ -83,11 +83,11 @@
             <property name="UseNDocXmlFile" value="" />
         </documenter>
         <documenter name="LaTeX">
-            <property name="OutputDirectory" value=".\doc\" />
+            <property name="OutputDirectory" value="..\doc\" />
             <property name="TextFileFullName" value="Documentation.tex" />
             <property name="TexFileBaseName" value="Documentation" />
             <property name="LatexCompiler" value="latex" />
-            <property name="TexFileFullPath" value=".\doc\Documentation.tex" />
+            <property name="TexFileFullPath" value="..\doc\Documentation.tex" />
             <property name="ShowMissingSummaries" value="False" />
             <property name="ShowMissingRemarks" value="False" />
             <property name="ShowMissingParams" value="False" />
@@ -115,7 +115,7 @@
         </documenter>
         <documenter name="LinearHtml">
             <property name="IncludeTypeMemberDetails" value="False" />
-            <property name="OutputDirectory" value=".\doc\" />
+            <property name="OutputDirectory" value="..\doc\" />
             <property name="MethodParametersInTable" value="False" />
             <property name="TypeIncludeRegexp" value="" />
             <property name="NamespaceExcludeRegexp" value="" />
@@ -151,7 +151,8 @@
             <property name="UseNDocXmlFile" value="" />
         </documenter>
         <documenter name="MSDN">
-            <property name="OutputDirectory" value=".\Help\" />
+            <property name="Preliminary" value="True" />
+            <property name="OutputDirectory" value="..\doc\help\" />
             <property name="HtmlHelpName" value="ELMAH" />
             <property name="IncludeFavorites" value="False" />
             <property name="Title" value="ELMAH (Error Logging Modules and Handlers for ASP.NET)" />
@@ -177,7 +178,7 @@
             <property name="DocumentProtectedInternalAsProtected" value="False" />
             <property name="DocumentEmptyNamespaces" value="False" />
             <property name="IncludeAssemblyVersion" value="True" />
-            <property name="CopyrightText" value="Copyright © 2004, Atif Aziz, Skybow AG. All rights reserved." />
+            <property name="CopyrightText" value="Copyright (c) 2007, Atif Aziz. All rights reserved." />
             <property name="CopyrightHref" value="" />
             <property name="ReferencesPath" value="" />
             <property name="SkipNamespacesWithoutSummaries" value="False" />
@@ -192,7 +193,7 @@
             <property name="UseNDocXmlFile" value="" />
         </documenter>
         <documenter name="XML">
-            <property name="OutputFile" value=".\doc\doc.xml" />
+            <property name="OutputFile" value="..\doc\doc.xml" />
             <property name="ShowMissingSummaries" value="False" />
             <property name="ShowMissingRemarks" value="False" />
             <property name="ShowMissingParams" value="False" />
