@@ -4,6 +4,7 @@
     </assemblies>
     <namespaces>
         <namespace name="Elmah"></namespace>
+        <namespace name="Elmah.Assertions"></namespace>
         <namespace name="Elmah.ContentSyndication"></namespace>
     </namespaces>
     <documenters>
