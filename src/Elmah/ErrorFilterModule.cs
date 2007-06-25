@@ -93,11 +93,17 @@ namespace Elmah
             
             if (args.Exception == null)
                 throw new ArgumentException(null, "args");
-            
-            // TODO: Consider making this robust in case an exception is thrown during testing of the assertion.
-            
-            if (Assertion.Test(new AssertionHelperContext(args.Exception, args.Context)))
-                args.Dismiss();
+
+            try
+            {
+                if (Assertion.Test(new AssertionHelperContext(args.Exception, args.Context)))
+                    args.Dismiss();
+            }
+            catch (Exception e)
+            {
+                Trace.WriteLine(e);
+                throw;
+            }
         }
 
         public sealed class AssertionHelperContext
