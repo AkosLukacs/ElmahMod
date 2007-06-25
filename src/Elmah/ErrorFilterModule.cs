@@ -100,7 +100,7 @@ namespace Elmah
                 args.Dismiss();
         }
 
-        internal sealed class AssertionHelperContext
+        public sealed class AssertionHelperContext
         {
             private readonly Exception _exception;
             private readonly object _context;
