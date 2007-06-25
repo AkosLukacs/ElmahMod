@@ -218,9 +218,12 @@ namespace Elmah
             // reporting of the uncaught exception.
             //
 
-            Exception ex = context.Server.GetLastError();
-            ExceptionFilterEventArgs filterArgs = new ExceptionFilterEventArgs(ex, context);
-            if (filterArgs.Dismissed)
+            ExceptionFilterEventArgs args = new ExceptionFilterEventArgs(
+                context.Server.GetLastError(), context);
+            
+            OnFiltering(args);
+            
+            if (args.Dismissed)
                 return;
             
             //
