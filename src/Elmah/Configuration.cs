@@ -38,7 +38,7 @@ namespace Elmah
 
     internal sealed class Configuration
     {
-        internal const string GroupName = "elmah/";
+        internal const string GroupName = "elmah";
         internal const string GroupSlash = GroupName + "/";
 
         public static NameValueCollection AppSettings
