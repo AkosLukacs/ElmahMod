@@ -32,7 +32,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Configuration;
     using System.Diagnostics;
     using System.Web;
     using Elmah.Assertions;
@@ -57,7 +56,7 @@ namespace Elmah
             if (application == null)
                 throw new ArgumentNullException("application");
             
-            ErrorFilterConfiguration config = (ErrorFilterConfiguration) ConfigurationSettings.GetConfig("elmah/errorFilter");
+            ErrorFilterConfiguration config = (ErrorFilterConfiguration) Configuration.GetSubsection("errorFilter");
             
             if (config == null)
                 return;

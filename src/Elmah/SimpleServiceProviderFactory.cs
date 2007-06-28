@@ -34,7 +34,6 @@ namespace Elmah
     using System;
 
     using IDictionary = System.Collections.IDictionary;
-    using ConfigurationSettings = System.Configuration.ConfigurationSettings;
 
     #endregion
 
@@ -53,7 +52,7 @@ namespace Elmah
             // Get the configuration section with the settings.
             //
             
-            IDictionary config = (IDictionary) ConfigurationSettings.GetConfig(sectionName);
+            IDictionary config = (IDictionary) Configuration.GetSection(sectionName);
 
             if (config == null)
                 return null;

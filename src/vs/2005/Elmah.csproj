@@ -155,6 +155,9 @@
       <Link>CdoConfigurationFields.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\Configuration.cs">
+      <Link>Configuration.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ConfigurationSectionHelper.cs">
       <Link>ConfigurationSectionHelper.cs</Link>
       <SubType>Code</SubType>

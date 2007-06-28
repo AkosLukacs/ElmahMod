@@ -42,7 +42,6 @@ namespace Elmah
     using System.Net.Mail;
 #endif
 
-    using ConfigurationSettings = System.Configuration.ConfigurationSettings;
     using IDictionary = System.Collections.IDictionary;
     using ThreadPool = System.Threading.ThreadPool;
     using WaitCallback = System.Threading.WaitCallback;
@@ -536,7 +535,7 @@ namespace Elmah
 
         protected virtual object GetConfig()
         {
-            return ConfigurationSettings.GetConfig("elmah/errorMail");
+            return Configuration.GetSubsection("errorMail");
         }
 
         /// <summary>

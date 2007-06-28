@@ -25,27 +25,48 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8925.0")]
-[assembly: AssemblyFileVersion("1.0.8928.813")]
-[assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah
+{
+    #region Imports
+
+    using System.Collections.Specialized;
+    using System.Configuration;
+
+    #endregion
+
+    internal sealed class Configuration
+    {
+        internal const string GroupName = "elmah/";
+        internal const string GroupSlash = GroupName + "/";
+
+        public static NameValueCollection AppSettings
+        {
+            get
+            {
+#if NET_1_0 || NET_1_1
+                return ConfigurationSettings.AppSettings;
+#else
+                return ConfigurationManager.AppSettings;
+#endif
+            }
+        }
+
+        public static object GetSubsection(string name)
+        {
+            return GetSection(GroupSlash + name);
+        }
+
+        public static object GetSection(string name)
+        {
+#if NET_1_0 || NET_1_1
+            return ConfigurationSettings.GetConfig(name);
+#else
+            return ConfigurationManager.GetSection(name);
+#endif
+        }
+
+        private Configuration() { }
+    }
+}

@@ -33,7 +33,6 @@ namespace Elmah
     
     using System;
 
-    using HttpContext = System.Web.HttpContext;
     using IList = System.Collections.IList;
     using HttpRuntime = System.Web.HttpRuntime;
 
@@ -121,7 +120,7 @@ namespace Elmah
                     // create an instance of it.
                     //
 
-                    ErrorLog log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection("elmah/errorLog");
+                    ErrorLog log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection(Configuration.GroupSlash + "errorLog");
 
                     //
                     // If no object got created (probably because the right 

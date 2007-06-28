@@ -117,6 +117,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Configuration.cs"
+                    Link = "..\..\Elmah\Configuration.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ConfigurationSectionHelper.cs"
                     Link = "..\..\Elmah\ConfigurationSectionHelper.cs"
                     SubType = "Code"
