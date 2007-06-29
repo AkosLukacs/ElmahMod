@@ -40,6 +40,7 @@ namespace Elmah
     using System.Web.Mail;
 #else
     using System.Net.Mail;
+    using MailAttachment = System.Net.Mail.Attachment;
 #endif
 
     using IDictionary = System.Collections.IDictionary;
@@ -49,6 +50,36 @@ namespace Elmah
     using NetworkCredential = System.Net.NetworkCredential;
 
     #endregion
+
+    public sealed class ErrorMailEventArgs : EventArgs
+    {
+        private readonly Error _error;
+        private readonly MailMessage _mail;
+
+        public ErrorMailEventArgs(Error error, MailMessage mail)
+        {
+            if (error == null)
+                throw new ArgumentNullException("error");
+
+            if (mail == null)
+                throw new ArgumentNullException("mail");
+
+            _error = error;
+            _mail = mail;
+        }
+
+        public Error Error
+        {
+            get { return _error; }
+        }
+
+        public MailMessage Mail
+        {
+            get { return _mail; }
+        }
+    }
+
+    public delegate void ErrorMailEventHandler(object sender, ErrorMailEventArgs args);
 
     /// <summary>
     /// HTTP module that sends an e-mail whenever an unhandled exception
@@ -67,6 +98,9 @@ namespace Elmah
         private string _authPassword;
 
         public event ExceptionFilterEventHandler Filtering;
+        public event ErrorMailEventHandler Mailing;
+        public event ErrorMailEventHandler Mailed;
+        public event ErrorMailEventHandler DisposingMail;
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
@@ -301,9 +335,7 @@ namespace Elmah
             // TODO: Under 2.0, the sender can be defaulted via <network> configuration so consider only checking recipient here.
 
             if (sender.Length == 0 || recipient.Length == 0)
-            {
                 return;
-            }
 
             //
             // Create the mail, setting up the sender and recipient.
@@ -318,16 +350,11 @@ namespace Elmah
             mail.From = new MailAddress(sender);
             mail.To.Add(recipient);
 #endif
-
             //
             // Format the mail subject.
             // 
 
-            string subjectFormat = Mask.NullString(this.MailSubjectFormat);
-        
-            if (subjectFormat.Length == 0)
-                subjectFormat = "Error ({1}): {0}";
-
+            string subjectFormat = Mask.EmptyString(this.MailSubjectFormat, "Error ({1}): {0}");
             mail.Subject = string.Format(subjectFormat, error.Message, error.Type).
                 Replace('\r', ' ').Replace('\n', ' ');
 
@@ -393,88 +420,92 @@ namespace Elmah
                 }
             }
 #endif
-
-            //
-            // Provide one last hook to pre-process the mail and then send 
-            // it off.
-            //
+            MailAttachment ysodAttachment = null;
+            ErrorMailEventArgs args = new ErrorMailEventArgs(error, mail);
 
             try
             {
-                PreSendMail(mail, error);
+                //
+                // If an HTML message was supplied by the web host then attach 
+                // it to the mail.
+                //
+
+                if (error.WebHostHtmlMessage.Length != 0)
+                {
+                    ysodAttachment = CreateHtmlAttachment("YSOD", error.WebHostHtmlMessage);
+
+                    if (ysodAttachment != null)
+                        mail.Attachments.Add(ysodAttachment);
+                }
+
+                //
+                // Send off the mail with some chance to pre- or post-process
+                // using event.
+                //
+
+                OnMailing(args);
                 SendMail(mail);
+                OnMailed(args);
             }
             finally
             {
-                DisposeMail(mail);
-            }
-        }
-
-        /// <summary>
-        /// Provides a final point (mainly for inheritors) to customize the 
-        /// e-mail message before it is sent.
-        /// </summary>
-
-        protected virtual void PreSendMail(MailMessage mail, Error error)
-        {
-            if (mail == null)
-                throw new ArgumentNullException("mail");
-
-            if (error == null)
-                throw new ArgumentNullException("error");
-
-            //
-            // If a HTML message supplied by the web host then attach it to
-            // the mail.
-            //
-
-            if (error.WebHostHtmlMessage.Length != 0)
-            {
 #if NET_1_0 || NET_1_1
                 //
-                // Create a temporary file to hold the attachment. Note that 
-                // the temporary file is created in the location returned by
-                // System.Web.HttpRuntime.CodegenDir. It is assumed that
-                // this code will have sufficient rights to create the
-                // temporary file in that area.
+                // Delete any attached files, if necessary.
                 //
-
-                string fileName = "YSOD-" + Guid.NewGuid().ToString() + ".html";
-                string path = Path.Combine(HttpRuntime.CodegenDir, fileName);
-
-                try
+                
+                if (ysodAttachment != null)
                 {
-                    using (StreamWriter attachementWriter = File.CreateText(path))
-                        attachementWriter.Write(error.WebHostHtmlMessage);
+                    File.Delete(ysodAttachment.Filename);
+                    mail.Attachments.Remove(ysodAttachment);
+                }
+#endif
+                OnDisposingMail(args);
 
-                    mail.Attachments.Add(new MailAttachment(path));
-                }
-                catch (IOException)
-                {
-                    //
-                    // Ignore I/O errors as non-critical. It's not the
-                    // end of the world if the attachment could not be
-                    // created (though it would be nice). It is more
-                    // important to get to deliver the error message!
-                    //
-                }
-#else
-                mail.Attachments.Add(Attachment.CreateAttachmentFromString(error.WebHostHtmlMessage, 
-                    "YSOD.html", Encoding.UTF8, "text/html"));
+#if !NET_1_0 && !NET_1_1
+                mail.Dispose();
 #endif
             }
         }
 
-        /// <summary>
-        /// Disposes the e-mail message after sending it, like deleting
-        /// any temporary files created for attachements.
-        /// </summary>
-
-        protected virtual void DisposeMail(MailMessage mail)
+        private static MailAttachment CreateHtmlAttachment(string name, string html)
         {
-#if NET_1_1
-            foreach (MailAttachment attachment in mail.Attachments)
-                File.Delete(attachment.Filename);
+            Debug.AssertStringNotEmpty(name);
+            Debug.AssertStringNotEmpty(html);
+
+#if NET_1_0 || NET_1_1
+            //
+            // Create a temporary file to hold the attachment. Note that 
+            // the temporary file is created in the location returned by
+            // System.Web.HttpRuntime.CodegenDir. It is assumed that
+            // this code will have sufficient rights to create the
+            // temporary file in that area.
+            //
+
+            string fileName = name + "-" + Guid.NewGuid().ToString() + ".html";
+            string path = Path.Combine(HttpRuntime.CodegenDir, fileName);
+
+            try
+            {
+                using (StreamWriter attachementWriter = File.CreateText(path))
+                    attachementWriter.Write(html);
+
+                return new MailAttachment(path);
+            }
+            catch (IOException)
+            {
+                //
+                // Ignore I/O errors as non-critical. It's not the
+                // end of the world if the attachment could not be
+                // created (though it would be nice). It is more
+                // important to get to deliver the error message!
+                //
+                
+                return null;
+            }
+#else
+            return MailAttachment.CreateAttachmentFromString(html,
+                name + ".html", Encoding.UTF8, "text/html");
 #endif
         }
 
@@ -526,6 +557,51 @@ namespace Elmah
 
             client.Send(mail);
 #endif
+        }
+
+        /// <summary>
+        /// Fires the <see cref="Mailing"/> event.
+        /// </summary>
+
+        protected virtual void OnMailing(ErrorMailEventArgs args)
+        {
+            if (args == null)
+                throw new ArgumentNullException("args");
+
+            ErrorMailEventHandler handler = Mailing;
+
+            if (handler != null)
+                handler(this, args);
+        }
+
+        /// <summary>
+        /// Fires the <see cref="Mailed"/> event.
+        /// </summary>
+
+        protected virtual void OnMailed(ErrorMailEventArgs args)
+        {
+            if (args == null)
+                throw new ArgumentNullException("args");
+
+            ErrorMailEventHandler handler = Mailed;
+
+            if (handler != null)
+                handler(this, args);
+        }
+
+        /// <summary>
+        /// Fires the <see cref="DisposingMail"/> event.
+        /// </summary>
+        
+        protected virtual void OnDisposingMail(ErrorMailEventArgs args)
+        {
+            if (args == null)
+                throw new ArgumentNullException("args");
+
+            ErrorMailEventHandler handler = DisposingMail;
+
+            if (handler != null)
+                handler(this, args);
         }
 
         /// <summary>
