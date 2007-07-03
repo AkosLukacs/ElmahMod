@@ -159,7 +159,9 @@ namespace Elmah
             
             try
             {
-                return application.Modules;
+                IHttpModule[] modules = new IHttpModule[application.Modules.Count];
+                application.Modules.CopyTo(modules, 0);
+                return modules;
             }
             catch (SecurityException)
             {
