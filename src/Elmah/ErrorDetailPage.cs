@@ -177,7 +177,18 @@ namespace Elmah
             writer.WriteLine();
 
             //
-            // Do we have an HTML formatted message from ASP.NET? If yes,
+            // Render alternate links.
+            //
+
+            writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.Write("See also:");
+            writer.RenderEndTag(); // </p>
+            writer.WriteLine();
+
+            writer.RenderBeginTag(HtmlTextWriterTag.Ul);
+
+            //
+            // Do we have an HTML formatted message from ASP.NET? If yes
             // then write out a link to it instead of embedding it 
             // with the rest of the content since it is an entire HTML
             // document in itself.
@@ -185,18 +196,33 @@ namespace Elmah
 
             if (error.WebHostHtmlMessage.Length != 0)
             {
+                writer.RenderBeginTag(HtmlTextWriterTag.Li);
                 string htmlUrl = this.BasePageName + "/html?id=" + _errorEntry.Id;
-
-                writer.RenderBeginTag(HtmlTextWriterTag.P);
-            
                 writer.AddAttribute(HtmlTextWriterAttribute.Href, htmlUrl);
                 writer.RenderBeginTag(HtmlTextWriterTag.A);
-                writer.Write("See ASP.NET error message in full view");
+                writer.Write("Original ASP.NET error page");
                 writer.RenderEndTag(); // </a>
-            
-                writer.RenderEndTag(); // </p>
-                writer.WriteLine();
+                writer.RenderEndTag(); // </li>
             }
+
+            //
+            // Add a link to the source XML data.
+            //
+
+            writer.RenderBeginTag(HtmlTextWriterTag.Li);
+            writer.AddAttribute(HtmlTextWriterAttribute.Href, "xml" + Request.Url.Query);
+            writer.AddAttribute("rel", "alternate");
+            writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/xml");
+            writer.RenderBeginTag(HtmlTextWriterTag.A);
+            writer.Write("Raw/Source data in XML");
+            writer.RenderEndTag(); // </a>
+            writer.RenderEndTag(); // </li>
+
+            //
+            // End of alternate links.
+            //
+
+            writer.RenderEndTag(); // </ul>
 
             //
             // If this error has context, then write it out.

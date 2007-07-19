@@ -70,11 +70,15 @@ namespace Elmah
                     
                     return new ErrorDetailPage();
 
-                case "html" :
+                case "html":
                     
                     return new ErrorHtmlPage();
 
-                case "rss" :
+                case "xml":
+
+                    return new ErrorXmlHandler();
+
+                case "rss":
                     
                     return new ErrorRssHandler();
 

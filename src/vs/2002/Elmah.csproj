@@ -253,6 +253,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorXmlHandler.cs"
+                    Link = "..\..\Elmah\ErrorXmlHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ExceptionFiltering.cs"
                     Link = "..\..\Elmah\ExceptionFiltering.cs"
                     SubType = "Code"
