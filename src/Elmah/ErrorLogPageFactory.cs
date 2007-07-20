@@ -82,7 +82,11 @@ namespace Elmah
                     
                     return new ErrorRssHandler();
 
-                case "stylesheet" :
+                case "digestrss":
+
+                    return new ErrorDigestRssHandler();
+
+                case "stylesheet":
 
                     return new ManifestResourceHandler("ErrorLog.css", 
                         "text/css", Encoding.GetEncoding("Windows-1252"));

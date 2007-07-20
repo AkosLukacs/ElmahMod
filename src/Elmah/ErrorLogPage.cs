@@ -445,8 +445,10 @@ namespace Elmah
 
             return cell;
         }
+        
+        // TODO: GetSimpleErrorType needs to be moved elsewhere.
 
-        private string GetSimpleErrorType(Error error)
+        internal static string GetSimpleErrorType(Error error)
         {
             Debug.Assert(error != null);
 
