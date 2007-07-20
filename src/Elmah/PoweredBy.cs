@@ -69,7 +69,7 @@ namespace Elmah
             AboutSet about = this.About;
 
             writer.Write("Powered by ");
-            writer.AddAttribute("href", "http://code.google.com/p/elmah/");
+            writer.AddAttribute("href", "http://elmah.googlecode.com/");
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             HttpUtility.HtmlEncode(Mask.EmptyString(about.Product, "(product)"), writer);
             writer.RenderEndTag();
