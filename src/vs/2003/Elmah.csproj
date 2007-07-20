@@ -278,6 +278,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HtmlLinkType.cs"
+                    Link = "..\..\Elmah\HtmlLinkType.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "HttpModuleBase.cs"
                     Link = "..\..\Elmah\HttpModuleBase.cs"
                     SubType = "Code"

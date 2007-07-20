@@ -246,6 +246,9 @@
       <Link>ExceptionFiltering.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\HtmlLinkType.cs">
+      <Link>HtmlLinkType.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\HttpModuleBase.cs">
       <Link>HttpModuleBase.cs</Link>
     </Compile>

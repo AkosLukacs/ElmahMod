@@ -211,7 +211,7 @@ namespace Elmah
 
             writer.RenderBeginTag(HtmlTextWriterTag.Li);
             writer.AddAttribute(HtmlTextWriterAttribute.Href, "xml" + Request.Url.Query);
-            writer.AddAttribute("rel", "alternate");
+            writer.AddAttribute("rel", HtmlLinkType.Alternate);
             writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/xml");
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             writer.Write("Raw/Source data in XML");

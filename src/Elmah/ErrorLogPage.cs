@@ -100,7 +100,7 @@ namespace Elmah
             // Write a <link> tag to relate the RSS feed.
             //
 
-            writer.AddAttribute("rel", "alternate");
+            writer.AddAttribute("rel", HtmlLinkType.Alternate);
             writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/rss+xml");
             writer.AddAttribute(HtmlTextWriterAttribute.Title, "RSS");
             writer.AddAttribute(HtmlTextWriterAttribute.Href, this.BasePageName + "/rss");
@@ -192,7 +192,7 @@ namespace Elmah
     
             if (moreErrors)
             {
-                RenderLinkToPage(writer, "Next errors", nextPageIndex);
+                RenderLinkToPage(writer, HtmlLinkType.Next, "Next errors", nextPageIndex);
             }
 
             //
@@ -204,7 +204,7 @@ namespace Elmah
                 if (moreErrors)
                     writer.Write("; ");
 
-                RenderLinkToPage(writer, "Back to first page", 0);
+                RenderLinkToPage(writer, HtmlLinkType.Start, "Back to first page", 0);
             }
     
             writer.RenderEndTag(); // </p>
@@ -234,7 +234,7 @@ namespace Elmah
                     writer.Write(stockSizeIndex + 1 < stockSizes.Length ? ", " : " or ");
                 }
                     
-                RenderLinkToPage(writer, stockSize.ToString(), 0, stockSize);
+                RenderLinkToPage(writer, HtmlLinkType.Start, stockSize.ToString(), 0, stockSize);
             }
     
             writer.Write(" errors per page.");
@@ -312,7 +312,7 @@ namespace Elmah
             
             if (_pageIndex > 0 && _totalCount > 0)
             {
-                RenderLinkToPage(writer, "Go to first page", 0);
+                RenderLinkToPage(writer, HtmlLinkType.Start, "Go to first page", 0);
                 writer.Write(". ");
             }
 
@@ -482,12 +482,12 @@ namespace Elmah
             return simpleType;
         }
 
-        private void RenderLinkToPage(HtmlTextWriter writer, string text, int pageIndex)
+        private void RenderLinkToPage(HtmlTextWriter writer, string type, string text, int pageIndex)
         {
-            RenderLinkToPage(writer, text, pageIndex, _pageSize);
+            RenderLinkToPage(writer, type, text, pageIndex, _pageSize);
         }
 
-        private void RenderLinkToPage(HtmlTextWriter writer, string text, int pageIndex, int pageSize)
+        private void RenderLinkToPage(HtmlTextWriter writer, string type, string text, int pageIndex, int pageSize)
         {
             Debug.Assert(writer != null);
             Debug.Assert(text != null);
@@ -500,6 +500,10 @@ namespace Elmah
                 pageSize.ToString(CultureInfo.InvariantCulture));
 
             writer.AddAttribute(HtmlTextWriterAttribute.Href, href);
+
+            if (type != null && type.Length > 0)
+                writer.AddAttribute("rel", type);
+            
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             this.Server.HtmlEncode(text, writer);
             writer.RenderEndTag();
