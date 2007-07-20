@@ -157,13 +157,13 @@ namespace Elmah
                             RenderEnd(writer);
                             item.description = sb.ToString();
                             itemList.Add(item);
-
-                            if (itemList.Count == pageSize)
-                                break;
                         }
 
                         runningDay = day;
                         runningErrorCount = 0;
+
+                        if (itemList.Count == pageSize)
+                            break;
 
                         item = new Item();
                         item.pubDate = time.ToString("r");
