@@ -47,6 +47,11 @@ a:hover
     color: #FF6600;
 }
 
+pre
+{
+    font-family: "Courier New", Courier;
+}
+
 table
 {
     width: 100%;
