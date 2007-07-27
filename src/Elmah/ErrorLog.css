@@ -93,7 +93,14 @@ th
     background-color: #ffffcc;
     padding: 1em;
     width: 100%;
-    overflow: scroll;
+}
+
+@media screen
+{
+    #ErrorDetail
+    {
+        overflow: scroll;
+    }
 }
 
 #ErrorTitle
@@ -136,8 +143,11 @@ h1
     font-weight: bold;
 }
 
-.scroll-view
+@media screen 
 {
-    width: 100%;
-    overflow: scroll;
+    .scroll-view
+    {
+        width: 100%;
+        overflow: scroll;
+    }
 }
