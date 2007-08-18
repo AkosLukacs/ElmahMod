@@ -90,6 +90,7 @@ namespace Elmah
     {
         private string _mailSender;
         private string _mailRecipient;
+        private string _mailCopyRecipient;
         private string _mailSubjectFormat;
         private bool _reportAsynchronously;
         private string _smtpServer;
@@ -128,6 +129,7 @@ namespace Elmah
 
             string mailRecipient = GetSetting(config, "to");
             string mailSender = GetSetting(config, "from", mailRecipient);
+            string mailCopyRecipient = GetSetting(config, "cc");
             string mailSubjectFormat = GetSetting(config, "subject", string.Empty);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
             string smtpServer = GetSetting(config, "smtpServer", string.Empty);
@@ -148,6 +150,7 @@ namespace Elmah
 
             _mailRecipient = mailRecipient;
             _mailSender = mailSender;
+            _mailCopyRecipient = mailCopyRecipient;
             _mailSubjectFormat = mailSubjectFormat;
             _reportAsynchronously = reportAsynchronously;
             _smtpServer = smtpServer;
@@ -174,15 +177,39 @@ namespace Elmah
         {
             get { return _mailSender; }
         }
-        
+
         /// <summary>
-        /// Gets the e-mail address of the recipient, or a semicolon-delimited 
-        /// list of e-mail addresses in case of multiple recipients.
+        /// Gets the e-mail address of the recipient, or a 
+        /// comma-/semicolon-delimited list of e-mail addresses in case of 
+        /// multiple recipients.
         /// </summary>
+        /// <remarks>
+        /// When using System.Web.Mail components under .NET Framework 1.x, 
+        /// multiple recipients must be semicolon-delimited.
+        /// When using System.Net.Mail components under .NET Framework 2.0
+        /// or later, multiple recipients must be comma-delimited.
+        /// </remarks>
 
         protected virtual string MailRecipient
         {
             get { return _mailRecipient; }
+        }
+
+        /// <summary>
+        /// Gets the e-mail address of the recipient for mail carbon 
+        /// copy (CC), or a comma-/semicolon-delimited list of e-mail 
+        /// addresses in case of multiple recipients.
+        /// </summary>
+        /// <remarks>
+        /// When using System.Web.Mail components under .NET Framework 1.x, 
+        /// multiple recipients must be semicolon-delimited.
+        /// When using System.Net.Mail components under .NET Framework 2.0
+        /// or later, multiple recipients must be comma-delimited.
+        /// </remarks>
+
+        protected virtual string MailCopyRecipient
+        {
+            get { return _mailCopyRecipient; }
         }
 
         /// <summary>
@@ -331,6 +358,7 @@ namespace Elmah
 
             string sender = Mask.NullString(this.MailSender);
             string recipient = Mask.NullString(this.MailRecipient);
+            string copyRecipient = Mask.NullString(this.MailCopyRecipient);
 
             // TODO: Under 2.0, the sender can be defaulted via <network> configuration so consider only checking recipient here.
 
@@ -346,9 +374,15 @@ namespace Elmah
 #if NET_1_0 || NET_1_1
             mail.From = sender;
             mail.To = recipient;
+
+            if (copyRecipient.Length > 0)
+                mail.Cc = copyRecipient;
 #else
             mail.From = new MailAddress(sender);
             mail.To.Add(recipient);
+            
+            if (copyRecipient.Length > 0)
+                mail.CC.Add(copyRecipient);
 #endif
             //
             // Format the mail subject.
