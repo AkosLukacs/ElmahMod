@@ -127,8 +127,8 @@ namespace Elmah
 
                 CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);";
 
-            using(SQLiteConnection connection = new SQLiteConnection(connectionString))
-            using(SQLiteCommand command = new SQLiteCommand(sql, connection))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 connection.Open();
                 command.ExecuteNonQuery();
@@ -172,18 +172,12 @@ namespace Elmah
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-
-            try
+            using (XmlWriter writer = XmlWriter.Create(sw, settings))
             {
                 writer.WriteStartElement("error");
                 error.ToXml(writer);
                 writer.WriteEndElement();
                 writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
             }
 
             string errorXml = sw.ToString();
@@ -196,8 +190,8 @@ namespace Elmah
                 VALUES (
                     ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            using(SQLiteConnection connection = new SQLiteConnection(ConnectionString))
-            using(SQLiteCommand command = new SQLiteCommand(query, connection))
+            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
                 Guid id = Guid.NewGuid();
 
@@ -387,16 +381,15 @@ namespace Elmah
 
                 string errorXml = (string) command.ExecuteScalar();
 
-                StringReader sr = new StringReader(errorXml);
-                XmlTextReader reader = new XmlTextReader(sr);
+                using (XmlReader reader = XmlReader.Create(new StringReader(errorXml)))
+                {
+                    if (!reader.IsStartElement("error"))
+                        throw new ApplicationException("The error XML is not in the expected format.");
 
-                if (!reader.IsStartElement("error"))
-                    throw new ApplicationException("The error XML is not in the expected format.");
-
-                Error error = NewError();
-                error.FromXml(reader);
-
-                return new ErrorLogEntry(this, id, error);
+                    Error error = NewError();
+                    error.FromXml(reader);
+                    return new ErrorLogEntry(this, id, error);
+                }
             }
         }
 
