@@ -188,14 +188,16 @@ namespace Elmah
 
             string errorXml = sw.ToString();
 
+            const string query = @"
+                INSERT INTO ELMAH_Error (
+                    ErrorId, Application, Host, 
+                    Type, Source, Message, User, StatusCode, 
+                    TimeUtc, AllXml)
+                VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
             using(SQLiteConnection connection = new SQLiteConnection(ConnectionString))
-            using(
-                SQLiteCommand command =
-                    new SQLiteCommand(
-                        @"
-INSERT INTO ELMAH_Error (ErrorId, Application, Host, Type, Source, Message, User, StatusCode, TimeUtc, AllXml)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                        connection))
+            using(SQLiteCommand command = new SQLiteCommand(query, connection))
             {
                 Guid id = Guid.NewGuid();
 
@@ -231,108 +233,112 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             if (pageSize < 0)
                 throw new ArgumentOutOfRangeException("pageSize");
 
+            const string sql = @"
+                CREATE TEMPORARY TABLE Page
+                (
+                    Position    INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    ErrorId     UNIQUEIDENTIFIER NOT NULL,
+                    Application TEXT NOT NULL,
+                    Host        TEXT NOT NULL,
+                    Type        TEXT NOT NULL,
+                    Source      TEXT NOT NULL,
+                    Message     TEXT NOT NULL,
+                    User        TEXT NOT NULL,
+                    StatusCode  INTEGER NOT NULL,
+                    TimeUtc     TEXT NOT NULL
+                );
+
+                INSERT INTO
+                    Page
+                    (
+                        ErrorId,
+                        Application,
+                        Host,
+                        Type,
+                        Source,
+                        Message,
+                        User,
+                        StatusCode,
+                        TimeUtc
+                    )
+                SELECT
+                    ErrorId,
+                    Application,
+                    Host,
+                    Type,
+                    Source,
+                    Message,
+                    User,
+                    StatusCode,
+                    TimeUtc
+                FROM
+                    ELMAH_Error
+                WHERE
+                    Application = @Application    
+                ORDER BY
+                    TimeUtc DESC,
+                    Sequence DESC;
+
+                SELECT
+                    ErrorId,
+                    Application,
+                    Host,
+                    Type,
+                    Source,
+                    Message,
+                    User,
+                    StatusCode,
+                    TimeUtc
+                FROM 
+                    Page
+                WHERE
+                    Position >= (@PageIndex * @PageSize + 1)
+                AND
+                    Position <= ((@PageIndex * @PageSize + 1) + @PageSize - 1)
+                ORDER BY Position;
+
+                SELECT COUNT(*) FROM Page;";
+
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
-                using(
-                    SQLiteCommand command =
-                        new SQLiteCommand(
-                            @"
-CREATE TEMPORARY TABLE Page
-(
-    Position    INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    ErrorId     UNIQUEIDENTIFIER NOT NULL,
-    Application TEXT NOT NULL,
-    Host        TEXT NOT NULL,
-    Type        TEXT NOT NULL,
-    Source      TEXT NOT NULL,
-    Message     TEXT NOT NULL,
-    User        TEXT NOT NULL,
-    StatusCode  INTEGER NOT NULL,
-    TimeUtc     TEXT NOT NULL
-);
+                SQLiteParameterCollection parameters = command.Parameters;
 
-INSERT INTO
-    Page
-    (
-        ErrorId,
-        Application,
-        Host,
-        Type,
-        Source,
-        Message,
-        User,
-        StatusCode,
-        TimeUtc
-    )
-SELECT
-    ErrorId,
-    Application,
-    Host,
-    Type,
-    Source,
-    Message,
-    User,
-    StatusCode,
-    TimeUtc
-FROM
-    ELMAH_Error
-WHERE
-    Application = @Application    
-ORDER BY
-    TimeUtc DESC,
-    Sequence DESC;
+                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
+                parameters.Add("@PageIndex", DbType.Int16).Value = pageIndex;
+                parameters.Add("@PageSize", DbType.Int16).Value = pageSize;
 
-SELECT
-    ErrorId,
-    Application,
-    Host,
-    Type,
-    Source,
-    Message,
-    User,
-    StatusCode,
-    TimeUtc
-FROM 
-    Page
-WHERE
-    Position >= (@PageIndex * @PageSize + 1)
-AND
-    Position <= ((@PageIndex * @PageSize + 1) + @PageSize - 1)
-ORDER BY Position;",
-                            connection))
+                connection.Open();
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    SQLiteParameterCollection parameters = command.Parameters;
-
-                    parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
-                    parameters.Add("@PageIndex", DbType.Int16).Value = pageIndex;
-                    parameters.Add("@PageSize", DbType.Int16).Value = pageSize;
-
-                    connection.Open();
-
-                    using(SQLiteDataReader reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while(reader.Read())
-                        {
-                            string id = reader["ErrorId"].ToString();
+                        string id = reader["ErrorId"].ToString();
 
-                            Error error = NewError();
+                        Error error = NewError();
 
-                            error.ApplicationName = reader["Application"].ToString();
-                            error.HostName = reader["Host"].ToString();
-                            error.Type = reader["Type"].ToString();
-                            error.Source = reader["Source"].ToString();
-                            error.Message = reader["Message"].ToString();
-                            error.User = reader["User"].ToString();
-                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                            error.Time = Convert.ToDateTime(reader["TimeUtc"]);
+                        error.ApplicationName = reader["Application"].ToString();
+                        error.HostName = reader["Host"].ToString();
+                        error.Type = reader["Type"].ToString();
+                        error.Source = reader["Source"].ToString();
+                        error.Message = reader["Message"].ToString();
+                        error.User = reader["User"].ToString();
+                        error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
+                        error.Time = Convert.ToDateTime(reader["TimeUtc"]);
 
-                            if (errorEntryList != null)
-                                errorEntryList.Add(new ErrorLogEntry(this, id, error));
-                        }
+                        if (errorEntryList != null)
+                            errorEntryList.Add(new ErrorLogEntry(this, id, error));
                     }
+
+                    //
+                    // Get the result of SELECT COUNT(*) FROM Page
+                    //
+
+                    reader.NextResult();
+                    reader.Read();
+                    return reader.GetInt32(0);
                 }
-                using(SQLiteCommand countCommand = new SQLiteCommand("SELECT COUNT(*) FROM Page;", connection))
-                    return Convert.ToInt32(countCommand.ExecuteScalar());
             }
         }
 
@@ -355,21 +361,23 @@ ORDER BY Position;",
             {
                 errorGuid = new Guid(id);
             }
-            catch(FormatException e)
+            catch (FormatException e)
             {
                 throw new ArgumentOutOfRangeException("id", id, e.Message);
             }
 
-            using(SQLiteConnection connection = new SQLiteConnection(ConnectionString))
-            using (SQLiteCommand command = new SQLiteCommand(@"
-SELECT 
-    AllXml
-FROM 
-    ELMAH_Error
-WHERE
-    ErrorId = @ErrorId
-AND
-    Application = @Application", connection))
+            const string sql = @"
+                SELECT 
+                    AllXml
+                FROM 
+                    ELMAH_Error
+                WHERE
+                    ErrorId = @ErrorId
+                AND
+                    Application = @Application";
+
+            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 SQLiteParameterCollection parameters = command.Parameters;
                 parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
