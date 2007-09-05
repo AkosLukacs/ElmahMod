@@ -27,10 +27,15 @@
 
 #endregion
 
+// All code in this file requires .NET Framework 2.0 or later.
+
+#if !NET_1_1 && !NET_1_0
+
 [assembly: Elmah.Scc("$Id$")]
 
 namespace Elmah
 {
+
     #region Imports
 
     using System;
@@ -164,15 +169,10 @@ namespace Elmah
 
             StringWriter sw = new StringWriter();
 
-#if NET_2_0
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
             XmlWriter writer = XmlWriter.Create(sw, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-#endif
 
             try
             {
@@ -409,7 +409,6 @@ AND
         {
             Debug.Assert(config != null);
 
-#if !NET_1_1 && !NET_1_0
             //
             // First look for a connection string name that can be 
             // subsequently indexed into the <connectionStrings> section of 
@@ -427,7 +426,6 @@ AND
 
                 return settings.ConnectionString ?? string.Empty;
             }
-#endif
 
             //
             // Connection string name not found so see if a connection 
@@ -455,3 +453,5 @@ AND
         }
     }
 }
+
+#endif //!NET_1_1 && !NET_1_0
