@@ -31,6 +31,8 @@
 
 namespace Elmah
 {
+    #region Imports
+
     using System;
     using System.Collections;
     using System.Configuration;
@@ -38,22 +40,25 @@ namespace Elmah
     using System.Data.SQLite;
     using System.IO;
     using System.Xml;
-    using Elmah;
+
+    #endregion
 
     /// <summary>
     /// An <see cref="ErrorLog"/> implementation that uses SQLite as its backing store.
     /// </summary>
+
     public class SQLiteErrorLog : ErrorLog
     {
         private readonly string _connectionString;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
+        /// Initializes a new instance of the <see cref="SQLiteErrorLog"/> class
         /// using a dictionary of configured settings.
         /// </summary>
+        
         public SQLiteErrorLog(IDictionary config)
         {
-            if(config == null)
+            if (config == null)
                 throw new ArgumentNullException("config");
 
             _connectionString = GetConnectionString(config);
@@ -63,22 +68,23 @@ namespace Elmah
             // exception to abort construction.
             //
 
-            if(_connectionString.Length == 0)
+            if (_connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
             CreateDatabase();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
+        /// Initializes a new instance of the <see cref="SQLiteErrorLog"/> class
         /// to use a specific connection string for connecting to the database.
         /// </summary>
+        
         public SQLiteErrorLog(string connectionString)
         {
-            if(connectionString == null)
+            if (connectionString == null)
                 throw new ArgumentNullException("connectionString");
 
-            if(connectionString.Length == 0)
+            if (connectionString.Length == 0)
                 throw new ArgumentOutOfRangeException("connectionString");
 
             _connectionString = connectionString;
@@ -122,6 +128,7 @@ CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);", connection))
         /// <summary>
         /// Gets the name of this error log implementation.
         /// </summary>
+        
         public override string Name
         {
             get { return "SQLite Error Log"; }
@@ -130,6 +137,7 @@ CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);", connection))
         /// <summary>
         /// Gets the connection string used by the log to connect to the database.
         /// </summary>
+        
         public virtual string ConnectionString
         {
             get { return _connectionString; }
@@ -143,9 +151,10 @@ CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);", connection))
         /// policy on how long errors are kept in the log. The default
         /// implementation stores all errors for an indefinite time.
         /// </remarks>
+        
         public override string Log(Error error)
         {
-            if(error == null)
+            if (error == null)
                 throw new ArgumentNullException("error");
 
             StringWriter sw = new StringWriter();
@@ -211,10 +220,10 @@ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         /// </summary>
         public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
         {
-            if(pageIndex < 0)
+            if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex");
 
-            if(pageSize < 0)
+            if (pageSize < 0)
                 throw new ArgumentOutOfRangeException("pageSize");
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
@@ -312,7 +321,7 @@ ORDER BY Position;",
                             error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
                             error.Time = Convert.ToDateTime(reader["TimeUtc"]);
 
-                            if(errorEntryList != null)
+                            if (errorEntryList != null)
                                 errorEntryList.Add(new ErrorLogEntry(this, id, error));
                         }
                     }
@@ -326,12 +335,13 @@ ORDER BY Position;",
         /// Returns the specified error from the database, or null 
         /// if it does not exist.
         /// </summary>
+        
         public override ErrorLogEntry GetError(string id)
         {
-            if(id == null)
+            if (id == null)
                 throw new ArgumentNullException("id");
 
-            if(id.Length == 0)
+            if (id.Length == 0)
                 throw new ArgumentOutOfRangeException("id");
 
             Guid errorGuid;
@@ -367,7 +377,7 @@ AND
                 StringReader sr = new StringReader(errorXml);
                 XmlTextReader reader = new XmlTextReader(sr);
 
-                if(!reader.IsStartElement("error"))
+                if (!reader.IsStartElement("error"))
                     throw new ApplicationException("The error XML is not in the expected format.");
 
                 Error error = NewError();
@@ -380,6 +390,7 @@ AND
         /// <summary>
         /// Creates a new and empty instance of the <see cref="Error"/> class.
         /// </summary>
+        
         protected virtual Error NewError()
         {
             return new Error();
@@ -388,6 +399,7 @@ AND
         /// <summary>
         /// Gets the connection string from the given configuration.
         /// </summary>
+        
         private static string GetConnectionString(IDictionary config)
         {
             Debug.Assert(config != null);
@@ -401,11 +413,11 @@ AND
 
             string connectionStringName = (string) config["connectionStringName"] ?? string.Empty;
 
-            if(connectionStringName.Length > 0)
+            if (connectionStringName.Length > 0)
             {
                 ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
 
-                if(settings == null)
+                if (settings == null)
                     return string.Empty;
 
                 return settings.ConnectionString ?? string.Empty;
@@ -419,7 +431,7 @@ AND
 
             string connectionString = Mask.NullString((string) config["connectionString"]);
 
-            if(connectionString.Length > 0)
+            if (connectionString.Length > 0)
                 return connectionString;
 
             //
@@ -431,7 +443,7 @@ AND
 
             string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
 
-            if(connectionStringAppKey.Length == 0)
+            if (connectionStringAppKey.Length == 0)
                 return string.Empty;
 
             return Configuration.AppSettings[connectionStringAppKey];
