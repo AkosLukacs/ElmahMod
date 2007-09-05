@@ -71,7 +71,7 @@ namespace Elmah
             if (_connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
-            CreateDatabase();
+            InitializeDatabase(ConnectionString);
         }
 
         /// <summary>
@@ -89,39 +89,44 @@ namespace Elmah
 
             _connectionString = connectionString;
 
-            CreateDatabase();
+            InitializeDatabase(connectionString);
         }
 
-        private void CreateDatabase()
+        private static void InitializeDatabase(string connectionString)
         {
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(_connectionString);
+            Debug.AssertStringNotEmpty(connectionString);
 
-            string database = builder.DataSource;
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
 
-            if (!File.Exists(database))
+            string dbFilePath = builder.DataSource;
+
+            if (File.Exists(dbFilePath))
+                return;
+
+            SQLiteConnection.CreateFile(dbFilePath);
+
+            const string sql = @"
+                CREATE TABLE ELMAH_Error (
+                    ErrorId UNIQUEIDENTIFIER NOT NULL,
+                    Application TEXT NOT NULL,
+                    Host TEXT NOT NULL,
+                    Type TEXT NOT NULL,
+                    Source TEXT NOT NULL,
+                    Message TEXT NOT NULL,
+                    User TEXT NOT NULL,
+                    StatusCode INTEGER NOT NULL,
+                    TimeUtc TEXT NOT NULL,
+                    Sequence INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    AllXml TEXT NOT NULL
+                );
+
+                CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);";
+
+            using(SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using(SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
-                SQLiteConnection.CreateFile(database);
-
-                using(SQLiteConnection connection = new SQLiteConnection(_connectionString))
-                using(SQLiteCommand command = new SQLiteCommand(@"
-CREATE TABLE ELMAH_Error (
-ErrorId UNIQUEIDENTIFIER NOT NULL,
-Application TEXT NOT NULL,
-Host TEXT NOT NULL,
-Type TEXT NOT NULL,
-Source TEXT NOT NULL,
-Message TEXT NOT NULL,
-User TEXT NOT NULL,
-StatusCode INTEGER NOT NULL,
-TimeUtc TEXT NOT NULL,
-Sequence INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-AllXml TEXT NOT NULL
-);
-CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);", connection))
-                {
-                    connection.Open();
-                    command.ExecuteNonQuery();
-                }
+                connection.Open();
+                command.ExecuteNonQuery();
             }
         }
 
