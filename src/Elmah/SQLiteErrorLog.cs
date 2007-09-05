@@ -1,0 +1,440 @@
+#region License, Terms and Author(s)
+
+//
+// ELMAH - Error Logging Modules and Handlers for ASP.NET
+// Copyright (c) 2007 Atif Aziz. All rights reserved.
+//
+//  Author(s):
+//
+//      Simone Busoli, mailto:simone.busoli@gmail.com
+//
+// This library is free software; you can redistribute it and/or modify it 
+// under the terms of the New BSD License, a copy of which should have 
+// been delivered along with this distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A 
+// PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
+// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
+// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
+// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+
+#endregion
+
+[assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah
+{
+    using System;
+    using System.Collections;
+    using System.Configuration;
+    using System.Data;
+    using System.Data.SQLite;
+    using System.IO;
+    using System.Xml;
+    using Elmah;
+
+    /// <summary>
+    /// An <see cref="ErrorLog"/> implementation that uses SQLite as its backing store.
+    /// </summary>
+    public class SQLiteErrorLog : ErrorLog
+    {
+        private readonly string _connectionString;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
+        /// using a dictionary of configured settings.
+        /// </summary>
+        public SQLiteErrorLog(IDictionary config)
+        {
+            if(config == null)
+                throw new ArgumentNullException("config");
+
+            _connectionString = GetConnectionString(config);
+
+            //
+            // If there is no connection string to use then throw an 
+            // exception to abort construction.
+            //
+
+            if(_connectionString.Length == 0)
+                throw new ApplicationException("Connection string is missing for the SQLite error log.");
+
+            CreateDatabase();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
+        /// to use a specific connection string for connecting to the database.
+        /// </summary>
+        public SQLiteErrorLog(string connectionString)
+        {
+            if(connectionString == null)
+                throw new ArgumentNullException("connectionString");
+
+            if(connectionString.Length == 0)
+                throw new ArgumentOutOfRangeException("connectionString");
+
+            _connectionString = connectionString;
+
+            CreateDatabase();
+        }
+
+        private void CreateDatabase()
+        {
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(_connectionString);
+
+            string database = builder.DataSource;
+
+            if (!File.Exists(database))
+            {
+                SQLiteConnection.CreateFile(database);
+
+                using(SQLiteConnection connection = new SQLiteConnection(_connectionString))
+                using(SQLiteCommand command = new SQLiteCommand(@"
+CREATE TABLE ELMAH_Error (
+ErrorId UNIQUEIDENTIFIER NOT NULL,
+Application TEXT NOT NULL,
+Host TEXT NOT NULL,
+Type TEXT NOT NULL,
+Source TEXT NOT NULL,
+Message TEXT NOT NULL,
+User TEXT NOT NULL,
+StatusCode INTEGER NOT NULL,
+TimeUtc TEXT NOT NULL,
+Sequence INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+AllXml TEXT NOT NULL
+);
+CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);", connection))
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of this error log implementation.
+        /// </summary>
+        public override string Name
+        {
+            get { return "SQLite Error Log"; }
+        }
+
+        /// <summary>
+        /// Gets the connection string used by the log to connect to the database.
+        /// </summary>
+        public virtual string ConnectionString
+        {
+            get { return _connectionString; }
+        }
+
+        /// <summary>
+        /// Logs an error to the database.
+        /// </summary>
+        /// <remarks>
+        /// Use the stored procedure called by this implementation to set a
+        /// policy on how long errors are kept in the log. The default
+        /// implementation stores all errors for an indefinite time.
+        /// </remarks>
+        public override string Log(Error error)
+        {
+            if(error == null)
+                throw new ArgumentNullException("error");
+
+            StringWriter sw = new StringWriter();
+
+#if NET_2_0
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.NewLineOnAttributes = true;
+            XmlWriter writer = XmlWriter.Create(sw, settings);
+#else
+            XmlTextWriter writer = new XmlTextWriter(sw);
+            writer.Formatting = Formatting.Indented;
+#endif
+
+            try
+            {
+                writer.WriteStartElement("error");
+                error.ToXml(writer);
+                writer.WriteEndElement();
+                writer.Flush();
+            }
+            finally
+            {
+                writer.Close();
+            }
+
+            string errorXml = sw.ToString();
+
+            using(SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using(
+                SQLiteCommand command =
+                    new SQLiteCommand(
+                        @"
+INSERT INTO ELMAH_Error (ErrorId, Application, Host, Type, Source, Message, User, StatusCode, TimeUtc, AllXml)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        connection))
+            {
+                Guid id = Guid.NewGuid();
+
+                SQLiteParameterCollection parameters = command.Parameters;
+
+                parameters.Add("@ErrorId", DbType.Guid).Value = id;
+                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
+                parameters.Add("@Host", DbType.String, 30).Value = error.HostName;
+                parameters.Add("@Type", DbType.String, 100).Value = error.Type;
+                parameters.Add("@Source", DbType.String, 60).Value = error.Source;
+                parameters.Add("@Message", DbType.String, 500).Value = error.Message;
+                parameters.Add("@User", DbType.String, 50).Value = error.User;
+                parameters.Add("@StatusCode", DbType.Int64).Value = error.StatusCode;
+                parameters.Add("@TimeUtc", DbType.DateTime).Value = error.Time.ToUniversalTime();
+                parameters.Add("@AllXml", DbType.String).Value = errorXml;
+
+                connection.Open();
+                command.ExecuteNonQuery();
+
+                return id.ToString();
+            }
+        }
+
+        /// <summary>
+        /// Returns a page of errors from the databse in descending order 
+        /// of logged time.
+        /// </summary>
+        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+        {
+            if(pageIndex < 0)
+                throw new ArgumentOutOfRangeException("pageIndex");
+
+            if(pageSize < 0)
+                throw new ArgumentOutOfRangeException("pageSize");
+
+            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            {
+                using(
+                    SQLiteCommand command =
+                        new SQLiteCommand(
+                            @"
+CREATE TEMPORARY TABLE Page
+(
+    Position    INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    ErrorId     UNIQUEIDENTIFIER NOT NULL,
+    Application TEXT NOT NULL,
+    Host        TEXT NOT NULL,
+    Type        TEXT NOT NULL,
+    Source      TEXT NOT NULL,
+    Message     TEXT NOT NULL,
+    User        TEXT NOT NULL,
+    StatusCode  INTEGER NOT NULL,
+    TimeUtc     TEXT NOT NULL
+);
+
+INSERT INTO
+    Page
+    (
+        ErrorId,
+        Application,
+        Host,
+        Type,
+        Source,
+        Message,
+        User,
+        StatusCode,
+        TimeUtc
+    )
+SELECT
+    ErrorId,
+    Application,
+    Host,
+    Type,
+    Source,
+    Message,
+    User,
+    StatusCode,
+    TimeUtc
+FROM
+    ELMAH_Error
+WHERE
+    Application = @Application    
+ORDER BY
+    TimeUtc DESC,
+    Sequence DESC;
+
+SELECT
+    ErrorId,
+    Application,
+    Host,
+    Type,
+    Source,
+    Message,
+    User,
+    StatusCode,
+    TimeUtc
+FROM 
+    Page
+WHERE
+    Position >= (@PageIndex * @PageSize + 1)
+AND
+    Position <= ((@PageIndex * @PageSize + 1) + @PageSize - 1)
+ORDER BY Position;",
+                            connection))
+                {
+                    SQLiteParameterCollection parameters = command.Parameters;
+
+                    parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
+                    parameters.Add("@PageIndex", DbType.Int16).Value = pageIndex;
+                    parameters.Add("@PageSize", DbType.Int16).Value = pageSize;
+
+                    connection.Open();
+
+                    using(SQLiteDataReader reader = command.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            string id = reader["ErrorId"].ToString();
+
+                            Error error = NewError();
+
+                            error.ApplicationName = reader["Application"].ToString();
+                            error.HostName = reader["Host"].ToString();
+                            error.Type = reader["Type"].ToString();
+                            error.Source = reader["Source"].ToString();
+                            error.Message = reader["Message"].ToString();
+                            error.User = reader["User"].ToString();
+                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
+                            error.Time = Convert.ToDateTime(reader["TimeUtc"]);
+
+                            if(errorEntryList != null)
+                                errorEntryList.Add(new ErrorLogEntry(this, id, error));
+                        }
+                    }
+                }
+                using(SQLiteCommand countCommand = new SQLiteCommand("SELECT COUNT(*) FROM Page;", connection))
+                    return Convert.ToInt32(countCommand.ExecuteScalar());
+            }
+        }
+
+        /// <summary>
+        /// Returns the specified error from the database, or null 
+        /// if it does not exist.
+        /// </summary>
+        public override ErrorLogEntry GetError(string id)
+        {
+            if(id == null)
+                throw new ArgumentNullException("id");
+
+            if(id.Length == 0)
+                throw new ArgumentOutOfRangeException("id");
+
+            Guid errorGuid;
+
+            try
+            {
+                errorGuid = new Guid(id);
+            }
+            catch(FormatException e)
+            {
+                throw new ArgumentOutOfRangeException("id", id, e.Message);
+            }
+
+            using(SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using (SQLiteCommand command = new SQLiteCommand(@"
+SELECT 
+    AllXml
+FROM 
+    ELMAH_Error
+WHERE
+    ErrorId = @ErrorId
+AND
+    Application = @Application", connection))
+            {
+                SQLiteParameterCollection parameters = command.Parameters;
+                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
+                parameters.Add("@ErrorId", DbType.Guid).Value = errorGuid;
+
+                connection.Open();
+
+                string errorXml = (string) command.ExecuteScalar();
+
+                StringReader sr = new StringReader(errorXml);
+                XmlTextReader reader = new XmlTextReader(sr);
+
+                if(!reader.IsStartElement("error"))
+                    throw new ApplicationException("The error XML is not in the expected format.");
+
+                Error error = NewError();
+                error.FromXml(reader);
+
+                return new ErrorLogEntry(this, id, error);
+            }
+        }
+
+        /// <summary>
+        /// Creates a new and empty instance of the <see cref="Error"/> class.
+        /// </summary>
+        protected virtual Error NewError()
+        {
+            return new Error();
+        }
+
+        /// <summary>
+        /// Gets the connection string from the given configuration.
+        /// </summary>
+        private static string GetConnectionString(IDictionary config)
+        {
+            Debug.Assert(config != null);
+
+#if !NET_1_1 && !NET_1_0
+            //
+            // First look for a connection string name that can be 
+            // subsequently indexed into the <connectionStrings> section of 
+            // the configuration to get the actual connection string.
+            //
+
+            string connectionStringName = (string) config["connectionStringName"] ?? string.Empty;
+
+            if(connectionStringName.Length > 0)
+            {
+                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
+
+                if(settings == null)
+                    return string.Empty;
+
+                return settings.ConnectionString ?? string.Empty;
+            }
+#endif
+
+            //
+            // Connection string name not found so see if a connection 
+            // string was given directly.
+            //
+
+            string connectionString = Mask.NullString((string) config["connectionString"]);
+
+            if(connectionString.Length > 0)
+                return connectionString;
+
+            //
+            // As a last resort, check for another setting called 
+            // connectionStringAppKey. The specifies the key in 
+            // <appSettings> that contains the actual connection string to 
+            // be used.
+            //
+
+            string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
+
+            if(connectionStringAppKey.Length == 0)
+                return string.Empty;
+
+            return Configuration.AppSettings[connectionStringAppKey];
+        }
+    }
+}
