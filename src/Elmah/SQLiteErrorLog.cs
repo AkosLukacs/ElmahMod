@@ -228,33 +228,7 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageSize");
 
             const string sql = @"
-                CREATE TEMPORARY TABLE Page
-                (
-                    Position    INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                    ErrorId     UNIQUEIDENTIFIER NOT NULL,
-                    Application TEXT NOT NULL,
-                    Host        TEXT NOT NULL,
-                    Type        TEXT NOT NULL,
-                    Source      TEXT NOT NULL,
-                    Message     TEXT NOT NULL,
-                    User        TEXT NOT NULL,
-                    StatusCode  INTEGER NOT NULL,
-                    TimeUtc     TEXT NOT NULL
-                );
-
-                INSERT INTO
-                    Page
-                    (
-                        ErrorId,
-                        Application,
-                        Host,
-                        Type,
-                        Source,
-                        Message,
-                        User,
-                        StatusCode,
-                        TimeUtc
-                    )
+                
                 SELECT
                     ErrorId,
                     Application,
@@ -271,27 +245,12 @@ namespace Elmah
                     Application = @Application    
                 ORDER BY
                     TimeUtc DESC,
-                    Sequence DESC;
+                    Sequence DESC
+                LIMIT 
+                    @PageIndex * @PageSize,
+                    @PageSize;
 
-                SELECT
-                    ErrorId,
-                    Application,
-                    Host,
-                    Type,
-                    Source,
-                    Message,
-                    User,
-                    StatusCode,
-                    TimeUtc
-                FROM 
-                    Page
-                WHERE
-                    Position >= (@PageIndex * @PageSize + 1)
-                AND
-                    Position <= ((@PageIndex * @PageSize + 1) + @PageSize - 1)
-                ORDER BY Position;
-
-                SELECT COUNT(*) FROM Page;";
+                SELECT COUNT(*) FROM ELMAH_Error WHERE Application = @Application;";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
