@@ -278,7 +278,7 @@ namespace Elmah
                         error.Message = reader["Message"].ToString();
                         error.User = reader["User"].ToString();
                         error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                        error.Time = Convert.ToDateTime(reader["TimeUtc"]);
+                        error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
 
                         if (errorEntryList != null)
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
