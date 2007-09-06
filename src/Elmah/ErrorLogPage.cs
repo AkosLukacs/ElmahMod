@@ -82,9 +82,9 @@ namespace Elmah
             // Set the title of the page.
             //
 
-            this.PageTitle = string.Format("Error log for {0} on {1} (Page {2})", 
+            this.PageTitle = string.Format("Error log for {0} on {1} (Page #{2})", 
                 this.ApplicationName, Environment.MachineName, 
-                (_pageIndex + 1).ToString());
+                (_pageIndex + 1).ToString("N0"));
 
             base.OnLoad(e);
         }
@@ -249,11 +249,11 @@ namespace Elmah
             int totalPages = (int) Math.Ceiling((double) _totalCount / _pageSize);
     
             writer.Write("Errors {0} to {1} of total {2} (page {3} of {4}). ",
-                         firstErrorNumber.ToString(), 
-                         lastErrorNumber.ToString(),
-                         _totalCount.ToString(),
-                         (_pageIndex + 1).ToString(),
-                         totalPages.ToString());
+                         firstErrorNumber.ToString("N0"), 
+                         lastErrorNumber.ToString("N0"),
+                         _totalCount.ToString("N0"),
+                         (_pageIndex + 1).ToString("N0"),
+                         totalPages.ToString("N0"));
         }
 
         private void RenderTitle(HtmlTextWriter writer)
