@@ -93,7 +93,7 @@ namespace Elmah
 #else
                 if (_appName == null)
                 {
-                    string path = HttpRuntime.AppDomainAppVirtualPath;
+                    string path = HttpRuntime.AppDomainAppVirtualPath ?? string.Empty;
                     string[] parts = path.Split('/');
                     _appName = Mask.EmptyString(parts[parts.Length - 1], "/"); 
                 }
