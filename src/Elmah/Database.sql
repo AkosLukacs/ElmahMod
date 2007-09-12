@@ -6,6 +6,7 @@
     Author(s):
   
         Atif Aziz, http://www.raboof.com
+        Phil Haacked, http://haacked.com
   
    This library is free software; you can redistribute it and/or modify it 
    under the terms of the New BSD License, a copy of which should have 
@@ -50,6 +51,14 @@ GO
 
 ALTER TABLE dbo.ELMAH_Error ADD 
     CONSTRAINT DF_ELMAH_Error_ErrorId DEFAULT (newid()) FOR [ErrorId]
+GO
+
+CREATE NONCLUSTERED INDEX IX_ELMAH_Error_App_Time_Seq ON dbo.ELMAH_Error
+(
+    [Application] ASC,
+    [TimeUtc] DESC,
+    [Sequence] DESC
+) ON [PRIMARY]
 GO
 
 SET QUOTED_IDENTIFIER ON 
@@ -99,62 +108,38 @@ AS
 
 SET NOCOUNT ON
 
-DECLARE @Page TABLE
-(
-    Position INT IDENTITY(1, 1) NOT NULL,
-    ErrorId UNIQUEIDENTIFIER NOT NULL,
-    Application NVARCHAR(60) NOT NULL,
-    Host NVARCHAR(30) NOT NULL,
-    Type NVARCHAR(100) NOT NULL,
-    Source NVARCHAR(60) NOT NULL,
-    Message NVARCHAR(500) NOT NULL,
-    [User] NVARCHAR(50) NOT NULL,
-    StatusCode INT NOT NULL,
-    TimeUtc DATETIME NOT NULL
-)
+DECLARE @FirstTimeUTC DateTime
+DECLARE @FirstSequence int
+DECLARE @StartRow int
+DECLARE @StartRowIndex int
 
-INSERT
-INTO
-    @Page
-    (
-        ErrorId,
-        Application,
-        Host,
-        Type,
-        Source,
-        Message,
-        [User],
-        StatusCode,
-        TimeUtc
-    )
-SELECT
-    ErrorId,
-    Application,
-    Host,
-    Type,
-    Source,
-    Message,
-    [User],
-    StatusCode,
-    TimeUtc
-FROM
+-- Get the ID of the first error for the requested page
+
+SET @StartRowIndex = @PageIndex * @PageSize + 1
+SET ROWCOUNT @StartRowIndex
+
+SELECT  
+    @FirstTimeUTC = TimeUTC,
+    @FirstSequence = Sequence
+FROM 
     ELMAH_Error
-WHERE
-    Application = @Application    
-ORDER BY
-    TimeUtc DESC,
+WHERE   
+    Application = @Application
+ORDER BY 
+    TimeUTC DESC, 
     Sequence DESC
 
+-- Now set the row count to the requested page size and get
+-- all records below it for the pertaining application.
+
+SET ROWCOUNT @PageSize
+
 SELECT 
-    @TotalCount = COUNT(*) 
+    @TotalCount = COUNT(1) 
 FROM 
-    @Page
-
-DECLARE @FirstPosition INT
-SET @FirstPosition = @PageIndex * @PageSize + 1
-
-DECLARE @LastPosition INT
-SET @LastPosition  = @FirstPosition + @PageSize - 1
+    ELMAH_Error
+WHERE 
+    Application = @Application
 
 SELECT 
     errorId, 
@@ -167,13 +152,16 @@ SELECT
     statusCode, 
     CONVERT(VARCHAR(50), TimeUtc, 126) + 'Z' time
 FROM 
-    @Page error
+    ELMAH_Error error
 WHERE
-    Position >= @FirstPosition
-AND
-    Position <= @LastPosition
+    Application = @Application
+AND 
+    TimeUTC <= @FirstTimeUTC
+AND 
+    Sequence <= @FirstSequence
 ORDER BY
-    Position
+    TimeUTC DESC, 
+    Sequence DESC
 FOR
     XML AUTO
 
