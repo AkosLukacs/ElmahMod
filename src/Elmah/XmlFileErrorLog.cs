@@ -200,7 +200,7 @@ namespace Elmah
             id = (new Guid(id)).ToString();
 
             /* Get the file folder list - should only return one ever */
-            string[] files = Directory.GetFiles(LogPath, string.Format("error-{0}.xml", id));
+            string[] files = Directory.GetFiles(LogPath, string.Format("error-*-{0}.xml", id));
             
             if (files.Length < 1)
                 throw new System.ApplicationException(string.Format("Cannot locate error file for error with ID {0}.", id));
