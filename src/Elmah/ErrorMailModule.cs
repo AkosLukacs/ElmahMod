@@ -129,7 +129,7 @@ namespace Elmah
 
             string mailRecipient = GetSetting(config, "to");
             string mailSender = GetSetting(config, "from", mailRecipient);
-            string mailCopyRecipient = GetSetting(config, "cc");
+            string mailCopyRecipient = GetSetting(config, "cc", string.Empty);
             string mailSubjectFormat = GetSetting(config, "subject", string.Empty);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
             string smtpServer = GetSetting(config, "smtpServer", string.Empty);
