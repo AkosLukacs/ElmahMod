@@ -34,11 +34,8 @@ namespace Elmah
     using System;
     using System.Web.UI;
     using System.Web.UI.WebControls;
-    using System.Web.Mail;
 
     using NameValueCollection = System.Collections.Specialized.NameValueCollection;
-    using Comparer = System.Collections.Comparer;
-    using StringWriter = System.IO.StringWriter;
 
     #endregion
 

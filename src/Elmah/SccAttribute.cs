@@ -32,7 +32,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Diagnostics;
 
     #endregion
 

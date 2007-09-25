@@ -32,7 +32,6 @@ namespace Elmah
     #region Imports
     
     using System;
-    using System.Data.SqlClient;
     using IList = System.Collections.IList;
     using HttpRuntime = System.Web.HttpRuntime;
 
