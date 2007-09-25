@@ -110,7 +110,8 @@ namespace Elmah
             // Build the channel items.
             //
 
-            const int pageSize = 15;
+            const int pageSize = 30;
+            const int maxPageLimit = 30;
             ArrayList itemList = new ArrayList(pageSize);
             ArrayList errorEntryList = new ArrayList(pageSize);
 
@@ -178,7 +179,7 @@ namespace Elmah
                     runningErrorCount++;
                 }
             }
-            while (itemList.Count < pageSize && errorEntryList.Count > 0);
+            while (pageIndex < maxPageLimit && itemList.Count < pageSize && errorEntryList.Count > 0);
 
             if (runningErrorCount > 0)
             {
