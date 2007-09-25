@@ -41,7 +41,7 @@ namespace Elmah
     internal sealed class HttpModuleRegistry
     {
         private static Hashtable _moduleListByApp;
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
 
         public static bool RegisterInPartialTrust(HttpApplication application, IHttpModule module)
         {
