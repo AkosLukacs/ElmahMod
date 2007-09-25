@@ -25,6 +25,10 @@
 //
 #endregion
 
+#if !NET_1_0 && !NET_1_1
+#define ASYNC_ADONET
+#endif
+
 [assembly: Elmah.Scc("$Id$")]
 
 namespace Elmah
@@ -35,6 +39,7 @@ namespace Elmah
     using System.Configuration;
     using System.Data;
     using System.Data.SqlClient;
+    using System.Threading;
     using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
@@ -52,6 +57,10 @@ namespace Elmah
     public class SqlErrorLog : ErrorLog
     {
         private readonly string _connectionString;
+
+#if ASYNC_ADONET
+        private delegate RV Function<RV, A>(A a);
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
@@ -124,7 +133,7 @@ namespace Elmah
 
             StringWriter sw = new StringWriter();
 
-#if NET_2_0
+#if NET_2_0 // FIXME NET_2_0 -> !NET_1_0 && !NET_1_1
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
@@ -147,30 +156,17 @@ namespace Elmah
             }
 
             string errorXml = sw.ToString();
+            Guid id = Guid.NewGuid();
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = new SqlCommand("ELMAH_LogError", connection))
+            using (SqlCommand command = Commands.LogError(
+                id, this.ApplicationName, 
+                error.HostName, error.Type, error.Source, error.Message, error.User,
+                error.StatusCode, error.Time.ToUniversalTime(), errorXml))
             {
-                command.CommandType = CommandType.StoredProcedure;
-
-                Guid id = Guid.NewGuid();
-
-                SqlParameterCollection parameters = command.Parameters;
-                
-                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
-                parameters.Add("@Host", SqlDbType.NVarChar, 30).Value = error.HostName;
-                parameters.Add("@Type", SqlDbType.NVarChar, 100).Value = error.Type;
-                parameters.Add("@Source", SqlDbType.NVarChar, 60).Value = error.Source;
-                parameters.Add("@Message", SqlDbType.NVarChar, 500).Value = error.Message;
-                parameters.Add("@User", SqlDbType.NVarChar, 50).Value = error.User;
-                parameters.Add("@AllXml", SqlDbType.NText).Value = errorXml;
-                parameters.Add("@StatusCode", SqlDbType.Int).Value = error.StatusCode;
-                parameters.Add("@TimeUtc", SqlDbType.DateTime).Value = error.Time.ToUniversalTime();
-
+                command.Connection = connection;
                 connection.Open();
                 command.ExecuteNonQuery();
-                
                 return id.ToString();
             }
         }
@@ -189,42 +185,147 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageSite");
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = new SqlCommand("ELMAH_GetErrorsXml", connection))
+            using (SqlCommand command = Commands.GetErrorsXml(this.ApplicationName, pageIndex, pageSize))
             {
-                command.CommandType = CommandType.StoredProcedure;
-
-                SqlParameterCollection parameters = command.Parameters;
-
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
-                parameters.Add("@PageIndex", SqlDbType.Int).Value = pageIndex;
-                parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
-
-                SqlParameter total = parameters.Add("@TotalCount", SqlDbType.Int);
-                total.Direction = ParameterDirection.Output;
-
+                command.Connection = connection;
                 connection.Open();
 
                 XmlReader reader = command.ExecuteXmlReader();
-
+                
                 try
                 {
-                    while (reader.IsStartElement("error"))
-                    {
-                        string id = reader.GetAttribute("errorId");
-                        
-                        Error error = NewError();
-                        error.FromXml(reader);
-
-                        if (errorEntryList != null)
-                            errorEntryList.Add(new ErrorLogEntry(this, id, error));
-                    }
+                    ErrorsXmlToList(reader, errorEntryList);
                 }
                 finally
                 {
                     reader.Close();
                 }
+                
+                int total;
+                Commands.GetErrorsXmlOutputs(command, out total);
+                return total;
+            }
+        }
 
-                return (int) total.Value;
+#if ASYNC_ADONET
+
+        /// <summary>
+        /// Begins an asynchronous version of <see cref="GetErrors"/>.
+        /// </summary>
+
+        public override IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList errorEntryList,
+            AsyncCallback asyncCallback, object asyncState)
+        {
+            if (pageIndex < 0)
+                throw new ArgumentOutOfRangeException("pageIndex");
+
+            if (pageSize < 0)
+                throw new ArgumentOutOfRangeException("pageSite");
+
+            //
+            // Modify the connection string on the fly to support async 
+            // processing otherwise the asynchronous methods on the
+            // SqlCommand will throw an exception. This ensures the
+            // right behavior regardless of whether configured
+            // connection string sets the Async option to true or not.
+            //
+
+            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.ConnectionString);
+            csb.AsynchronousProcessing = true;
+            SqlConnection connection = new SqlConnection(csb.ConnectionString);
+
+            //
+            // Create the command object with input parameters initialized
+            // and setup to call the stored procedure.
+            //
+
+            SqlCommand command = Commands.GetErrorsXml(this.ApplicationName, pageIndex, pageSize);
+            command.Connection = connection;
+
+            //
+            // Create a closure to handle the ending of the async operation
+            // and retrieve results.
+            //
+
+            AsyncResultWrapper asyncResult = null;
+
+            Function<int, IAsyncResult> endHandler = delegate
+            {
+                Debug.Assert(asyncResult != null);
+
+                using (connection)
+                using (command)
+                {
+                    using (XmlReader reader = command.EndExecuteXmlReader(asyncResult.InnerResult))
+                        ErrorsXmlToList(reader, errorEntryList);
+
+                    int total;
+                    Commands.GetErrorsXmlOutputs(command, out total);
+                    return total;
+                }
+            };
+
+            //
+            // Open the connenction and execute the command asynchronously,
+            // returning an IAsyncResult that wrap the downstream one. This
+            // is needed to be able to send our own AsyncState object to
+            // the downstream IAsyncResult object. In order to preserve the
+            // one sent by caller, we need to maintain and return it from
+            // our wrapper.
+            //
+
+            try
+            {
+                connection.Open();
+
+                asyncResult = new AsyncResultWrapper(
+                    command.BeginExecuteXmlReader(
+                        asyncCallback != null ? /* thunk */ delegate { asyncCallback(asyncResult); } : (AsyncCallback) null, 
+                        endHandler), asyncState);
+
+                return asyncResult;
+            }
+            catch (Exception)
+            {
+                connection.Dispose();
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Ends an asynchronous version of <see cref="ErrorLog.GetErrors"/>.
+        /// </summary>
+
+        public override int EndGetErrors(IAsyncResult asyncResult)
+        {
+            if (asyncResult == null)
+                throw new ArgumentNullException("asyncResult");
+
+            AsyncResultWrapper wrapper = asyncResult as AsyncResultWrapper;
+
+            if (wrapper == null)
+                throw new ArgumentException("Unexepcted IAsyncResult type.", "asyncResult");
+
+            Function<int, IAsyncResult> endHandler = (Function<int, IAsyncResult>) wrapper.InnerResult.AsyncState;
+            return endHandler(wrapper.InnerResult);
+        }
+
+#endif
+
+        private void ErrorsXmlToList(XmlReader reader, IList errorEntryList)
+        {
+            Debug.Assert(reader != null);
+            Debug.Assert(errorEntryList != null);
+
+            while (reader.IsStartElement("error"))
+            {
+                string id = reader.GetAttribute("errorId");
+
+                Error error = NewError();
+                error.FromXml(reader);
+
+                if (errorEntryList != null)
+                    errorEntryList.Add(new ErrorLogEntry(this, id, error));
             }
         }
 
@@ -252,30 +353,26 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("id", id, e.Message);
             }
 
+            string errorXml;
+
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = new SqlCommand("ELMAH_GetErrorXml", connection))
+            using (SqlCommand command = Commands.GetErrorXml(this.ApplicationName, errorGuid))
             {
-                command.CommandType = CommandType.StoredProcedure;
-
-                SqlParameterCollection parameters = command.Parameters;
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = this.ApplicationName;
-                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = errorGuid;
-                
+                command.Connection = connection;
                 connection.Open();
-
-                string errorXml = (string) command.ExecuteScalar();
-
-                StringReader sr = new StringReader(errorXml);
-                XmlTextReader reader = new XmlTextReader(sr);
-
-                if (!reader.IsStartElement("error"))
-                    throw new ApplicationException("The error XML is not in the expected format.");
-
-                Error error = NewError();
-                error.FromXml(reader);
-
-                return new ErrorLogEntry(this, id, error);
+                errorXml = (string) command.ExecuteScalar();
             }
+
+            StringReader sr = new StringReader(errorXml);
+            XmlTextReader reader = new XmlTextReader(sr);
+
+            if (!reader.IsStartElement("error"))
+                throw new ApplicationException("The error XML is not in the expected format.");
+
+            Error error = NewError();
+            error.FromXml(reader);
+
+            return new ErrorLogEntry(this, id, error);
         }
 
         /// <summary>
@@ -338,6 +435,113 @@ namespace Elmah
                 return string.Empty;
 
             return Configuration.AppSettings[connectionStringAppKey];
+        }
+
+        private sealed class Commands
+        {
+            private Commands() {}
+
+            public static SqlCommand LogError(
+                Guid id,
+                string appName,
+                string hostName,
+                string typeName,
+                string source,
+                string message,
+                string user,
+                int statusCode,
+                DateTime time,
+                string xml)
+            {
+                SqlCommand command = new SqlCommand("ELMAH_LogError");
+                command.CommandType = CommandType.StoredProcedure;
+
+                SqlParameterCollection parameters = command.Parameters;
+
+                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@Host", SqlDbType.NVarChar, 30).Value = hostName;
+                parameters.Add("@Type", SqlDbType.NVarChar, 100).Value = typeName;
+                parameters.Add("@Source", SqlDbType.NVarChar, 60).Value = source;
+                parameters.Add("@Message", SqlDbType.NVarChar, 500).Value = message;
+                parameters.Add("@User", SqlDbType.NVarChar, 50).Value = user;
+                parameters.Add("@AllXml", SqlDbType.NText).Value = xml;
+                parameters.Add("@StatusCode", SqlDbType.Int).Value = statusCode;
+                parameters.Add("@TimeUtc", SqlDbType.DateTime).Value = time.ToUniversalTime();
+
+                return command;
+            }
+
+            public static SqlCommand GetErrorXml(string appName, Guid id)
+            {
+                SqlCommand command = new SqlCommand("ELMAH_GetErrorXml");
+                command.CommandType = CommandType.StoredProcedure;
+
+                SqlParameterCollection parameters = command.Parameters;
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
+
+                return command;
+            }
+
+            public static SqlCommand GetErrorsXml(string appName, int pageIndex, int pageSize)
+            {
+                SqlCommand command = new SqlCommand("ELMAH_GetErrorsXml");
+                command.CommandType = CommandType.StoredProcedure;
+
+                SqlParameterCollection parameters = command.Parameters;
+
+                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@PageIndex", SqlDbType.Int).Value = pageIndex;
+                parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
+                parameters.Add("@TotalCount", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+                return command;
+            }
+
+            public static void GetErrorsXmlOutputs(SqlCommand command, out int totalCount)
+            {
+                Debug.Assert(command != null);
+
+                totalCount = (int) command.Parameters["@TotalCount"].Value;
+            }
+        }
+
+        private sealed class AsyncResultWrapper : IAsyncResult
+        {
+            private readonly IAsyncResult _inner;
+            private readonly object _asyncState;
+
+            public AsyncResultWrapper(IAsyncResult inner, object asyncState)
+            {
+                _inner = inner;
+                _asyncState = asyncState;
+            }
+
+            public IAsyncResult InnerResult
+            {
+                get { return _inner; }
+            }
+
+            public bool IsCompleted
+            {
+                get { return _inner.IsCompleted; }
+            }
+
+            public WaitHandle AsyncWaitHandle
+            {
+                get { return _inner.AsyncWaitHandle; }
+            }
+
+            public object AsyncState
+            {
+                get { return _asyncState; }
+            }
+
+            public bool CompletedSynchronously
+            {
+                get { return _inner.CompletedSynchronously; }
+            }
         }
     }
 }

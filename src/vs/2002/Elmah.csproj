@@ -367,6 +367,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SynchronousAsyncResult.cs"
+                    Link = "..\..\Elmah\SynchronousAsyncResult.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "TestException.cs"
                     Link = "..\..\Elmah\TestException.cs"
                     SubType = "Code"

@@ -311,6 +311,9 @@
       <Link>SqlErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\SynchronousAsyncResult.cs">
+      <Link>SynchronousAsyncResult.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\SQLiteErrorLog.cs">
       <Link>SQLiteErrorLog.cs</Link>
     </Compile>
