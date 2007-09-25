@@ -114,7 +114,27 @@ namespace Elmah
         {
             Debug.Assert(result != null);
 
-            // FIXME: Wrap this whole body in try/catch to trap exceptions for async reporting.
+            try
+            {
+                TryGetErrorsCallback(result);
+            }
+            catch (Exception e)
+            {
+                //
+                // If anything goes wrong during the processing of the 
+                // callback then the exception needs to be captured
+                // and the raising delayed until EndProcessRequest.
+                // Meanwhile, the BeginProcessRequest called is notified
+                // immediately of completion.
+                //
+
+                _result.Complete(_callback, e);
+            }
+        }
+
+        private void TryGetErrorsCallback(IAsyncResult result) 
+        {
+            Debug.Assert(result != null);
 
             _log.EndGetErrors(result);
 
@@ -149,16 +169,16 @@ namespace Elmah
                 Uri url = new Uri(_context.Request.Url, "detail?id=" + entry.Id);
 
                 csv.Field(error.ApplicationName)
-                   .Field(error.HostName)
-                   .Field(time.ToString("yyyy-MM-dd hh:mm:ss", culture))
-                   .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
-                   .Field(error.Type)
-                   .Field(error.Source)
-                   .Field(error.User)
-                   .Field(error.StatusCode.ToString(culture))
-                   .Field(error.Message)
-                   .Field(url.ToString())
-                   .Record();
+                    .Field(error.HostName)
+                    .Field(time.ToString("yyyy-MM-dd hh:mm:ss", culture))
+                    .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
+                    .Field(error.Type)
+                    .Field(error.Source)
+                    .Field(error.User)
+                    .Field(error.StatusCode.ToString(culture))
+                    .Field(error.Message)
+                    .Field(url.ToString())
+                    .Record();
             }
 
             response.Output.Write(writer.ToString());
