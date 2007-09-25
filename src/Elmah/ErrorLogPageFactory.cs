@@ -86,6 +86,10 @@ namespace Elmah
 
                     return new ErrorDigestRssHandler();
 
+                case "download":
+
+                    return new ErrorLogDownloadHandler();
+
                 case "stylesheet":
 
                     return new ManifestResourceHandler("ErrorLog.css", 

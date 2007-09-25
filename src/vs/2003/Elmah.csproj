@@ -200,6 +200,12 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
+                    RelPath = "ErrorLogDownloadHandler.cs"
+                    Link = "..\..\Elmah\ErrorLogDownloadHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorLogEntry.cs"
                     Link = "..\..\Elmah\ErrorLogEntry.cs"
                     SubType = "Code"
