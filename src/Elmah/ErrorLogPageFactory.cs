@@ -31,7 +31,6 @@ namespace Elmah
 {
     #region Imports
 
-    using System;
     using System.Web;
 
     using CultureInfo = System.Globalization.CultureInfo;
@@ -66,53 +65,40 @@ namespace Elmah
 
             switch (resource.ToLower(CultureInfo.InvariantCulture))
             {
-                case "detail" :
-                    
+                case "detail":
                     return new ErrorDetailPage();
 
                 case "html":
-                    
                     return new ErrorHtmlPage();
 
                 case "xml":
-
                     return new ErrorXmlHandler();
 
                 case "rss":
-                    
                     return new ErrorRssHandler();
 
                 case "digestrss":
-
                     return new ErrorDigestRssHandler();
 
                 case "download":
-
                     return new ErrorLogDownloadHandler();
 
                 case "stylesheet":
-
-                    return new ManifestResourceHandler("ErrorLog.css", 
+                    return new ManifestResourceHandler("ErrorLog.css",
                         "text/css", Encoding.GetEncoding("Windows-1252"));
 
-                case "test" :
-                    
+                case "test":
                     throw new TestException();
 
-                case "about" :
-                    
+                case "about":
                     return new AboutPage();
 
-                default :
+                default:
                 {
                     if (resource.Length == 0)
-                    {
                         return new ErrorLogPage();
-                    }
                     else
-                    {
                         throw new HttpException(404, "Resource not found.");
-                    }
                 }
             }
         }
@@ -120,7 +106,7 @@ namespace Elmah
         /// <summary>
         /// Enables the factory to reuse an existing handler instance.
         /// </summary>
-        
+
         public virtual void ReleaseHandler(IHttpHandler handler)
         {
         }
