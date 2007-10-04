@@ -36,8 +36,13 @@ namespace Elmah
 
     #endregion
 
-    internal class AboutPage : ErrorPageBase
+    internal sealed class AboutPage : ErrorPageBase
     {
+        public AboutPage()
+        {
+            PageTitle = "About ELMAH";
+        }
+
         protected override void RenderContents(HtmlTextWriter writer)
         {
             if (writer == null)
@@ -45,7 +50,7 @@ namespace Elmah
             
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
             writer.RenderBeginTag(HtmlTextWriterTag.H1);
-            writer.Write("About ELMAH");
+            writer.Write(PageTitle);
             writer.RenderEndTag(); // </h1>
             writer.WriteLine();
 
