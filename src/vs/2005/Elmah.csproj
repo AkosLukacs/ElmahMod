@@ -263,6 +263,9 @@
       <Link>HttpModuleRegistry.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\HttpRequestSecurity.cs">
+      <Link>HttpRequestSecurity.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\HttpValuesCollection.cs">
       <Link>HttpValuesCollection.cs</Link>
       <SubType>Code</SubType>
@@ -306,6 +309,12 @@
       <Link>SccStamp.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\SecurityConfiguration.cs">
+      <Link>SecurityConfiguration.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Elmah\SecuritySectionHandler.cs">
+      <Link>SecuritySectionHandler.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\SimpleServiceProviderFactory.cs">
       <Link>SimpleServiceProviderFactory.cs</Link>
       <SubType>Code</SubType>
@@ -313,6 +322,9 @@
     <Compile Include="..\..\Elmah\SqlErrorLog.cs">
       <Link>SqlErrorLog.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\StringTranslation.cs">
+      <Link>StringTranslation.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\SynchronousAsyncResult.cs">
       <Link>SynchronousAsyncResult.cs</Link>
@@ -331,6 +343,9 @@
     <Content Include="..\..\Elmah\Database.sql">
       <Link>Database.sql</Link>
     </Content>
+    <EmbeddedResource Include="..\..\Elmah\RemoteAccessError.htm">
+      <Link>RemoteAccessError.htm</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\..\Elmah\ErrorLog.css">
       <Link>ErrorLog.css</Link>
     </EmbeddedResource>

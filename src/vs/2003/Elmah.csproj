@@ -302,6 +302,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HttpRequestSecurity.cs"
+                    Link = "..\..\Elmah\HttpRequestSecurity.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "HttpValuesCollection.cs"
                     Link = "..\..\Elmah\HttpValuesCollection.cs"
                     SubType = "Code"
@@ -344,6 +350,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "RemoteAccessError.htm"
+                    Link = "..\..\Elmah\RemoteAccessError.htm"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "ReverseComparer.cs"
                     Link = "..\..\Elmah\ReverseComparer.cs"
                     SubType = "Code"
@@ -368,6 +379,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SecurityConfiguration.cs"
+                    Link = "..\..\Elmah\SecurityConfiguration.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SecuritySectionHandler.cs"
+                    Link = "..\..\Elmah\SecuritySectionHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SimpleServiceProviderFactory.cs"
                     Link = "..\..\Elmah\SimpleServiceProviderFactory.cs"
                     SubType = "Code"
@@ -376,6 +399,12 @@
                 <File
                     RelPath = "SqlErrorLog.cs"
                     Link = "..\..\Elmah\SqlErrorLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StringTranslation.cs"
+                    Link = "..\..\Elmah\StringTranslation.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

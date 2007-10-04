@@ -61,9 +61,44 @@ namespace Elmah
             //
 
             string resource = context.Request.PathInfo.Length == 0 ? string.Empty :
-                context.Request.PathInfo.Substring(1);
+                context.Request.PathInfo.Substring(1).ToLower(CultureInfo.InvariantCulture);
 
-            switch (resource.ToLower(CultureInfo.InvariantCulture))
+            IHttpHandler handler = FindHandler(resource);
+
+            if (handler == null)
+                throw new HttpException(404, "Resource not found.");
+
+            //
+            // Check if this is a remote request and if so whether to grant
+            // remote access based on security settings.
+            //
+
+            if (!HttpRequestSecurity.IsLocal(context.Request) &&
+                !SecurityConfiguration.Default.AllowRemoteAccess)
+            {
+                (new ManifestResourceHandler("RemoteAccessError.htm", "text/html")).ProcessRequest(context);
+                HttpResponse response = context.Response;
+                response.Status = "403 Forbidden";
+                response.End();
+
+                //
+                // HttpResponse.End docs say that is throws 
+                // ThreadAbortException and so should never end up here but
+                // that's not been the observation in the debugger. So as a
+                // precautionary measure, bail out anyway.
+                //
+
+                return null;
+            }
+
+            return handler;
+        }
+
+        private static IHttpHandler FindHandler(string name) 
+        {
+            Debug.Assert(name != null);
+
+            switch (name)
             {
                 case "detail":
                     return new ErrorDetailPage();
@@ -94,12 +129,7 @@ namespace Elmah
                     return new AboutPage();
 
                 default:
-                {
-                    if (resource.Length == 0)
-                        return new ErrorLogPage();
-                    else
-                        throw new HttpException(404, "Resource not found.");
-                }
+                    return name.Length == 0 ? new ErrorLogPage() : null;
             }
         }
 

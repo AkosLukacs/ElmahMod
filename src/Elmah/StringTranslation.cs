@@ -25,27 +25,24 @@
 //
 #endregion
 
-#region Imports
-
-using System.Reflection;
-
-using CLSCompliantAttribute = System.CLSCompliantAttribute;
-using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
-
-#endregion
-
-[assembly: AssemblyTitle("ELMAH")]
-[assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
-[assembly: AssemblyCulture("")]
-
-[assembly: AssemblyVersion("1.0.8925.0")]
-[assembly: AssemblyFileVersion("1.0.9303.2122")]
-[assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
-
-[assembly: CLSCompliant(true)] 
-[assembly: ComVisible(false)]
-
 [assembly: Elmah.Scc("$Id$")]
+
+namespace Elmah
+{
+    using System;
+
+    /// <summary>
+    /// Provides translation from multiple representations of a string to a
+    /// single base representation.
+    /// </summary>
+
+    internal sealed class StringTranslation
+    {
+        public static string Translate(string translation, string input, string[] faces)
+        {
+            return Array.IndexOf(faces, input) >= 0 ? translation : input;
+        }
+
+        private StringTranslation() {}
+    }
+}
