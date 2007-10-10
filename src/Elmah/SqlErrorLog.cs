@@ -133,7 +133,7 @@ namespace Elmah
 
             StringWriter sw = new StringWriter();
 
-#if NET_2_0 // FIXME NET_2_0 -> !NET_1_0 && !NET_1_1
+#if !NET_1_0 && !NET_1_1
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
