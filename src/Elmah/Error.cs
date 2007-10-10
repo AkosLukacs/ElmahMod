@@ -51,7 +51,7 @@ namespace Elmah
     [ Serializable ]
     public class Error : IXmlExportable, ICloneable
     {
-        private Exception _exception;
+        private readonly Exception _exception;
         private string _applicationName;
         private string _hostName;
         private string _typeName;
