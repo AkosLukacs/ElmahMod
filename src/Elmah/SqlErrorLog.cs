@@ -315,7 +315,6 @@ namespace Elmah
         private void ErrorsXmlToList(XmlReader reader, IList errorEntryList)
         {
             Debug.Assert(reader != null);
-            Debug.Assert(errorEntryList != null);
 
             while (reader.IsStartElement("error"))
             {
