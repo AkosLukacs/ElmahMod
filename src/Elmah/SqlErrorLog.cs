@@ -220,7 +220,7 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageIndex");
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSite");
+                throw new ArgumentOutOfRangeException("pageSize");
 
             //
             // Modify the connection string on the fly to support async 
