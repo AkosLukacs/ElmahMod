@@ -39,6 +39,10 @@ namespace Elmah
 
     #endregion
 
+    /// <summary>
+    /// Represents a source code control (SCC) stamp and its components.
+    /// </summary>
+
     [ Serializable ]
     public sealed class SccStamp
     {
@@ -55,6 +59,12 @@ namespace Elmah
                 @"^\$id:\s*(?<f>[^\s]+)\s+(?<r>[0-9]+)\s+((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2}))\s+((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z)\s+(?<a>\w+)",
                 RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
         }
+
+        /// <summary>
+        /// Initializes an <see cref="SccStamp"/> instance given a SCC stamp 
+        /// ID. The ID is expected to be in the format popularized by CVS 
+        /// and SVN.
+        /// </summary>
 
         public SccStamp(string id)
         {
@@ -87,25 +97,45 @@ namespace Elmah
             _lastChanged = new DateTime(year, month, day, hour, minute, second);
         }
 
+        /// <summary>
+        /// Gets the original SCC stamp ID.
+        /// </summary>
+
         public string Id
         {
             get { return _id; }
         }
+
+        /// <summary>
+        /// Gets the author component of the SCC stamp ID.
+        /// </summary>
 
         public string Author
         {
             get { return _author; }
         }
 
+        /// <summary>
+        /// Gets the file name component of the SCC stamp ID.
+        /// </summary>
+
         public string FileName
         {
             get { return _fileName; }
         }
 
+        /// <summary>
+        /// Gets the revision number component of the SCC stamp ID.
+        /// </summary>
+
         public int Revision
         {
             get { return _revision; }
         }
+
+        /// <summary>
+        /// Gets the last modification time component of the SCC stamp ID.
+        /// </summary>
 
         public DateTime LastChanged
         {
@@ -116,6 +146,12 @@ namespace Elmah
         {
             return Id;
         }
+
+        /// <summary>
+        /// Finds and builds an array of <see cref="SccStamp"/> instances 
+        /// from all the <see cref="SccAttribute"/> attributes applied to
+        /// the given assembly.
+        /// </summary>
 
         public static SccStamp[] FindAll(Assembly assembly)
         {
@@ -140,10 +176,21 @@ namespace Elmah
             return (SccStamp[]) list.ToArray(typeof(SccStamp));
         }
 
+        /// <summary>
+        /// Finds the latest SCC stamp for an assembly. The latest stamp is 
+        /// the one with the highest revision number.
+        /// </summary>
+
         public static SccStamp FindLatest(Assembly assembly)
         {
             return FindLatest(FindAll(assembly));
         }
+
+        /// <summary>
+        /// Finds the latest stamp among an array of <see cref="SccStamp"/> 
+        /// objects. The latest stamp is the one with the highest revision 
+        /// number.
+        /// </summary>
 
         public static SccStamp FindLatest(SccStamp[] stamps)
         {
@@ -158,10 +205,20 @@ namespace Elmah
             return stamps[0];
         }
 
+        /// <summary>
+        /// Sorts an array of <see cref="SccStamp"/> objects by their 
+        /// revision numbers in ascending order.
+        /// </summary>
+
         public static void SortByRevision(SccStamp[] stamps)
         {
             SortByRevision(stamps, false);
         }
+
+        /// <summary>
+        /// Sorts an array of <see cref="SccStamp"/> objects by their 
+        /// revision numbers in ascending or descending order.
+        /// </summary>
 
         public static void SortByRevision(SccStamp[] stamps, bool descending)
         {
@@ -192,7 +249,7 @@ namespace Elmah
                 return Compare((SccStamp) x, (SccStamp) y);
             }
 
-            private int Compare(SccStamp lhs, SccStamp rhs)
+            private static int Compare(SccStamp lhs, SccStamp rhs)
             {
                 Debug.Assert(lhs != null);
                 Debug.Assert(rhs != null);
