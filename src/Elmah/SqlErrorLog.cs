@@ -182,7 +182,7 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageIndex");
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSite");
+                throw new ArgumentOutOfRangeException("pageSize");
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))
             using (SqlCommand command = Commands.GetErrorsXml(this.ApplicationName, pageIndex, pageSize))
