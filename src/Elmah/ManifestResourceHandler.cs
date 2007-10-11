@@ -46,9 +46,9 @@ namespace Elmah
 
     internal sealed class ManifestResourceHandler : IHttpHandler
     {
-        private string _resourceName;
-        private string _contentType;
-        private Encoding _responseEncoding;
+        private readonly string _resourceName;
+        private readonly string _contentType;
+        private readonly Encoding _responseEncoding;
 
         public ManifestResourceHandler(string resourceName, string contentType) :
             this(resourceName, contentType, null) {}
