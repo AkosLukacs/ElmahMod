@@ -66,17 +66,18 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            _connectionString = GetConnectionString(config);
+            string connectionString = GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
             // exception to abort construction.
             //
 
-            if (_connectionString.Length == 0)
+            if (connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
-            InitializeDatabase(ConnectionString);
+            _connectionString = connectionString;
+            InitializeDatabase();
         }
 
         /// <summary>
@@ -94,11 +95,12 @@ namespace Elmah
 
             _connectionString = connectionString;
 
-            InitializeDatabase(connectionString);
+            InitializeDatabase();
         }
 
-        private static void InitializeDatabase(string connectionString)
+        private void InitializeDatabase()
         {
+            string connectionString = ConnectionString;
             Debug.AssertStringNotEmpty(connectionString);
 
             SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
