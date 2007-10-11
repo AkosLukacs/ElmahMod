@@ -72,8 +72,10 @@ namespace Elmah
             foreach (SccStamp stamp in stamps)
             {
                 writer.RenderBeginTag(HtmlTextWriterTag.Li);
+                writer.RenderBeginTag(HtmlTextWriterTag.Code);
                 Server.HtmlEncode(stamp.Id, writer);
-                writer.RenderEndTag();
+                writer.RenderEndTag(); // </code>
+                writer.RenderEndTag(); // </li>
             }
 
             writer.RenderEndTag(); // </ul>
