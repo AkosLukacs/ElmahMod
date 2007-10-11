@@ -68,7 +68,10 @@ namespace Elmah
             //
 
             if (_errorEntry == null)
+            {
+                Response.Status = "404 Not Found";
                 return;
+            }
 
             //
             // Setup the title of the page.
@@ -85,16 +88,12 @@ namespace Elmah
                 throw new ArgumentNullException("writer");
 
             if (_errorEntry != null)
-            {
                 RenderError(writer);
-            }
             else
-            {
                 RenderNoError(writer);
-            }
         }
 
-        private void RenderNoError(HtmlTextWriter writer)
+        private static void RenderNoError(HtmlTextWriter writer)
         {
             Debug.Assert(writer != null);
 

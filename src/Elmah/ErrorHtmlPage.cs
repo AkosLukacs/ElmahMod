@@ -61,17 +61,21 @@ namespace Elmah
             ErrorLogEntry errorEntry = this.ErrorLog.GetError(errorId);
 
             if (errorEntry == null)
+            {
+                // TODO: Send error response entity
+                Response.Status = "404 Not Found";
                 return;
+            }
 
             //
             // If we have a host (ASP.NET) formatted HTML message 
             // for the error then just stream it out as our response.
             //
 
-            if (errorEntry.Error.WebHostHtmlMessage.Length != 0)
-            {
-                writer.Write(errorEntry.Error.WebHostHtmlMessage);
-            }
+            if (errorEntry.Error.WebHostHtmlMessage.Length == 0)
+                return;
+
+            writer.Write(errorEntry.Error.WebHostHtmlMessage);
         }
     }
 }
