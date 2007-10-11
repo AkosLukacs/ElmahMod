@@ -362,6 +362,9 @@ namespace Elmah
                 errorXml = (string) command.ExecuteScalar();
             }
 
+            if (errorXml == null)
+                return null;
+
             StringReader sr = new StringReader(errorXml);
             XmlTextReader reader = new XmlTextReader(sr);
 
