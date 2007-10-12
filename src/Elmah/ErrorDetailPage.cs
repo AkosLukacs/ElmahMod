@@ -69,7 +69,7 @@ namespace Elmah
 
             if (_errorEntry == null)
             {
-                Response.Status = "404 Not Found";
+                Response.Status = HttpStatus.NotFound.ToString();
                 return;
             }
 

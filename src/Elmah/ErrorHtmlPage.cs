@@ -63,7 +63,7 @@ namespace Elmah
             if (errorEntry == null)
             {
                 // TODO: Send error response entity
-                Response.Status = "404 Not Found";
+                Response.Status = HttpStatus.NotFound.ToString();
                 return;
             }
 
