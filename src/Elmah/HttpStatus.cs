@@ -57,6 +57,8 @@ namespace Elmah
 
         public HttpStatus(int code, string reason)
         {
+            Debug.Assert(code >= 100);
+            Debug.Assert(code < 1000);
             Debug.AssertStringNotEmpty(reason);
             
             _code = code;
