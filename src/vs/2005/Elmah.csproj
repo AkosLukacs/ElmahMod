@@ -266,6 +266,9 @@
     <Compile Include="..\..\Elmah\HttpRequestSecurity.cs">
       <Link>HttpRequestSecurity.cs</Link>
     </Compile>
+    <Compile Include="..\..\Elmah\HttpStatus.cs">
+      <Link>HttpStatus.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\HttpValuesCollection.cs">
       <Link>HttpValuesCollection.cs</Link>
       <SubType>Code</SubType>

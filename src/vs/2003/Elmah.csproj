@@ -308,6 +308,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "HttpStatus.cs"
+                    Link = "..\..\Elmah\HttpStatus.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "HttpValuesCollection.cs"
                     Link = "..\..\Elmah\HttpValuesCollection.cs"
                     SubType = "Code"
