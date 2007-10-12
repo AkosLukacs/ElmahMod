@@ -66,7 +66,7 @@ namespace Elmah
         // for the entires collection to be intialized correctly.
         //
 
-        private int _size;
+        private readonly int _size;
 
         /// <summary>
         /// The maximum number of errors that will ever be allowed to be stored
