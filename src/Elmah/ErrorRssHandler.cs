@@ -57,7 +57,8 @@ namespace Elmah
 
             const int pageSize = 15;
             ArrayList errorEntryList = new ArrayList(pageSize);
-            ErrorLog.Default.GetErrors(0, pageSize, errorEntryList);
+            ErrorLog log = ErrorLog.GetDefault(context);
+            log.GetErrors(0, pageSize, errorEntryList);
 
             //
             // We'll be emitting RSS vesion 0.91.
@@ -71,7 +72,7 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Error log of " + ErrorLog.Default.ApplicationName + " on " + Environment.MachineName;
+            channel.title = "Error log of " + log.ApplicationName + " on " + Environment.MachineName;
             channel.description = "Log of recent errors";
             channel.language = "en";
             channel.link = context.Request.Url.GetLeftPart(UriPartial.Authority) + 

@@ -32,8 +32,8 @@ namespace Elmah
     #region Imports
     
     using System;
+    using System.Web;
     using IList = System.Collections.IList;
-    using HttpRuntime = System.Web.HttpRuntime;
 
     #endregion
 
@@ -44,11 +44,10 @@ namespace Elmah
 
     public abstract class ErrorLog
     {
-        [ ThreadStatic ] private static ErrorLog _defaultLog;
-        
-#if !NET_1_1 && !NET_1_0
         private string _appName;
-#endif
+        private bool _appNameInitialized;
+
+        private static readonly object _contextKey = new object();
 
         /// <summary>
         /// Logs an error in log for the application.
@@ -149,22 +148,17 @@ namespace Elmah
         /// Gets the name of the application to which the log is scoped.
         /// </summary>
         
-        public virtual string ApplicationName
+        public string ApplicationName
         {
-            get
+            get { return Mask.NullString(_appName); }
+            
+            set
             {
-#if NET_1_1 || NET_1_0
-                return HttpRuntime.AppDomainAppId;
-#else
-                if (_appName == null)
-                {
-                    string path = HttpRuntime.AppDomainAppVirtualPath ?? string.Empty;
-                    string[] parts = path.Split('/');
-                    _appName = Mask.EmptyString(parts[parts.Length - 1], "/"); 
-                }
+                if (_appNameInitialized)
+                    throw new InvalidOperationException("The application name cannot be reset once initialized.");
 
-                return _appName;
-#endif
+                _appName = value;
+                _appNameInitialized = Mask.NullString(value).Length > 0;
             }
         }
 
@@ -173,31 +167,110 @@ namespace Elmah
         /// configuration file, or the in-memory log implemention if
         /// none is configured.
         /// </summary>
-        
+
+        [ Obsolete("Use ErrorLog.GetDefault(context) instead.") ]
         public static ErrorLog Default
         {
-            get 
-            { 
-                if (_defaultLog == null)
-                {
-                    //
-                    // Determine the default store type from the configuration and 
-                    // create an instance of it.
-                    //
+            get { return GetDefault(HttpContext.Current); }
+        }
 
-                    ErrorLog log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection(Configuration.GroupSlash + "errorLog");
+        /// <summary>
+        /// Gets the default error log implementation specified in the 
+        /// configuration file, or the in-memory log implemention if
+        /// none is configured.
+        /// </summary>
 
-                    //
-                    // If no object got created (probably because the right 
-                    // configuration settings are missing) then default to 
-                    // the in-memory log implementation.
-                    //
+        public static ErrorLog GetDefault(HttpContext context)
+        {
+            ErrorLog log;
 
-                    _defaultLog = log != null ? log : new MemoryErrorLog();
-                }
+            if (context != null)
+            {
+                log = (ErrorLog) context.Items[_contextKey];
 
-                return _defaultLog;
+                if (log != null)
+                    return log;
             }
+
+            //
+            // Determine the default store type from the configuration and 
+            // create an instance of it.
+            //
+
+            log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection(Configuration.GroupSlash + "errorLog");
+
+            //
+            // If no object got created (probably because the right 
+            // configuration settings are missing) then default to 
+            // the in-memory log implementation.
+            //
+
+            if (log == null)
+                log = new MemoryErrorLog();
+
+            if (context != null)
+            {
+                //
+                // Infer the application name from the context if it has not
+                // been initialized so far.
+                //
+
+                if (log.ApplicationName.Length == 0)
+                    log.ApplicationName = InferApplicationName(context);
+
+                //
+                // Save into the context if context is there so retrieval is
+                // quick next time.
+                //
+
+                context.Items[_contextKey] = log;
+            }
+
+            return log;
+        }
+
+        private static string InferApplicationName(HttpContext context)
+        {
+            Debug.Assert(context != null);
+
+#if NET_1_1 || NET_1_0
+            return HttpRuntime.AppDomainAppId;
+#else
+            //
+            // Setup the application name (ASP.NET 2.0 or later).
+            //
+
+            string appName = null;
+
+            if (context.Request != null)
+            {
+                //
+                // ASP.NET 2.0 returns a different and more cryptic value
+                // for HttpRuntime.AppDomainAppId comared to previous 
+                // versions. Also HttpRuntime.AppDomainAppId is not available
+                // in partial trust environments. However, the APPL_MD_PATH
+                // server variable yields the same value as 
+                // HttpRuntime.AppDomainAppId did previously so we try to
+                // get to it over here for compatibility reasons (otherwise
+                // folks upgrading to this version of ELMAH could find their
+                // error log empty due to change in application name.
+                //
+
+                appName = context.Request.ServerVariables["APPL_MD_PATH"];
+            }
+
+            if (string.IsNullOrEmpty(appName))
+            {
+                //
+                // Still no luck? Try HttpRuntime.AppDomainAppVirtualPath,
+                // which is available even under partial trust.
+                //
+
+                appName = HttpRuntime.AppDomainAppVirtualPath;
+            }
+
+            return Mask.EmptyString(appName, "/");
+#endif
         }
 
         //

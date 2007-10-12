@@ -58,6 +58,8 @@ namespace Elmah
     {
         private readonly string _connectionString;
 
+        private const int _maxAppNameLength = 60;
+
 #if ASYNC_ADONET
         private delegate RV Function<RV, A>(A a);
 #endif
@@ -72,15 +74,33 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            _connectionString = GetConnectionString(config);
+            string connectionString = GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
             // exception to abort construction.
             //
 
-            if (_connectionString.Length == 0)
+            if (connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQL error log.");
+
+            _connectionString = connectionString;
+
+            //
+            // Set the application name as this implementation provides
+            // per-application isolation over a single store.
+            //
+
+            string appName = Mask.NullString((string) config["applicationName"]);
+
+            if (appName.Length > _maxAppNameLength)
+            {
+                throw new ApplicationException(string.Format(
+                    "Application name is too long. Maximum length allowed is {0} characters.",
+                    _maxAppNameLength.ToString("N0")));
+            }
+
+            ApplicationName = appName;
         }
 
         /// <summary>
@@ -461,7 +481,7 @@ namespace Elmah
                 SqlParameterCollection parameters = command.Parameters;
 
                 parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@Application", SqlDbType.NVarChar, _maxAppNameLength).Value = appName;
                 parameters.Add("@Host", SqlDbType.NVarChar, 30).Value = hostName;
                 parameters.Add("@Type", SqlDbType.NVarChar, 100).Value = typeName;
                 parameters.Add("@Source", SqlDbType.NVarChar, 60).Value = source;
@@ -480,7 +500,7 @@ namespace Elmah
                 command.CommandType = CommandType.StoredProcedure;
 
                 SqlParameterCollection parameters = command.Parameters;
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@Application", SqlDbType.NVarChar, _maxAppNameLength).Value = appName;
                 parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
 
                 return command;
@@ -493,7 +513,7 @@ namespace Elmah
 
                 SqlParameterCollection parameters = command.Parameters;
 
-                parameters.Add("@Application", SqlDbType.NVarChar, 60).Value = appName;
+                parameters.Add("@Application", SqlDbType.NVarChar, _maxAppNameLength).Value = appName;
                 parameters.Add("@PageIndex", SqlDbType.Int).Value = pageIndex;
                 parameters.Add("@PageSize", SqlDbType.Int).Value = pageSize;
                 parameters.Add("@TotalCount", SqlDbType.Int).Direction = ParameterDirection.Output;

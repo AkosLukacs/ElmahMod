@@ -64,9 +64,9 @@ namespace Elmah
         /// will log exceptions.
         /// </summary>
         
-        protected virtual ErrorLog ErrorLog
+        protected virtual ErrorLog GetErrorLog(HttpContext context)
         {
-            get { return ErrorLog.Default; }
+            return ErrorLog.GetDefault(context);
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Elmah
 
             try
             {
-                this.ErrorLog.Log(new Error(e, context));
+                GetErrorLog(context).Log(new Error(e, context));
             }
             catch (Exception localException)
             {

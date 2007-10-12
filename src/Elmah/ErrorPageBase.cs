@@ -46,6 +46,7 @@ namespace Elmah
     internal abstract class ErrorPageBase : Page
     {
         private string _title;
+        private ErrorLog _log;
 
         protected string BasePageName
         {
@@ -54,7 +55,13 @@ namespace Elmah
 
         protected virtual ErrorLog ErrorLog
         {
-            get { return ErrorLog.Default; }
+            get
+            {
+                if (_log == null)
+                    _log = ErrorLog.GetDefault(Context);
+
+                return _log;
+            }
         }
 
         protected virtual string PageTitle

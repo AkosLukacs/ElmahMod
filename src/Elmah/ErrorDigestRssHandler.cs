@@ -83,7 +83,7 @@ namespace Elmah
         {
             Response.ContentType = "application/xml";
 
-            ErrorLog log = ErrorLog.Default;
+            ErrorLog log = ErrorLog.GetDefault(_context);
 
             //
             // We'll be emitting RSS vesion 0.91.

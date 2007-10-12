@@ -80,7 +80,7 @@ namespace Elmah
             response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
 
             _result = new AsyncResult(extraData);
-            _log = ErrorLog.Default;
+            _log = ErrorLog.GetDefault(context);
             _pageIndex = 0;
             _lastBeatTime = DateTime.Now;
             _context = context;

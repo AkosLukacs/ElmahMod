@@ -78,6 +78,13 @@ namespace Elmah
 
             _connectionString = connectionString;
             InitializeDatabase();
+
+            //
+            // Set the application name as this implementation provides
+            // per-application isolation over a single store.
+            //
+
+            ApplicationName = Mask.NullString((string) config["applicationName"]);
         }
 
         /// <summary>
