@@ -278,7 +278,7 @@ namespace Elmah
 
         private class EntryCollection : NameObjectCollectionBase
         {
-            private int _size;
+            private readonly int _size;
 
             public EntryCollection(int size) : base(size)
             {
