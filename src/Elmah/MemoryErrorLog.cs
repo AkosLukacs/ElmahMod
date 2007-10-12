@@ -169,7 +169,7 @@ namespace Elmah
                     _entries = new EntryCollection(_size);
                 }
 
-                _entries.Add(newId, entry);
+                _entries.Add(entry);
             }
             finally
             {
@@ -224,7 +224,7 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageIndex");
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSite");
+                throw new ArgumentOutOfRangeException("pageSize");
 
             //
             // To minimize the time for which we hold the lock, we'll first
@@ -300,7 +300,7 @@ namespace Elmah
                 get { return this[new Guid(id)]; }
             }
 
-            public void Add(Guid id, ErrorLogEntry entry)
+            public void Add(ErrorLogEntry entry)
             {
                 Debug.Assert(entry != null);
                 Debug.AssertStringNotEmpty(entry.Id);
