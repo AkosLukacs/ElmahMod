@@ -192,7 +192,9 @@ namespace Elmah
                     Type, Source, Message, User, StatusCode, 
                     TimeUtc, AllXml)
                 VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    @ErrorId, @Application, @Host, 
+                    @Type, @Source, @Message, @User, @StatusCode, 
+                    @TimeUtc, @AllXml)";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
