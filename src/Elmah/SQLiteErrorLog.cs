@@ -60,7 +60,7 @@ namespace Elmah
         /// Initializes a new instance of the <see cref="SQLiteErrorLog"/> class
         /// using a dictionary of configured settings.
         /// </summary>
-        
+
         public SQLiteErrorLog(IDictionary config)
         {
             if (config == null)
@@ -77,15 +77,16 @@ namespace Elmah
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
             _connectionString = connectionString;
-
             InitializeDatabase();
+
+            ApplicationName = Mask.NullString((string) config["applicationName"]);
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SQLiteErrorLog"/> class
         /// to use a specific connection string for connecting to the database.
         /// </summary>
-        
+
         public SQLiteErrorLog(string connectionString)
         {
             if (connectionString == null)
@@ -101,9 +102,10 @@ namespace Elmah
 
         private void InitializeDatabase()
         {
-            Debug.AssertStringNotEmpty(ConnectionString);
+            string connectionString = ConnectionString;
+            Debug.AssertStringNotEmpty(connectionString);
 
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(ConnectionString);
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
 
             string dbFilePath = builder.DataSource;
 
@@ -115,6 +117,7 @@ namespace Elmah
             const string sql = @"
                 CREATE TABLE ELMAH_Error (
                     ErrorId UNIQUEIDENTIFIER NOT NULL,
+                    Application TEXT NOT NULL,
                     Host TEXT NOT NULL,
                     Type TEXT NOT NULL,
                     Source TEXT NOT NULL,
@@ -128,7 +131,7 @@ namespace Elmah
 
                 CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);";
 
-            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 connection.Open();
@@ -139,7 +142,7 @@ namespace Elmah
         /// <summary>
         /// Gets the name of this error log implementation.
         /// </summary>
-        
+
         public override string Name
         {
             get { return "SQLite Error Log"; }
@@ -148,7 +151,7 @@ namespace Elmah
         /// <summary>
         /// Gets the connection string used by the log to connect to the database.
         /// </summary>
-        
+
         public virtual string ConnectionString
         {
             get { return _connectionString; }
@@ -162,7 +165,7 @@ namespace Elmah
         /// policy on how long errors are kept in the log. The default
         /// implementation stores all errors for an indefinite time.
         /// </remarks>
-        
+
         public override string Log(Error error)
         {
             if (error == null)
@@ -185,11 +188,11 @@ namespace Elmah
 
             const string query = @"
                 INSERT INTO ELMAH_Error (
-                    ErrorId, Host, 
+                    ErrorId, Application, Host, 
                     Type, Source, Message, User, StatusCode, 
                     TimeUtc, AllXml)
                 VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
@@ -199,6 +202,7 @@ namespace Elmah
                 SQLiteParameterCollection parameters = command.Parameters;
 
                 parameters.Add("@ErrorId", DbType.Guid).Value = id;
+                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
                 parameters.Add("@Host", DbType.String, 30).Value = error.HostName;
                 parameters.Add("@Type", DbType.String, 100).Value = error.Type;
                 parameters.Add("@Source", DbType.String, 60).Value = error.Source;
@@ -228,9 +232,9 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("pageSize");
 
             const string sql = @"
-                
                 SELECT
                     ErrorId,
+                    Application,
                     Host,
                     Type,
                     Source,
@@ -247,7 +251,7 @@ namespace Elmah
                     @PageIndex * @PageSize,
                     @PageSize;
 
-                SELECT COUNT(*) FROM ELMAH_Error;";
+                SELECT COUNT(*) FROM ELMAH_Error";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
@@ -267,6 +271,7 @@ namespace Elmah
 
                         Error error = NewError();
 
+                        error.ApplicationName = reader["Application"].ToString();
                         error.HostName = reader["Host"].ToString();
                         error.Type = reader["Type"].ToString();
                         error.Source = reader["Source"].ToString();
@@ -294,7 +299,7 @@ namespace Elmah
         /// Returns the specified error from the database, or null 
         /// if it does not exist.
         /// </summary>
-        
+
         public override ErrorLogEntry GetError(string id)
         {
             if (id == null)
@@ -314,8 +319,7 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("id", id, e.Message);
             }
 
-            const string sql =
-                @"
+            const string sql = @"
                 SELECT 
                     AllXml
                 FROM 
@@ -348,7 +352,7 @@ namespace Elmah
         /// <summary>
         /// Creates a new and empty instance of the <see cref="Error"/> class.
         /// </summary>
-        
+
         protected virtual Error NewError()
         {
             return new Error();
@@ -357,7 +361,7 @@ namespace Elmah
         /// <summary>
         /// Gets the connection string from the given configuration.
         /// </summary>
-        
+
         private static string GetConnectionString(IDictionary config)
         {
             Debug.Assert(config != null);
