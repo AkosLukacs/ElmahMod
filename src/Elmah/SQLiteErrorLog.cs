@@ -77,14 +77,8 @@ namespace Elmah
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
             _connectionString = connectionString;
+
             InitializeDatabase();
-
-            //
-            // Set the application name as this implementation provides
-            // per-application isolation over a single store.
-            //
-
-            ApplicationName = Mask.NullString((string) config["applicationName"]);
         }
 
         /// <summary>
@@ -107,10 +101,9 @@ namespace Elmah
 
         private void InitializeDatabase()
         {
-            string connectionString = ConnectionString;
-            Debug.AssertStringNotEmpty(connectionString);
+            Debug.AssertStringNotEmpty(ConnectionString);
 
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(ConnectionString);
 
             string dbFilePath = builder.DataSource;
 
@@ -122,7 +115,6 @@ namespace Elmah
             const string sql = @"
                 CREATE TABLE ELMAH_Error (
                     ErrorId UNIQUEIDENTIFIER NOT NULL,
-                    Application TEXT NOT NULL,
                     Host TEXT NOT NULL,
                     Type TEXT NOT NULL,
                     Source TEXT NOT NULL,
@@ -136,7 +128,7 @@ namespace Elmah
 
                 CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);";
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+            using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 connection.Open();
@@ -193,11 +185,11 @@ namespace Elmah
 
             const string query = @"
                 INSERT INTO ELMAH_Error (
-                    ErrorId, Application, Host, 
+                    ErrorId, Host, 
                     Type, Source, Message, User, StatusCode, 
                     TimeUtc, AllXml)
                 VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
@@ -207,7 +199,6 @@ namespace Elmah
                 SQLiteParameterCollection parameters = command.Parameters;
 
                 parameters.Add("@ErrorId", DbType.Guid).Value = id;
-                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
                 parameters.Add("@Host", DbType.String, 30).Value = error.HostName;
                 parameters.Add("@Type", DbType.String, 100).Value = error.Type;
                 parameters.Add("@Source", DbType.String, 60).Value = error.Source;
@@ -240,7 +231,6 @@ namespace Elmah
                 
                 SELECT
                     ErrorId,
-                    Application,
                     Host,
                     Type,
                     Source,
@@ -250,8 +240,6 @@ namespace Elmah
                     TimeUtc
                 FROM
                     ELMAH_Error
-                WHERE
-                    Application = @Application    
                 ORDER BY
                     TimeUtc DESC,
                     Sequence DESC
@@ -259,14 +247,13 @@ namespace Elmah
                     @PageIndex * @PageSize,
                     @PageSize;
 
-                SELECT COUNT(*) FROM ELMAH_Error WHERE Application = @Application;";
+                SELECT COUNT(*) FROM ELMAH_Error;";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 SQLiteParameterCollection parameters = command.Parameters;
 
-                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
                 parameters.Add("@PageIndex", DbType.Int16).Value = pageIndex;
                 parameters.Add("@PageSize", DbType.Int16).Value = pageSize;
 
@@ -280,7 +267,6 @@ namespace Elmah
 
                         Error error = NewError();
 
-                        error.ApplicationName = reader["Application"].ToString();
                         error.HostName = reader["Host"].ToString();
                         error.Type = reader["Type"].ToString();
                         error.Source = reader["Source"].ToString();
@@ -328,21 +314,19 @@ namespace Elmah
                 throw new ArgumentOutOfRangeException("id", id, e.Message);
             }
 
-            const string sql = @"
+            const string sql =
+                @"
                 SELECT 
                     AllXml
                 FROM 
                     ELMAH_Error
                 WHERE
-                    ErrorId = @ErrorId
-                AND
-                    Application = @Application";
+                    ErrorId = @ErrorId";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 SQLiteParameterCollection parameters = command.Parameters;
-                parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
                 parameters.Add("@ErrorId", DbType.Guid).Value = errorGuid;
 
                 connection.Open();
