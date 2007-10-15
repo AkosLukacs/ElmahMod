@@ -43,6 +43,7 @@ namespace Elmah
     using System.Configuration;
     using System.Data;
     using System.Data.SQLite;
+    using System.Globalization;
     using System.IO;
     using System.Xml;
 
@@ -116,7 +117,7 @@ namespace Elmah
 
             const string sql = @"
                 CREATE TABLE ELMAH_Error (
-                    ErrorId UNIQUEIDENTIFIER NOT NULL,
+                    ErrorId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     Application TEXT NOT NULL,
                     Host TEXT NOT NULL,
                     Type TEXT NOT NULL,
@@ -125,11 +126,8 @@ namespace Elmah
                     User TEXT NOT NULL,
                     StatusCode INTEGER NOT NULL,
                     TimeUtc TEXT NOT NULL,
-                    Sequence INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     AllXml TEXT NOT NULL
-                );
-
-                CREATE UNIQUE INDEX ELMAH_Index on ELMAH_Error (ErrorId ASC);";
+                )";
 
             using (SQLiteConnection connection = new SQLiteConnection(connectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
@@ -188,22 +186,21 @@ namespace Elmah
 
             const string query = @"
                 INSERT INTO ELMAH_Error (
-                    ErrorId, Application, Host, 
+                    Application, Host, 
                     Type, Source, Message, User, StatusCode, 
                     TimeUtc, AllXml)
                 VALUES (
-                    @ErrorId, @Application, @Host, 
+                    @Application, @Host, 
                     @Type, @Source, @Message, @User, @StatusCode, 
-                    @TimeUtc, @AllXml)";
+                    @TimeUtc, @AllXml);
+
+                SELECT last_insert_rowid();";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(query, connection))
             {
-                Guid id = Guid.NewGuid();
-
                 SQLiteParameterCollection parameters = command.Parameters;
 
-                parameters.Add("@ErrorId", DbType.Guid).Value = id;
                 parameters.Add("@Application", DbType.String, 60).Value = ApplicationName;
                 parameters.Add("@Host", DbType.String, 30).Value = error.HostName;
                 parameters.Add("@Type", DbType.String, 100).Value = error.Type;
@@ -215,9 +212,8 @@ namespace Elmah
                 parameters.Add("@AllXml", DbType.String).Value = errorXml;
 
                 connection.Open();
-                command.ExecuteNonQuery();
 
-                return id.ToString();
+                return Convert.ToInt64(command.ExecuteScalar()).ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -247,8 +243,7 @@ namespace Elmah
                 FROM
                     ELMAH_Error
                 ORDER BY
-                    TimeUtc DESC,
-                    Sequence DESC
+                    ErrorId DESC
                 LIMIT 
                     @PageIndex * @PageSize,
                     @PageSize;
@@ -310,11 +305,11 @@ namespace Elmah
             if (id.Length == 0)
                 throw new ArgumentOutOfRangeException("id");
 
-            Guid errorGuid;
-
+            long key;
+            
             try
             {
-                errorGuid = new Guid(id);
+                key = long.Parse(id, CultureInfo.InvariantCulture);
             }
             catch (FormatException e)
             {
@@ -333,11 +328,13 @@ namespace Elmah
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
             {
                 SQLiteParameterCollection parameters = command.Parameters;
-                parameters.Add("@ErrorId", DbType.Guid).Value = errorGuid;
+                parameters.Add("@ErrorId", DbType.Int64).Value = key;
 
                 connection.Open();
 
                 string errorXml = (string) command.ExecuteScalar();
+
+                // FIXME: Handle case where errorXml is null.
 
                 using (XmlReader reader = XmlReader.Create(new StringReader(errorXml)))
                 {
