@@ -334,7 +334,8 @@ namespace Elmah
 
                 string errorXml = (string) command.ExecuteScalar();
 
-                // FIXME: Handle case where errorXml is null.
+                if (errorXml == null)
+                    return null;
 
                 using (XmlReader reader = XmlReader.Create(new StringReader(errorXml)))
                 {
