@@ -34,6 +34,7 @@ namespace Elmah
     using System;
     using System.Globalization;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Text;
     using System.Xml;
     using System.Collections;
@@ -47,7 +48,7 @@ namespace Elmah
 
     public class XmlFileErrorLog : ErrorLog
     {
-        private string _logPath;
+        private readonly string _logPath;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlFileErrorLog"/> class
@@ -56,21 +57,45 @@ namespace Elmah
         
         public XmlFileErrorLog(IDictionary config)
         {
-            _logPath = Mask.NullString(config["logPath"] as string);
+            string logPath = Mask.NullString(config["logPath"] as string);
 
-            if (_logPath.Length == 0)
+            if (logPath.Length == 0)
             {
                 //
                 // For compatibility reasons with older version of this
                 // implementation, we also try "LogPath".
                 //
 
-                _logPath = Mask.NullString(config["LogPath"] as string);
+                logPath = Mask.NullString(config["LogPath"] as string);
 
-                if (_logPath.Length == 0)
+                if (logPath.Length == 0)
                     throw new ApplicationException("Log path is missing for the XML file-based error log.");
             }
+
+#if !NET_1_1 && !NET_1_0
+            if (logPath.StartsWith("~/"))
+                logPath = MapPath(logPath);
+#endif
+
+            _logPath = logPath;
         }
+
+#if !NET_1_1 && !NET_1_0
+
+
+        /// <remarks>
+        /// This method is excluded from inlining so that if 
+        /// HostingEnvironment does not need JIT-ing if it is not implicated
+        /// by the caller.
+        /// </remarks>
+
+        [ MethodImpl(MethodImplOptions.NoInlining) ]
+        private static string MapPath(string path) 
+        {
+            return System.Web.Hosting.HostingEnvironment.MapPath(path);
+        }
+
+#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlFileErrorLog"/> class

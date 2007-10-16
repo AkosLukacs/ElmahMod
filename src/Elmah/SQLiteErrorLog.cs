@@ -45,6 +45,7 @@ namespace Elmah
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
+    using System.Runtime.CompilerServices;
     using System.Xml;
 
     #endregion
@@ -77,7 +78,8 @@ namespace Elmah
             if (connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
-            _connectionString = connectionString;
+            _connectionString = CompleteConnectionString(connectionString);
+
             InitializeDatabase();
 
             ApplicationName = Mask.NullString((string) config["applicationName"]);
@@ -96,9 +98,40 @@ namespace Elmah
             if (connectionString.Length == 0)
                 throw new ArgumentOutOfRangeException("connectionString");
 
-            _connectionString = connectionString;
+            _connectionString = CompleteConnectionString(connectionString);
 
             InitializeDatabase();
+        }
+
+        /// <summary>
+        /// Takes a connection string whose Data Source component uses
+        /// the root operator format (~/...) and resolves it to the
+        /// physical path within the web application.
+        /// </summary>
+
+        private static string CompleteConnectionString(string value)
+        {
+            Debug.AssertStringNotEmpty(value);
+
+            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(value);
+
+            if (!builder.DataSource.StartsWith("~/"))
+                return value;
+
+            builder.DataSource = MapPath(builder.DataSource);
+            return builder.ToString();
+        }
+
+        /// <remarks>
+        /// This method is excluded from inlining so that if 
+        /// HostingEnvironment does not need JIT-ing if it is not implicated
+        /// by the caller.
+        /// </remarks>
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static string MapPath(string path)
+        {
+            return System.Web.Hosting.HostingEnvironment.MapPath(path);
         }
 
         private void InitializeDatabase()
