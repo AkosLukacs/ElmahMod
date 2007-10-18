@@ -292,7 +292,7 @@ namespace Elmah
             Server.HtmlEncode(Environment.MachineName, writer);
             writer.RenderEndTag(); // </span>
 
-            writer.RenderEndTag(); // </p>
+            writer.RenderEndTag(); // </h1>
             writer.WriteLine();
         }
 
