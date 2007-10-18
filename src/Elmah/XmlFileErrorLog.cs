@@ -173,18 +173,30 @@ namespace Elmah
             if (pageSize < 0)
                 throw new ArgumentOutOfRangeException("pageSize");
 
-            /* Get the file list from the folder */
-            string[] files = Directory.GetFiles(LogPath);
+            /* Get all files in directory */
+            string logPath = LogPath;
+            DirectoryInfo dir = new DirectoryInfo(logPath);
+            FileSystemInfo[] infos = dir.GetFiles();
 
-            if (files.Length < 1)
+            if (infos.Length < 1)
                 return 0;
 
-            InvariantStringArray.Sort(files);
-            Array.Reverse(files);
+            string[] files = new string[infos.Length];
+            int count = 0;
+
+            /* Get files that are not marked with system and hidden attributes */
+            foreach (FileSystemInfo info in infos)
+            {
+                if ((info.Attributes & (FileAttributes.Hidden | FileAttributes.System)) == 0)
+                    files[count++] = Path.Combine(logPath, info.Name);
+            }
+
+            InvariantStringArray.Sort(files, 0, count);
+            Array.Reverse(files, 0, count);
             
             /* Find the proper page */
             int firstIndex = pageIndex * pageSize;
-            int lastIndex = (firstIndex + pageSize < files.Length) ? firstIndex + pageSize : files.Length;
+            int lastIndex = (firstIndex + pageSize < count) ? firstIndex + pageSize : count;
 
             /* Open them up and rehydrate the list */
             for (int i = firstIndex; i < lastIndex; i++)
@@ -212,7 +224,7 @@ namespace Elmah
             }
     
             /* Return how many are total */
-            return files.Length;
+            return count;
         }
 
         /// <summary>

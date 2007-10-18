@@ -46,14 +46,19 @@ namespace Elmah
     {
         public static void Sort(string[] keys)
         {
-            Array.Sort(keys);
+            Array.Sort(keys, 0, keys.Length);
         }
 
-        public static void Sort(string[] keys, Array items)
+        public static void Sort(string[] keys, int index, int length)
+        {
+            Array.Sort(keys, index, length);
+        }
+
+        public static void Sort(string[] keys, Array items, int index, int length)
         {
             Debug.Assert(keys != null);
 
-            Array.Sort(keys, items, InvariantComparer);
+            Array.Sort(keys, items, index, length, InvariantComparer);
         }
 
         private static IComparer InvariantComparer
