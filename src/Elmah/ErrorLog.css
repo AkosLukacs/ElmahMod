@@ -28,7 +28,6 @@
 body
 {
     font-family: Verdana;
-    font-size: small;
     font-size: 70%;
 }
 
@@ -60,7 +59,6 @@ table
 
 td
 {
-    font-size: 70%;
     border: solid 1px silver;
     padding: 0.4em;
     vertical-align: top;
@@ -68,7 +66,6 @@ td
 
 th
 {
-    font-size: 70%;
     text-align: left;
     background-color: #0A6CCE;
     padding: 0.4em;
@@ -135,8 +132,6 @@ h1
     font-weight: normal;
     color: #0A6CCE;
     font-size: 175%;
-    padding-bottom: 0.5em;
-    border-bottom: solid 1px silver;
 }
 
 .table-caption
