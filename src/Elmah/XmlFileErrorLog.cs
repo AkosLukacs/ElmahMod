@@ -233,8 +233,15 @@ namespace Elmah
         
         public override ErrorLogEntry GetError(string id)
         {
-            /* Make sure the identifier is a valid GUID */
-            id = (new Guid(id)).ToString();
+            try
+            {
+                /* Make sure the identifier is a valid GUID */
+                id = (new Guid(id)).ToString();
+            }
+            catch (FormatException e)
+            {
+                throw new ArgumentException(e.Message, id, e);
+            }
 
             /* Get the file folder list - should only return one ever */
             string[] files = Directory.GetFiles(LogPath, string.Format("error-*-{0}.xml", id));
