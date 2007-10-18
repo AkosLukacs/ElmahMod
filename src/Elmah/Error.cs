@@ -324,7 +324,7 @@ namespace Elmah
             //
 
             if (!reader.IsStartElement())
-                throw new ArgumentOutOfRangeException("reader");
+                throw new ArgumentException("Reader is not positioned at the start of an element.", "reader");
 
             //
             // Read out the attributes that contain the simple
@@ -359,7 +359,7 @@ namespace Elmah
                 throw new ArgumentNullException("reader");
 
             if (!reader.IsStartElement())
-                throw new ArgumentOutOfRangeException("reader");
+                throw new ArgumentException("Reader is not positioned at the start of an element.", "reader");
 
             _applicationName = reader.GetAttribute("application");
             _hostName = reader.GetAttribute("host");
@@ -427,7 +427,7 @@ namespace Elmah
                 throw new ArgumentNullException("writer");
 
             if (writer.WriteState != WriteState.Element)
-                throw new ArgumentOutOfRangeException("writer");
+                throw new ArgumentException("Writer is not in the expected Element state.", "writer");
 
             //
             // Write out the basic typed information in attributes

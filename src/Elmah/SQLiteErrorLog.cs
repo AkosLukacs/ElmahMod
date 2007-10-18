@@ -96,7 +96,7 @@ namespace Elmah
                 throw new ArgumentNullException("connectionString");
 
             if (connectionString.Length == 0)
-                throw new ArgumentOutOfRangeException("connectionString");
+                throw new ArgumentException(null, "connectionString");
 
             _connectionString = CompleteConnectionString(connectionString);
 
@@ -257,10 +257,10 @@ namespace Elmah
         public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
         {
             if (pageIndex < 0)
-                throw new ArgumentOutOfRangeException("pageIndex");
+                throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSize");
+                throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 
             const string sql = @"
                 SELECT
@@ -336,7 +336,7 @@ namespace Elmah
                 throw new ArgumentNullException("id");
 
             if (id.Length == 0)
-                throw new ArgumentOutOfRangeException("id");
+                throw new ArgumentException(null, "id");
 
             long key;
             
@@ -346,7 +346,7 @@ namespace Elmah
             }
             catch (FormatException e)
             {
-                throw new ArgumentOutOfRangeException("id", id, e.Message);
+                throw new ArgumentException(e.Message, "id", e);
             }
 
             const string sql = @"

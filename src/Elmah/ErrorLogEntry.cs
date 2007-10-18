@@ -61,7 +61,7 @@ namespace Elmah
                 throw new ArgumentNullException("id");
 
             if (id.Length == 0)
-                throw new ArgumentOutOfRangeException("id");
+                throw new ArgumentException(null, "id");
 
             if (error == null)
                 throw new ArgumentNullException("error");

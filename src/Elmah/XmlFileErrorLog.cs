@@ -168,10 +168,10 @@ namespace Elmah
         public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
         {
             if (pageIndex < 0)
-                throw new ArgumentOutOfRangeException("pageIndex");
+                throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSize");
+                throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 
             /* Get all files in directory */
             string logPath = LogPath;

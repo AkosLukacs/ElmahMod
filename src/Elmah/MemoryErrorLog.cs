@@ -97,7 +97,7 @@ namespace Elmah
         public MemoryErrorLog(int size)
         {
             if (size < 0 || size > MaximumSize)   
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException("size", size, string.Format("Size must be between 0 and {0}.", MaximumSize));
 
             _size = size;
         }
@@ -221,10 +221,10 @@ namespace Elmah
         public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
         {
             if (pageIndex < 0)
-                throw new ArgumentOutOfRangeException("pageIndex");
+                throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
 
             if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSize");
+                throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 
             //
             // To minimize the time for which we hold the lock, we'll first
