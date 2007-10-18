@@ -1,3 +1,5 @@
+@echo off
+
 REM ELMAH - Error Logging Modules and Handlers for ASP.NET
 REM Copyright (c) 2007 Atif Aziz. All rights reserved.
 REM
@@ -39,7 +41,6 @@ REM To compile for Microsoft .NET Framework 2.0, you only need MSBUILD.EXE
 REM and which is expected to be located in the standard installation 
 REM directory.
 
-@echo off
 pushd "%~dp0"
 setlocal
 set DEVENV70EXE=%ProgramFiles%\Microsoft Visual Studio .NET\Common7\IDE\devenv.com
