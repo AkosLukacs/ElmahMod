@@ -322,6 +322,9 @@
       <Link>SimpleServiceProviderFactory.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\SpeedBar.cs">
+      <Link>SpeedBar.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\SqlErrorLog.cs">
       <Link>SqlErrorLog.cs</Link>
       <SubType>Code</SubType>

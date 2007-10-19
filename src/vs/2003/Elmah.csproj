@@ -350,6 +350,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SpeedBar.cs"
+                    Link = "..\..\Elmah\SpeedBar.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "PoweredBy.cs"
                     Link = "..\..\Elmah\PoweredBy.cs"
                     SubType = "Code"

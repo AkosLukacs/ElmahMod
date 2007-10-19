@@ -116,8 +116,13 @@ namespace Elmah
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
             writer.RenderBeginTag(HtmlTextWriterTag.H1);
             Server.HtmlEncode(error.Message, writer);
-            writer.RenderEndTag(); // </p>
+            writer.RenderEndTag(); // </h1>
             writer.WriteLine();
+
+            SpeedBar.Render(writer,
+                SpeedBar.Home.Format(BasePageName),
+                SpeedBar.Help,
+                SpeedBar.About.Format(BasePageName));
 
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "ErrorTitle");
             writer.RenderBeginTag(HtmlTextWriterTag.P);

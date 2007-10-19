@@ -47,6 +47,10 @@ namespace Elmah
         {
             if (writer == null)
                 throw new ArgumentNullException("writer");
+
+            //
+            // Title
+            //
             
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
             writer.RenderBeginTag(HtmlTextWriterTag.H1);
@@ -54,8 +58,21 @@ namespace Elmah
             writer.RenderEndTag(); // </h1>
             writer.WriteLine();
 
+            //
+            // Speed Bar
+            //
+
+            SpeedBar.Render(writer,
+                SpeedBar.Home.Format(BasePageName),
+                SpeedBar.Help,
+                SpeedBar.About.Format(BasePageName));
+
             SccStamp[] stamps = SccStamp.FindAll(typeof(ErrorLog).Assembly);
             SccStamp.SortByRevision(stamps, /* descending */ true);
+
+            //
+            // Content...
+            //
 
             writer.RenderBeginTag(HtmlTextWriterTag.P);
             writer.Write("This <strong>{0}</strong> ", Build.TypeLowercase);
@@ -66,6 +83,10 @@ namespace Elmah
             writer.Write("build was compiled from the following sources for CLR {0}:", Build.ImageRuntimeVersion);
 
             writer.RenderEndTag(); // </p>
+
+            //
+            // Stamps...
+            //
 
             writer.RenderBeginTag(HtmlTextWriterTag.Ul);
 

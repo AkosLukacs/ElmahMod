@@ -156,3 +156,45 @@ h1
         overflow: scroll;
     }
 }
+
+#SpeedList 
+{
+    margin: 0;
+    list-style-type: none;
+    text-transform: uppercase;
+    font-size: 80%;
+    padding: 0.25em 0;
+    color: #fff;
+    background-color: #aaa;
+    border-top: solid 1px #aaa;
+    border-bottom: solid 1px #aaa;
+}
+
+#SpeedList a
+{
+    text-decoration: none;    
+    padding: 0.25em 1em;
+    border: solid 1px #aaa;
+    border-right: solid 1px #fff;
+    color: #fff;
+}
+
+#SpeedList a:hover
+{
+    background-color: #fff;
+    color: #FF6600;
+    border: solid 1px #FF6600;
+}
+
+#SpeedList li
+{
+    display: inline;
+}
+
+@media print
+{
+    #SpeedList
+    {
+        display: none;
+    }
+}

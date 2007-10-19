@@ -131,11 +131,18 @@ namespace Elmah
                 throw new ArgumentNullException("writer");
 
             //
-            // Write out the page title in the body.
+            // Write out the page title and speed bar in the body.
             //
 
             RenderTitle(writer);
 
+            SpeedBar.Render(writer, 
+                SpeedBar.RssFeed.Format(BasePageName),
+                SpeedBar.RssDigestFeed.Format(BasePageName),
+                SpeedBar.DownloadLog.Format(BasePageName),
+                SpeedBar.Help,
+                SpeedBar.About.Format(BasePageName));
+            
             if (_errorEntryList.Count != 0)
             {
                 //
