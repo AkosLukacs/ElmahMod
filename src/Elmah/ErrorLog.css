@@ -46,7 +46,12 @@ a:hover
     color: #FF6600;
 }
 
-pre
+img 
+{
+    border: none;
+}
+
+pre, code
 {
     font-family: "Courier New", Courier;
 }
