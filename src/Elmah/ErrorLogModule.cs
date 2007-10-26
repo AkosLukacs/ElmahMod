@@ -57,6 +57,7 @@ namespace Elmah
                 throw new ArgumentNullException("application");
             
             application.Error += new EventHandler(OnError);
+            ErrorSignal.Get(application).Raised += new ErrorSignalEventHandler(OnErrorSignaled);
         }
 
         /// <summary>
@@ -78,6 +79,15 @@ namespace Elmah
         {
             HttpApplication application = (HttpApplication) sender;
             LogException(application.Server.GetLastError(), application.Context);
+        }
+
+        /// <summary>
+        /// The handler called when an exception is explicitly signaled.
+        /// </summary>
+
+        protected virtual void OnErrorSignaled(object sender, ErrorSignalEventArgs args)
+        {
+            LogException(args.Exception, args.Context);
         }
 
         /// <summary>

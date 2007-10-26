@@ -142,6 +142,7 @@ namespace Elmah
             //
 
             application.Error += new EventHandler(OnError);
+            ErrorSignal.Get(application).Raised += new ErrorSignalEventHandler(OnErrorSignaled);
             
             //
             // Finally, commit the state of the module if we got this far.
@@ -272,33 +273,51 @@ namespace Elmah
         protected virtual void OnError(object sender, EventArgs e)
         {
             HttpContext context = ((HttpApplication) sender).Context;
-            
+            OnError(context.Server.GetLastError(), context);
+        }
+
+        /// <summary>
+        /// The handler called when an exception is explicitly signaled.
+        /// </summary>
+
+        protected virtual void OnErrorSignaled(object sender, ErrorSignalEventArgs args)
+        {
+            OnError(args.Exception, args.Context);
+        }
+
+        /// <summary>
+        /// Reports the exception.
+        /// </summary>
+
+        protected virtual void OnError(Exception e, HttpContext context)
+        {
+            if (e == null) 
+                throw new ArgumentNullException("e");
+
             //
             // Fire an event to check if listeners want to filter out
             // reporting of the uncaught exception.
             //
 
-            ExceptionFilterEventArgs args = new ExceptionFilterEventArgs(
-                context.Server.GetLastError(), context);
-            
+            ExceptionFilterEventArgs args = new ExceptionFilterEventArgs(e, context);
             OnFiltering(args);
-            
+
             if (args.Dismissed)
                 return;
-            
+
             //
             // Get the last error and then report it synchronously or 
             // asynchronously based on the configuration.
             //
 
-            Error error = GetLastError(context);
+            Error error = new Error(e, context);
 
             if (_reportAsynchronously)
                 ReportErrorAsync(error);
             else
                 ReportError(error);
         }
-        
+
         /// <summary>
         /// Raises the <see cref="Filtering"/> event.
         /// </summary>
@@ -653,12 +672,10 @@ namespace Elmah
         /// exception generated.
         /// </summary>
 
+        [ Obsolete ]
         protected virtual Error GetLastError(HttpContext context)
         {
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            return new Error(context.Server.GetLastError(), context);
+            throw new NotSupportedException();
         }
 
         private static string GetSetting(IDictionary config, string name)

@@ -242,6 +242,9 @@
       <Link>ErrorRssHandler.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorSignal.cs">
+      <Link>ErrorSignal.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorTextFormatter.cs">
       <Link>ErrorTextFormatter.cs</Link>
       <SubType>Code</SubType>
