@@ -182,8 +182,8 @@ h1
 #SpeedList a:hover
 {
     background-color: #fff;
-    color: #FF6600;
-    border: solid 1px #FF6600;
+    color: #444;
+    border: solid 1px #aaa;
 }
 
 #SpeedList li
