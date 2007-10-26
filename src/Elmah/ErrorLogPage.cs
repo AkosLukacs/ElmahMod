@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
@@ -372,7 +373,7 @@ namespace Elmah
                 //
 
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.HostName, "host-col"));
-                bodyRow.Cells.Add(FormatCell(new TableCell(), error.StatusCode.ToString(), "code-col"));
+                bodyRow.Cells.Add(FormatCell(new TableCell(), error.StatusCode.ToString(), "code-col", Mask.NullString(HttpWorkerRequest.GetStatusDescription(error.StatusCode))));
                 bodyRow.Cells.Add(FormatCell(new TableCell(), GetSimpleErrorType(error), "type-col", error.Type));
                     
                 //
@@ -389,7 +390,7 @@ namespace Elmah
 
                 HyperLink detailsLink = new HyperLink();
                 detailsLink.NavigateUrl = this.Request.Path + "/detail?id=" + errorEntry.Id;
-                detailsLink.Text = "[Details]";
+                detailsLink.Text = "Details&hellip;";
 
                 messageCell.Controls.Add(messageLabel);
                 messageCell.Controls.Add(new LiteralControl(" "));
