@@ -149,7 +149,7 @@ namespace Elmah
             SQLiteConnection.CreateFile(dbFilePath);
 
             const string sql = @"
-                CREATE TABLE ELMAH_Error (
+                CREATE TABLE Error (
                     ErrorId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     Application TEXT NOT NULL,
                     Host TEXT NOT NULL,
@@ -218,7 +218,7 @@ namespace Elmah
             string errorXml = sw.ToString();
 
             const string query = @"
-                INSERT INTO ELMAH_Error (
+                INSERT INTO Error (
                     Application, Host, 
                     Type, Source, Message, User, StatusCode, 
                     TimeUtc, AllXml)
@@ -274,14 +274,14 @@ namespace Elmah
                     StatusCode,
                     TimeUtc
                 FROM
-                    ELMAH_Error
+                    Error
                 ORDER BY
                     ErrorId DESC
                 LIMIT 
                     @PageIndex * @PageSize,
                     @PageSize;
 
-                SELECT COUNT(*) FROM ELMAH_Error";
+                SELECT COUNT(*) FROM Error";
 
             using (SQLiteConnection connection = new SQLiteConnection(ConnectionString))
             using (SQLiteCommand command = new SQLiteCommand(sql, connection))
@@ -353,7 +353,7 @@ namespace Elmah
                 SELECT 
                     AllXml
                 FROM 
-                    ELMAH_Error
+                    Error
                 WHERE
                     ErrorId = @ErrorId";
 
