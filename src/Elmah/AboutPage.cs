@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Reflection;
     using System.Web.UI;
 
     #endregion
@@ -47,6 +48,32 @@ namespace Elmah
         {
             if (writer == null)
                 throw new ArgumentNullException("writer");
+
+            //
+            // Emit a script that emit version info and checks for updates.
+            //
+
+            writer.WriteLine(@"
+                <script type='text/javascript' language='JavaScript'>
+                    function onCheckForUpdate(sender) {
+                        var script = document.createElement('script');
+                        script.type = 'text/javascript';
+                        script.language = 'JavaScript';
+                        script.src = 'http://elmah.googlecode.com/svn/www/update.js?__=' + (new Date()).getTime();
+                        document.getElementsByTagName('head')[0].appendChild(script);
+                        return false;
+                    }
+                    var ELMAH = {
+                        info : {
+                            version     : '" + GetVersion() + @"',
+                            fileVersion : '" + GetFileVersion() + @"',
+                            type        : '" + Build.TypeLowercase + @"',
+                            status      : '" + Build.Status + @"',
+                            runtime     : '" + Build.Runtime + @"',
+                            imageRuntime: '" + Build.ImageRuntimeVersion + @"'
+                        }
+                    };
+                </script>");
 
             //
             // Title
@@ -67,12 +94,20 @@ namespace Elmah
                 SpeedBar.Help,
                 SpeedBar.About.Format(BasePageName));
 
-            SccStamp[] stamps = SccStamp.FindAll(typeof(ErrorLog).Assembly);
-            SccStamp.SortByRevision(stamps, /* descending */ true);
-
             //
             // Content...
             //
+
+            writer.RenderBeginTag(HtmlTextWriterTag.P);
+            writer.AddAttribute(HtmlTextWriterAttribute.Onclick, "return onCheckForUpdate(this)");
+            writer.AddAttribute(HtmlTextWriterAttribute.Title, "Checks if your ELMAH version is up to date (requires Internet connection)");
+            writer.RenderBeginTag(HtmlTextWriterTag.Button);
+            writer.Write("Check for Update");
+            writer.RenderEndTag(); // </button>
+            writer.RenderEndTag(); // </p>
+
+            SccStamp[] stamps = SccStamp.FindAll(typeof(ErrorLog).Assembly);
+            SccStamp.SortByRevision(stamps, /* descending */ true);
 
             writer.RenderBeginTag(HtmlTextWriterTag.P);
             writer.Write("This <strong>{0}</strong> ", Build.TypeLowercase);
@@ -100,6 +135,17 @@ namespace Elmah
             }
 
             writer.RenderEndTag(); // </ul>
+        }
+
+        private Version GetVersion() 
+        {
+            return GetType().Assembly.GetName().Version;
+        }
+
+        private Version GetFileVersion()
+        {
+            AssemblyFileVersionAttribute version = (AssemblyFileVersionAttribute) Attribute.GetCustomAttribute(GetType().Assembly, typeof(AssemblyFileVersionAttribute));
+            return version != null ? new Version(version.Version) : new Version();
         }
     }
 }
