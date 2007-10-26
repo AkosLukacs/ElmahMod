@@ -187,7 +187,7 @@ namespace Elmah
             /* Get files that are not marked with system and hidden attributes */
             foreach (FileSystemInfo info in infos)
             {
-                if ((info.Attributes & (FileAttributes.Hidden | FileAttributes.System)) == 0)
+                if (IsUserFile(info.Attributes))
                     files[count++] = Path.Combine(logPath, info.Name);
             }
 
@@ -249,7 +249,11 @@ namespace Elmah
             if (files.Length < 1)
                 throw new System.ApplicationException(string.Format("Cannot locate error file for error with ID {0}.", id));
 
-            XmlTextReader reader = new XmlTextReader(files[0]);
+            FileInfo file = new FileInfo(files[0]);
+            if (!IsUserFile(file.Attributes))
+                return null;
+
+            XmlTextReader reader = new XmlTextReader(file.FullName);
             
             try
             {
@@ -261,6 +265,13 @@ namespace Elmah
             {
                 reader.Close();
             }
+        }
+
+        private static bool IsUserFile(FileAttributes attributes)
+        {
+            return 0 == (attributes & (FileAttributes.Directory | 
+                                       FileAttributes.Hidden | 
+                                       FileAttributes.System));
         }
     }
 }
