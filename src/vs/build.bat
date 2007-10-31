@@ -46,7 +46,7 @@ setlocal
 set DEVENV70EXE=%ProgramFiles%\Microsoft Visual Studio .NET\Common7\IDE\devenv.com
 set DEVENV71EXE=%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com
 set MSBUILDEXE=%windir%\Microsoft.NET\Framework\v2.0.50727\msbuild
-for %%i in (debug release) do if exist "%DEVENV70EXE%" "%DEVENV70EXE%" src\vs\2002\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%DEVENV71EXE%" "%DEVENV71EXE%" src\vs\2003\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%MSBUILDEXE%"  "%MSBUILDEXE%"  src\vs\2005\Elmah.sln /p:Configuration=%%i
+for %%i in (debug release) do if exist "%DEVENV70EXE%" "%DEVENV70EXE%" 2002\Elmah.sln /build %%i
+for %%i in (debug release) do if exist "%DEVENV71EXE%" "%DEVENV71EXE%" 2003\Elmah.sln /build %%i
+for %%i in (debug release) do if exist "%MSBUILDEXE%"  "%MSBUILDEXE%"  2005\Elmah.sln /p:Configuration=%%i
 popd
