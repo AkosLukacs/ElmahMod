@@ -25,21 +25,19 @@ REM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 REM
 REM -------------------------------------------------------------------------
 REM
-REM This is a batch file that can used to build ELMAH for Microsoft .NET 
-REM Framework 1.x and 2.0. The build is created for only those versions
-REM that are found to be installed in the expected locations (see below).
+REM This is a batch script that can used to build ELMAH binaries for 
+REM Microsoft .NET Framework 1.x and 2.0. The binaries are created for 
+REM only those versions that are found to be installed in the expected 
+REM locations on the local machine.
 REM
-REM To compile for Microsoft .NET Framework 1.0, you must have Microsoft
-REM Visual Studio .NET 2002 installed in the standard path proposed by
-REM by its installer.
+REM - Microsoft .NET Framework 1.0:
+REM   %SystemRoot%\Microsoft.NET\Framework\v1.0.3705
 REM
-REM To compile for Microsoft .NET Framework 1.1, you must have Microsoft
-REM Visual Studio .NET 2003 installed in the standard path proposed by
-REM by its installer.
-REM
-REM To compile for Microsoft .NET Framework 2.0, you only need MSBUILD.EXE
-REM and which is expected to be located in the standard installation 
-REM directory.
+REM - Microsoft .NET Framework 1.1:
+REM   %SystemRoot%\Microsoft.NET\Framework\v1.1.4322
+
+REM - Microsoft .NET Framework 2.0:
+REM   %SystemRoot%\Microsoft.NET\Framework\v2.0.50727
 
 pushd "%~dp0"
 setlocal
