@@ -25,19 +25,6 @@ REM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 REM
 REM -------------------------------------------------------------------------
 REM
-REM This is a batch script that can used to build ELMAH binaries for 
-REM Microsoft .NET Framework 1.x and 2.0. The binaries are created for 
-REM only those versions that are found to be installed in the expected 
-REM locations on the local machine.
-REM
-REM - Microsoft .NET Framework 1.0:
-REM   %SystemRoot%\Microsoft.NET\Framework\v1.0.3705
-REM
-REM - Microsoft .NET Framework 1.1:
-REM   %SystemRoot%\Microsoft.NET\Framework\v1.1.4322
-
-REM - Microsoft .NET Framework 2.0:
-REM   %SystemRoot%\Microsoft.NET\Framework\v2.0.50727
 
 pushd "%~dp0"
 setlocal
@@ -100,3 +87,12 @@ echo Usage: %~n0 TARGET
 echo.
 echo TARGET
 echo     is the target to build (all, 1.0, 1.1, or 2.0)
+echo.
+echo This is a batch script that can used to build ELMAH binaries for 
+echo Microsoft .NET Framework 1.x and 2.0. The binaries are created for 
+echo only those versions that are found to be installed in the expected 
+echo locations on the local machine.
+echo.
+echo The following versions appear to be installed on this system:
+echo.
+for %%i in (v1.0.3705 v1.1.4322 v2.0.50727) do if exist "%NETFX_BASE_PATH%\%%i\csc.exe" echo - %%i
