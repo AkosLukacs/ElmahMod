@@ -41,8 +41,8 @@ REM To compile for Microsoft .NET Framework 2.0, you only need MSBUILD.EXE
 REM and which is expected to be located in the standard installation 
 REM directory.
 
-pushd "%~dp0"
 setlocal
+pushd "%~dp0"
 set DEVENV70EXE=%ProgramFiles%\Microsoft Visual Studio .NET\Common7\IDE\devenv.com
 set DEVENV71EXE=%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com
 set MSBUILDEXE=%windir%\Microsoft.NET\Framework\v2.0.50727\msbuild

@@ -26,8 +26,8 @@ REM
 REM -------------------------------------------------------------------------
 REM
 
-pushd "%~dp0"
 setlocal
+pushd "%~dp0"
 
 set NETFX_BASE_PATH=%SystemRoot%\Microsoft.NET\Framework
 
