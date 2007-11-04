@@ -79,7 +79,7 @@ namespace Elmah
 
             response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
 
-            _result = new AsyncResult(extraData);
+            AsyncResult result = _result = new AsyncResult(extraData);
             _log = ErrorLog.GetDefault(context);
             _pageIndex = 0;
             _lastBeatTime = DateTime.Now;
@@ -90,7 +90,7 @@ namespace Elmah
             _log.BeginGetErrors(0, _pageSize, _errorEntryList, 
                 new AsyncCallback(GetErrorsCallback), null);
 
-            return _result;
+            return result;
         }
 
         public void EndProcessRequest(IAsyncResult result)
