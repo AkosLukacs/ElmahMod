@@ -79,6 +79,7 @@ namespace Elmah
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
+            settings.CheckCharacters = false;
             XmlWriter writer = XmlWriter.Create(response.Output, settings);
 #else
             XmlTextWriter writer = new XmlTextWriter(response.Output);
