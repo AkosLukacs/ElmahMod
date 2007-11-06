@@ -97,8 +97,8 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Dialy digest of errors in " + log.ApplicationName + " on " + Environment.MachineName;
-            channel.description = "Dialy digest of application errors";
+            channel.title = "Daily digest of errors in " + log.ApplicationName + " on " + Environment.MachineName;
+            channel.description = "Daily digest of application errors";
             channel.language = "en";
 
             Uri baseUrl = new Uri(Request.Url.GetLeftPart(UriPartial.Authority) + Request.ServerVariables["URL"]);
