@@ -176,7 +176,7 @@ namespace Elmah
             /* Get all files in directory */
             string logPath = LogPath;
             DirectoryInfo dir = new DirectoryInfo(logPath);
-            FileSystemInfo[] infos = dir.GetFiles();
+            FileSystemInfo[] infos = dir.GetFiles("error-*.xml");
 
             if (infos.Length < 1)
                 return 0;
