@@ -76,10 +76,11 @@ for %%i in (Debug Release) do if not exist %BIN_OUT_DIR%\%%i md %BIN_OUT_DIR%\%%
 echo Compiling DEBUG configuration
 echo.
 set CSC_FILES=/recurse:src\Elmah\*.cs /res:src\Elmah\ErrorLog.css,Elmah.ErrorLog.css /res:src\Elmah\RemoteAccessError.htm,Elmah.RemoteAccessError.htm 
-"%CSC_PATH%" /t:library /out:%BIN_OUT_DIR%\Debug\Elmah.dll   /nowarn:1591 /doc:%BIN_OUT_DIR%\Debug\Elmah.xml   /debug+                   %CSC_FILES% /d:TRACE;DEBUG %3 %4 %5 %6 %7 %8 %9
+set CSC_COMMON=/unsafe- /checked- /warnaserror+ /nowarn:1591,618 /warn:4 /d:TRACE /debug+ /baseaddress:285212672 
+"%CSC_PATH%" /t:library /out:%BIN_OUT_DIR%\Debug\Elmah.dll   %CSC_COMMON% /doc:%BIN_OUT_DIR%\Debug\Elmah.xml   /debug:full               %CSC_FILES% /d:DEBUG %3 %4 %5 %6 %7 %8 %9
 echo Compiling RELEASE configuration
 echo.
-"%CSC_PATH%" /t:library /out:%BIN_OUT_DIR%\Release\Elmah.dll /nowarn:1591 /doc:%BIN_OUT_DIR%\Release\Elmah.xml /debug:pdbonly /optimize+ %CSC_FILES% /d:TRACE       %3 %4 %5 %6 %7 %8 %9
+"%CSC_PATH%" /t:library /out:%BIN_OUT_DIR%\Release\Elmah.dll %CSC_COMMON% /doc:%BIN_OUT_DIR%\Release\Elmah.xml /debug:pdbonly /optimize+ %CSC_FILES%          %3 %4 %5 %6 %7 %8 %9
 goto :EOF
 
 :help
