@@ -1,24 +1,30 @@
-﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>ELMAH README</title>
-<style type="text/css">
+    <title>ELMAH README</title>
+    <style type="text/css">
 body {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 100%;
+    background-color: #fff;
 }
 li {
     padding-bottom: 0.5em;
 }
 </style>
 </head>
-
 <body>
-
-<h1>ELMAH README</h1>
-<p>To be completed&hellip;</p>
+    <h1>
+        ELMAH README</h1>
+    <h2>
+        Upgrading</h2>
+    <p>
+        If you are using the Microsoft SQL Server for your error log then you should re-create 
+        the <code>ELMAH_Error</code> table, its indicies and related stored procedures
+        using the supplied SQL script (see  <code>Database.sql</code> in your distribution).
+        The script does not contain DDL <code>DROP</code> statements so you will have to drop
+        the table and stored procedures manually before applying the script. If you wish to
+        preserve the logged error data, you should consider archiving it in a backup.
+    </p>
 </body>
-
 </html>
