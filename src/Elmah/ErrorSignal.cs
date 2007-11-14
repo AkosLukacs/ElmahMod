@@ -99,21 +99,16 @@ namespace Elmah
                 {
                     signal = new ErrorSignal();
                     _signalByApp.Add(application, signal);
-                    ChannelRemovalClosure removalClosure = new ChannelRemovalClosure(signal);
-                    application.Disposed += new EventHandler(removalClosure.OnApplicationDisposed);
+                    application.Disposed += new EventHandler(OnApplicationDisposed);
                 }
 
                 return signal;
             }
         }
 
-        private static void Dispose(HttpApplication application, ErrorSignal signal)
+        private static void OnApplicationDisposed(object sender, EventArgs e)
         {
-            Debug.Assert(application != null);
-            Debug.Assert(signal != null);
-
-            if (signal == null)
-                throw new ArgumentNullException("signal");
+            HttpApplication application = (HttpApplication) sender;
 
             lock (_lock)
             {
@@ -126,30 +121,15 @@ namespace Elmah
                     _signalByApp = null;
             }
         }
-
-        internal sealed class ChannelRemovalClosure
-        {
-            private readonly ErrorSignal _signal;
-
-            public ChannelRemovalClosure(ErrorSignal signal)
-            {
-                _signal = signal;
-            }
-
-            public void OnApplicationDisposed(object sender, EventArgs e)
-            {
-                Dispose((HttpApplication) sender, _signal);
-            }
-        }
     }
 
     public delegate void ErrorSignalEventHandler(object sender, ErrorSignalEventArgs args);
 
-    [Serializable]
+    [ Serializable ]
     public sealed class ErrorSignalEventArgs : EventArgs
     {
         private readonly Exception _exception;
-        [NonSerialized]
+        [ NonSerialized ]
         private readonly HttpContext _context;
 
         public ErrorSignalEventArgs(Exception e, HttpContext context)
