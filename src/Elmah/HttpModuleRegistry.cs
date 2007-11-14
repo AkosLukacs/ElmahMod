@@ -92,8 +92,8 @@ namespace Elmah
             // when the application fires its Disposed event.
             //
 
-            ModuleRemovalClosure removalClosure = new ModuleRemovalClosure(module);
-            application.Disposed += new EventHandler(removalClosure.OnApplicationDisposed);
+            Housekeeper housekeeper = new Housekeeper(module);
+            application.Disposed += new EventHandler(housekeeper.OnApplicationDisposed);
 
             return true;
         }
@@ -217,11 +217,11 @@ namespace Elmah
             throw new NotSupportedException();
         }
 
-        internal sealed class ModuleRemovalClosure
+        internal sealed class Housekeeper
         {
             private readonly IHttpModule _module;
 
-            public ModuleRemovalClosure(IHttpModule module)
+            public Housekeeper(IHttpModule module)
             {
                 _module = module;
             }
