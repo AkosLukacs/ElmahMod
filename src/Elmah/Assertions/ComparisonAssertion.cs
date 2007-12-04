@@ -46,8 +46,8 @@ namespace Elmah.Assertions
 
     public class ComparisonAssertion : DataBoundAssertion
     {
-        private object _expectedValue;
-        private ComparisonResultPredicate _predicate;
+        private readonly object _expectedValue;
+        private readonly ComparisonResultPredicate _predicate;
 
         public ComparisonAssertion(XmlElement config, ComparisonResultPredicate predicate) :
             base(config)

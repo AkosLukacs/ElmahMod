@@ -46,7 +46,7 @@ namespace Elmah.Assertions
 
     public class RegexMatchAssertion : DataBoundAssertion
     {
-        private Regex _regex;
+        private readonly Regex _regex;
         
         public RegexMatchAssertion(XmlElement config) : 
             base(config)

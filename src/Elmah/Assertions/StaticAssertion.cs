@@ -29,14 +29,6 @@
 
 namespace Elmah.Assertions
 {
-    #region Imports
-
-    using System;
-    using System.Collections;
-    using System.Web;
-
-    #endregion
-
     /// <summary>
     /// An static assertion implementation that always evaluates to 
     /// a preset value.

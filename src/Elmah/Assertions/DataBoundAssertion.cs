@@ -38,7 +38,7 @@ namespace Elmah.Assertions
 
     public abstract class DataBoundAssertion : IAssertion
     {
-        private string _expression;
+        private readonly string _expression;
 
         public DataBoundAssertion(XmlElement config)
         {

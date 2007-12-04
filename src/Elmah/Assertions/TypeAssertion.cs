@@ -44,8 +44,8 @@ namespace Elmah.Assertions
 
     public sealed class TypeAssertion : DataBoundAssertion
     {
-        private Type _expectedType;
-        private bool _byCompatibility;
+        private readonly Type _expectedType;
+        private readonly bool _byCompatibility;
 
         public TypeAssertion(XmlElement config, bool byCompatibility) : 
             base(config)
