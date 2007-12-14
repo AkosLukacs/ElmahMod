@@ -50,7 +50,7 @@ call :compile v1.0.3705 net-1.0 /d:NET_1_0
 goto :EOF
 
 :net-1-1
-call :compile v1.1.4322 net-1.1 /d:NET_1_1
+call :compile v1.1.4322 net-1.1 /d:NET_1_1 /r:System.Data.OracleClient.dll
 goto :EOF
 
 :net-2-0

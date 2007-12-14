@@ -80,6 +80,11 @@
                     HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
                 />
                 <Reference
+                    Name = "System.Data.OracleClient"
+                    AssemblyName = "System.Data.OracleClient"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.OracleClient.dll"
+                />
+                <Reference
                     Name = "System.XML"
                     AssemblyName = "System.Xml"
                     HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
@@ -513,6 +518,17 @@
                 <File
                     RelPath = "Assertions\UnaryNotAssertion.cs"
                     Link = "..\..\Elmah\Assertions\UnaryNotAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Oracle.sql"
+                    Link = "..\..\Elmah\Oracle.sql"
+                    BuildAction = "Content"
+                />
+                <File
+                    RelPath = "OracleErrorLog.cs"
+                    Link = "..\..\Elmah\OracleErrorLog.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

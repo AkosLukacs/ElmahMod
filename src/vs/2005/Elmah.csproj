@@ -77,6 +77,7 @@
     <Reference Include="System.Data">
       <Name>System.Data</Name>
     </Reference>
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Data.SQLite, Version=1.0.44.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\lib\System.Data.SQLite.DLL</HintPath>
@@ -295,6 +296,10 @@
       <Link>MemoryErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\OracleErrorLog.cs">
+      <Link>OracleErrorLog.cs</Link>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="..\..\Elmah\PoweredBy.cs">
       <Link>PoweredBy.cs</Link>
       <SubType>Code</SubType>
@@ -351,6 +356,9 @@
     </Compile>
     <Content Include="..\..\Elmah\Database.sql">
       <Link>Database.sql</Link>
+    </Content>
+    <Content Include="..\..\Elmah\Oracle.sql">
+      <Link>Oracle.sql</Link>
     </Content>
     <EmbeddedResource Include="..\..\Elmah\RemoteAccessError.htm">
       <Link>RemoteAccessError.htm</Link>
