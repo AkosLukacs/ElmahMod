@@ -113,33 +113,45 @@ DECLARE @FirstSequence int
 DECLARE @StartRow int
 DECLARE @StartRowIndex int
 
--- Get the ID of the first error for the requested page
-
-SET @StartRowIndex = @PageIndex * @PageSize + 1
-SET ROWCOUNT @StartRowIndex
-
-SELECT  
-    @FirstTimeUTC = TimeUTC,
-    @FirstSequence = Sequence
-FROM 
-    ELMAH_Error
-WHERE   
-    Application = @Application
-ORDER BY 
-    TimeUTC DESC, 
-    Sequence DESC
-
--- Now set the row count to the requested page size and get
--- all records below it for the pertaining application.
-
-SET ROWCOUNT @PageSize
-
 SELECT 
     @TotalCount = COUNT(1) 
 FROM 
     ELMAH_Error
 WHERE 
     Application = @Application
+
+-- Get the ID of the first error for the requested page
+
+SET @StartRowIndex = @PageIndex * @PageSize + 1
+
+IF @StartRowIndex <= @TotalCount
+BEGIN
+
+    SET ROWCOUNT @StartRowIndex
+
+    SELECT  
+        @FirstTimeUTC = TimeUTC,
+        @FirstSequence = Sequence
+    FROM 
+        ELMAH_Error
+    WHERE   
+        Application = @Application
+    ORDER BY 
+        TimeUTC DESC, 
+        Sequence DESC
+
+END
+ELSE
+BEGIN
+
+    SET @PageSize = 0
+
+END
+
+-- Now set the row count to the requested page size and get
+-- all records below it for the pertaining application.
+
+SET ROWCOUNT @PageSize
 
 SELECT 
     errorId, 
@@ -155,7 +167,7 @@ FROM
     ELMAH_Error error
 WHERE
     Application = @Application
-AND 
+AND
     TimeUTC <= @FirstTimeUTC
 AND 
     Sequence <= @FirstSequence
