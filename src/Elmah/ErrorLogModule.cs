@@ -46,6 +46,7 @@ namespace Elmah
     public class ErrorLogModule : HttpModuleBase, IExceptionFiltering
     {
         public event ExceptionFilterEventHandler Filtering;
+        public event ErrorLoggedEventHandler Logged;
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
@@ -114,9 +115,14 @@ namespace Elmah
             // Log away...
             //
 
+            ErrorLogEntry entry = null;
+
             try
             {
-                GetErrorLog(context).Log(new Error(e, context));
+                Error error = new Error(e, context);
+                ErrorLog log = GetErrorLog(context);
+                string id = log.Log(error);
+                entry = new ErrorLogEntry(log, id, error);
             }
             catch (Exception localException)
             {
@@ -131,6 +137,21 @@ namespace Elmah
 
                 Trace.WriteLine(localException);
             }
+
+            if (entry != null)
+                OnLogged(new ErrorLoggedEventArgs(entry));
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Logged"/> event.
+        /// </summary>
+
+        protected virtual void OnLogged(ErrorLoggedEventArgs args)
+        {
+            ErrorLoggedEventHandler handler = Logged;
+
+            if (handler != null)
+                handler(this, args);
         }
 
         /// <summary>
@@ -153,6 +174,27 @@ namespace Elmah
         protected override bool SupportDiscoverability
         {
             get { return true; }
+        }
+    }
+
+    public delegate void ErrorLoggedEventHandler(object sender, ErrorLoggedEventArgs args);
+
+    [ Serializable ]
+    public sealed class ErrorLoggedEventArgs : EventArgs
+    {
+        private readonly ErrorLogEntry _entry;
+
+        public ErrorLoggedEventArgs(ErrorLogEntry entry)
+        {
+            if (entry == null)
+                throw new ArgumentNullException("entry");
+
+            _entry = entry;
+        }
+
+        public ErrorLogEntry Entry
+        {
+            get { return _entry; }
         }
     }
 }
