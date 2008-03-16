@@ -69,7 +69,7 @@ namespace Elmah
                             fileVersion : '" + GetFileVersion() + @"',
                             type        : '" + Build.TypeLowercase + @"',
                             status      : '" + Build.Status + @"',
-                            runtime     : '" + Build.Runtime + @"',
+                            framework   : '" + Build.Framework + @"',
                             imageRuntime: '" + Build.ImageRuntimeVersion + @"'
                         }
                     };

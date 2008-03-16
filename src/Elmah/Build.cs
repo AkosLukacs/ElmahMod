@@ -46,18 +46,18 @@ namespace Elmah
 #endif
 
 #if NET_1_0
-        public const string Runtime = "net-1.0";
+        public const string Framework = "net-1.0";
 #elif NET_1_1
-        public const string Runtime = "net-1.1";
+        public const string Framework = "net-1.1";
 #elif NET_2_0
-        public const string Runtime = "net-2.0";
+        public const string Framework = "net-2.0";
 #elif NET_3_5
-        public const string Runtime = "net-3.5";
+        public const string Framework = "net-3.5";
 #else
-        public const string Runtime = "unknown";
+        public const string Framework = "unknown";
 #endif
 
-        public const string Configuration = TypeLowercase + "; " + Status + "; " + Runtime;
+        public const string Configuration = TypeLowercase + "; " + Status + "; " + Framework;
 
         /// <summary>
         /// Gets a string representing the version of the CLR saved in 
