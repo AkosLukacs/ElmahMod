@@ -37,16 +37,18 @@ REM To compile for Microsoft .NET Framework 1.1, you must have Microsoft
 REM Visual Studio .NET 2003 installed in the standard path proposed by
 REM by its installer.
 REM
-REM To compile for Microsoft .NET Framework 2.0, you only need MSBUILD.EXE
-REM and which is expected to be located in the standard installation 
-REM directory.
+REM To compile for Microsoft .NET Framework 2.0, 3.0 and 3.5, you only
+REM need MSBUILD.EXE and which is expected to be located in the standard
+REM installation directory.
 
 setlocal
 pushd "%~dp0"
 set DEVENV70EXE=%ProgramFiles%\Microsoft Visual Studio .NET\Common7\IDE\devenv.com
 set DEVENV71EXE=%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com
-set MSBUILDEXE=%windir%\Microsoft.NET\Framework\v2.0.50727\msbuild
-for %%i in (debug release) do if exist "%DEVENV70EXE%" "%DEVENV70EXE%" 2002\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%DEVENV71EXE%" "%DEVENV71EXE%" 2003\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%MSBUILDEXE%"  "%MSBUILDEXE%"  2005\Elmah.sln /p:Configuration=%%i
+set MSBUILD20EXE=%windir%\Microsoft.NET\Framework\v2.0.50727\msbuild.exe
+set MSBUILD35EXE=%windir%\Microsoft.NET\Framework\v3.5\msbuild.exe
+for %%i in (debug release) do if exist "%DEVENV70EXE%"  "%DEVENV70EXE%"  2002\Elmah.sln /build %%i
+for %%i in (debug release) do if exist "%DEVENV71EXE%"  "%DEVENV71EXE%"  2003\Elmah.sln /build %%i
+for %%i in (debug release) do if exist "%MSBUILD20EXE%" "%MSBUILD20EXE%" 2005\Elmah.sln /p:Configuration=%%i
+for %%i in (debug release) do if exist "%MSBUILD35EXE%" "%MSBUILD35EXE%" 2008\Elmah.sln /p:Configuration=%%i
 popd

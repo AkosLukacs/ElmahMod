@@ -75,7 +75,7 @@ namespace Elmah
             // Stream out the error as formatted XML.
             //
 
-#if NET_2_0
+#if !NET_1_0 && !NET_1_1
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;

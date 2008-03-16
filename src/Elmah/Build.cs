@@ -51,6 +51,8 @@ namespace Elmah
         public const string Runtime = "net-1.1";
 #elif NET_2_0
         public const string Runtime = "net-2.0";
+#elif NET_3_5
+        public const string Runtime = "net-3.5";
 #else
         public const string Runtime = "unknown";
 #endif
