@@ -199,9 +199,7 @@ namespace Elmah
             bool moreErrors = nextPageIndex * _pageSize < _totalCount;
     
             if (moreErrors)
-            {
                 RenderLinkToPage(writer, HtmlLinkType.Next, "Next errors", nextPageIndex);
-            }
 
             //
             // If not on the first page then render a link to the firs page.
@@ -238,9 +236,7 @@ namespace Elmah
                 int stockSize = stockSizes[stockSizeIndex];
 
                 if (stockSizeIndex > 0)
-                {
                     writer.Write(stockSizeIndex + 1 < stockSizes.Length ? ", " : " or ");
-                }
                     
                 RenderLinkToPage(writer, HtmlLinkType.Start, stockSize.ToString(), 0, stockSize);
             }
@@ -283,9 +279,7 @@ namespace Elmah
                 int lastSlashIndex = simpleName.LastIndexOf('/');
 
                 if (lastSlashIndex > 0)
-                {
                     simpleName = simpleName.Substring(lastSlashIndex + 1);
-                }
             }
 
             writer.AddAttribute(HtmlTextWriterAttribute.Id, "PageTitle");
@@ -462,18 +456,14 @@ namespace Elmah
             Debug.Assert(error != null);
 
             if (error.Type.Length == 0)
-            {
                 return string.Empty;
-            }
 
             string simpleType = error.Type;
 
             int lastDotIndex = CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(simpleType, '.');
-                
+
             if (lastDotIndex > 0)
-            {
                 simpleType = simpleType.Substring(lastDotIndex + 1);
-            }
 
             const string conventionalSuffix = "Exception";
 
