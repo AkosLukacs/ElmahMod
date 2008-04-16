@@ -138,7 +138,7 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Get the <see cref="Exception"/> instance used to initialize this
+        /// Gets the <see cref="Exception"/> instance used to initialize this
         /// instance.
         /// </summary>
         /// <remarks>
@@ -173,7 +173,7 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Get or sets the type, class or category of the error.
+        /// Gets or sets the type, class or category of the error.
         /// </summary>
         
         public string Type
