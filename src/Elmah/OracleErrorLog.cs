@@ -31,6 +31,8 @@
 
 #if !NET_1_0
 
+[assembly: Elmah.Scc("$Id$")]
+
 namespace Elmah
 {
     #region Imports
