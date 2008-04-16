@@ -39,7 +39,17 @@ namespace Elmah.Assertions
     
     #endregion
 
+    /// <summary>
+    /// Represents the method that will be responsible for creating an 
+    /// assertion object and initializing it from an XML configuration
+    /// element.
+    /// </summary>
+
     public delegate IAssertion AssertionFactoryHandler(XmlElement config);
+
+    /// <summary>
+    /// Holds factory methods for creating configured assertion objects.
+    /// </summary>
 
     public sealed class AssertionFactory
     {

@@ -530,6 +530,10 @@ namespace Elmah
             }
         }
 
+        /// <summary>
+        /// An <see cref="IAsyncResult"/> implementation that wraps another.
+        /// </summary>
+
         private sealed class AsyncResultWrapper : IAsyncResult
         {
             private readonly IAsyncResult _inner;

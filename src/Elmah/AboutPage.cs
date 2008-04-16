@@ -37,6 +37,12 @@ namespace Elmah
 
     #endregion
 
+    /// <summary>
+    /// Renders an HTML page that presents information about the version,
+    /// build configuration, source files as well as a method to check
+    /// for updates.
+    /// </summary>
+
     internal sealed class AboutPage : ErrorPageBase
     {
         public AboutPage()
