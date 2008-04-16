@@ -296,6 +296,9 @@
       <Link>MemoryErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\MsAjaxDeltaErrorLogModule.cs">
+      <Link>MsAjaxDeltaErrorLogModule.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\OracleErrorLog.cs">
       <Link>OracleErrorLog.cs</Link>
       <SubType>Code</SubType>
