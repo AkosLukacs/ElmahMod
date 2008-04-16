@@ -204,6 +204,9 @@
       <Link>ErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorLogDataSourceAdapter.cs">
+      <Link>ErrorLogDataSourceAdapter.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorLogDownloadHandler.cs">
       <Link>ErrorLogDownloadHandler.cs</Link>
     </Compile>
