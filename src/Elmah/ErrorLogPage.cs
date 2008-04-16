@@ -405,7 +405,8 @@ namespace Elmah
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.User, "user-col"));
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.Time.ToShortDateString(), "date-col", 
                     error.Time.ToLongDateString()));
-                bodyRow.Cells.Add(FormatCell(new TableCell(), error.Time.ToLongTimeString(), "time-col"));
+                bodyRow.Cells.Add(FormatCell(new TableCell(), error.Time.ToShortTimeString(), "time-col",
+                    error.Time.ToLongTimeString()));
 
                 //
                 // Finally, add the row to the table.
