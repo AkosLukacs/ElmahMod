@@ -214,7 +214,7 @@ namespace Elmah
             Error error = entry.Error;
             writer.RenderBeginTag(HtmlTextWriterTag.Li);
 
-            string errorType = ErrorLogPage.GetSimpleErrorType(error);
+            string errorType = ErrorDisplay.HumaneExceptionErrorType(error);
 
             if (errorType.Length > 0)
             {

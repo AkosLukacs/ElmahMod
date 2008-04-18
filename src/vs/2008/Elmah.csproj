@@ -184,6 +184,9 @@
     <Compile Include="..\..\Elmah\ErrorDigestRssHandler.cs">
       <Link>ErrorDigestRssHandler.cs</Link>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorDisplay.cs">
+      <Link>ErrorDisplay.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorFilterConfiguration.cs">
       <Link>ErrorFilterConfiguration.cs</Link>
       <SubType>Code</SubType>

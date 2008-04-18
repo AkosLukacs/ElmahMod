@@ -368,7 +368,7 @@ namespace Elmah
 
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.HostName, "host-col"));
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.StatusCode.ToString(), "code-col", Mask.NullString(HttpWorkerRequest.GetStatusDescription(error.StatusCode))));
-                bodyRow.Cells.Add(FormatCell(new TableCell(), GetSimpleErrorType(error), "type-col", error.Type));
+                bodyRow.Cells.Add(FormatCell(new TableCell(), ErrorDisplay.HumaneExceptionErrorType(error), "type-col", error.Type));
                     
                 //
                 // Format the message cell, which contains the message 
@@ -448,38 +448,6 @@ namespace Elmah
 
             return cell;
         }
-        
-        // TODO: GetSimpleErrorType needs to be moved elsewhere.
-
-        internal static string GetSimpleErrorType(Error error)
-        {
-            Debug.Assert(error != null);
-
-            if (error.Type.Length == 0)
-                return string.Empty;
-
-            string simpleType = error.Type;
-
-            int lastDotIndex = CultureInfo.InvariantCulture.CompareInfo.LastIndexOf(simpleType, '.');
-
-            if (lastDotIndex > 0)
-                simpleType = simpleType.Substring(lastDotIndex + 1);
-
-            const string conventionalSuffix = "Exception";
-
-            if (simpleType.Length > conventionalSuffix.Length)
-            {
-                int suffixIndex = simpleType.Length - conventionalSuffix.Length;
-                
-                if (string.Compare(simpleType, suffixIndex, conventionalSuffix, 0,
-                    conventionalSuffix.Length, true, CultureInfo.InvariantCulture) == 0)
-                {
-                    simpleType = simpleType.Substring(0, suffixIndex);
-                }
-            }
-
-            return simpleType;
-        }
 
         private void RenderLinkToPage(HtmlTextWriter writer, string type, string text, int pageIndex)
         {
@@ -506,6 +474,6 @@ namespace Elmah
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             this.Server.HtmlEncode(text, writer);
             writer.RenderEndTag();
-        }
+        }   
     }
 }

@@ -170,6 +170,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorDisplay.cs"
+                    Link = "..\..\Elmah\ErrorDisplay.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorFilterConfiguration.cs"
                     Link = "..\..\Elmah\ErrorFilterConfiguration.cs"
                     SubType = "Code"
