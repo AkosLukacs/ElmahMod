@@ -34,7 +34,11 @@ CREATE SEQUENCE elmah$error_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE NOCYCLE N
 -- you can optionally specify tablespaces here too!
 CREATE TABLE elmah$error
 (
-    errorid			NVARCHAR2(32) DEFAULT SYS_GUID() NOT NULL,
+	-- if using Oracle 10g and above you can add DEFAULT SYS_GUID() 
+	-- to the errorid definition.
+	-- Oracle 8i doesn't like it with an NVARCHAR2
+	-- haven't tested it against 9i
+    errorid			NVARCHAR2(32) NOT NULL,
     application		NVARCHAR2(60) NOT NULL,
     host			NVARCHAR2(50) NOT NULL,
     type			NVARCHAR2(100) NOT NULL,
