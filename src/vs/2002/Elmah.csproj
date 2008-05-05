@@ -93,6 +93,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "AccessErrorLog.cs"
+                    Link = "..\..\Elmah\AccessErrorLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ApplicationException.cs"
                     Link = "..\..\Elmah\ApplicationException.cs"
                     SubType = "Code"
@@ -138,6 +144,11 @@
                     Link = "..\..\Elmah\Debug.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Elmah.mdb"
+                    Link = "..\..\Elmah\Elmah.mdb"
+                    BuildAction = "Content"
                 />
                 <File
                     RelPath = "Error.cs"
