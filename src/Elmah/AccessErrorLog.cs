@@ -187,7 +187,6 @@ namespace Elmah
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
-                byte[] tempbuff = Encoding.Unicode.GetBytes(errorXml);
 
                 parameters.Add("@ErrorId", OleDbType.VarChar, 32).Value = id.ToString("N");
                 parameters.Add("@Application", OleDbType.VarChar, _maxAppNameLength).Value = ApplicationName;
