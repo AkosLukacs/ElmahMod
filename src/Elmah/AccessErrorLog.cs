@@ -323,16 +323,7 @@ namespace Elmah
                 parameters.Add("@ErrorId", OleDbType.VarChar, 32).Value = errorGuid.ToString("N");
 
                 connection.Open();
-
-                try
-                {
-                    errorXml = command.ExecuteScalar().ToString();
-                }
-                catch (Exception e)
-                {
-                    Trace.WriteLine(e.ToString());
-                    // TODO: Review and document why a general catch clause is needed here?
-                }
+                errorXml = (string)command.ExecuteScalar();
             }
 
             if (errorXml == null)
