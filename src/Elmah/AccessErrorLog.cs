@@ -37,6 +37,7 @@ namespace Elmah
     using System.Configuration;
     using System.Data;
     using System.Data.OleDb;
+    using System.Diagnostics;
     using System.IO;
     using System.Text;
     using System.Threading;
@@ -329,8 +330,10 @@ namespace Elmah
                 {
                     errorXml = command.ExecuteScalar().ToString();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    Trace.WriteLine(e.ToString());
+                    // TODO: Review and document why a general catch clause is needed here?
                 }
             }
 
