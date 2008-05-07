@@ -34,21 +34,21 @@ CREATE SEQUENCE elmah$error_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE NOCYCLE N
 -- you can optionally specify tablespaces here too!
 CREATE TABLE elmah$error
 (
-	-- if using Oracle 10g and above you can add DEFAULT SYS_GUID() 
-	-- to the errorid definition.
-	-- Oracle 8i doesn't like it with an NVARCHAR2
-	-- haven't tested it against 9i
-    errorid			NVARCHAR2(32) NOT NULL,
-    application		NVARCHAR2(60) NOT NULL,
-    host			NVARCHAR2(50) NOT NULL,
-    type			NVARCHAR2(100) NOT NULL,
-    source			NVARCHAR2(60) NOT NULL,
-    message			NVARCHAR2(500) NOT NULL,
+    -- if using Oracle 10g and above you can add DEFAULT SYS_GUID() 
+    -- to the errorid definition.
+    -- Oracle 8i doesn't like it with an NVARCHAR2
+    -- haven't tested it against 9i
+    errorid         NVARCHAR2(32) NOT NULL,
+    application     NVARCHAR2(60) NOT NULL,
+    host            NVARCHAR2(50) NOT NULL,
+    type            NVARCHAR2(100) NOT NULL,
+    source          NVARCHAR2(60) NOT NULL,
+    message         NVARCHAR2(500) NOT NULL,
     username        NVARCHAR2(50) NOT NULL,
-    statuscode		NUMBER NOT NULL,
-    timeutc			DATE NOT NULL,
-    sequencenumber	NUMBER NOT NULL,
-    allxml			NCLOB NOT NULL,
+    statuscode      NUMBER NOT NULL,
+    timeutc         DATE NOT NULL,
+    sequencenumber  NUMBER NOT NULL,
+    allxml          NCLOB NOT NULL,
     CONSTRAINT idx_elmah$error_pk 
         PRIMARY KEY (errorid) 
         USING INDEX -- TABLESPACE "TABLESPACE FOR INDEX"
@@ -116,11 +116,11 @@ IS
     )
     IS
     BEGIN
-        SELECT	allxml
-        INTO	v_AllXml
-        FROM	elmah$error
-        WHERE	errorid = UPPER(v_ErrorId)
-        AND		application = v_Application;
+        SELECT  allxml
+        INTO    v_AllXml
+        FROM    elmah$error
+        WHERE   errorid = UPPER(v_ErrorId)
+        AND     application = v_Application;
     EXCEPTION
         WHEN NO_DATA_FOUND THEN
             v_AllXml := NULL;
@@ -136,27 +136,27 @@ IS
     )
     IS
         l_StartRowIndex NUMBER;
-        l_EndRowIndex	NUMBER;
+        l_EndRowIndex   NUMBER;
     BEGIN
         -- Get the ID of the first error for the requested page
         l_StartRowIndex := v_PageIndex * v_PageSize + 1;
         l_EndRowIndex := l_StartRowIndex + v_PageSize - 1;
         
         -- find out how many rows we've got in total
-        SELECT	COUNT(*)
-        INTO	v_TotalCount
-        FROM	elmah$error
-        WHERE	application = v_Application;
+        SELECT  COUNT(*)
+        INTO    v_TotalCount
+        FROM    elmah$error
+        WHERE   application = v_Application;
 
         OPEN v_Results FOR
-            SELECT	*
+            SELECT  *
             FROM
             (
-                SELECT	e.*,
+                SELECT  e.*,
                         ROWNUM row_number
                 FROM
                 (
-                    SELECT	/*+ INDEX(elmah$error, idx_elmah$error_app_time_seq) */
+                    SELECT  /*+ INDEX(elmah$error, idx_elmah$error_app_time_seq) */
                             errorid,
                             application,
                             host,
@@ -166,15 +166,15 @@ IS
                             username,
                             statuscode,
                             timeutc
-                    FROM	elmah$error
-                    WHERE	application = v_Application
+                    FROM    elmah$error
+                    WHERE   application = v_Application
                     ORDER BY
                             timeutc DESC, 
                             sequencenumber DESC
                 ) e
                 WHERE ROWNUM <= l_EndRowIndex
             )
-            WHERE	row_number >= l_StartRowIndex;
+            WHERE   row_number >= l_StartRowIndex;
             
     END GetErrorsXml;
 
@@ -220,7 +220,7 @@ IS
                 v_TimeUtc
             );
 
-    END LogError;	
+    END LogError;   
 
 END pkg_elmah$error;
 /
