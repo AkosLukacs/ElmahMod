@@ -38,9 +38,7 @@ namespace Elmah
     using System.Data;
     using System.Data.OleDb;
     using System.Diagnostics;
-    using System.IO;
     using System.Text;
-    using System.Threading;
     using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
