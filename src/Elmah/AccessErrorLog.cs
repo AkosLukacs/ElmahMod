@@ -244,7 +244,7 @@ namespace Elmah
                 sql.Append("SELECT TOP ");
                 sql.Append(maxRecords.ToString());
                 sql.Append(" TimeUtc, SequenceNumber FROM Elmah_Error ");
-                sql.Append("WHERE Application = @Application");
+                sql.Append("WHERE Application = @Application ");
                 sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
                 sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
                 sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
