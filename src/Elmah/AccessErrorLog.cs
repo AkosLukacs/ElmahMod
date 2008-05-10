@@ -229,54 +229,57 @@ namespace Elmah
                 connection.Open();
                 int totalCount = (int)command.ExecuteScalar();
 
-                int maxRecords = pageSize * (pageIndex + 1);
-                if (maxRecords > totalCount)
+                if (pageIndex * pageSize < totalCount)
                 {
-                    maxRecords = totalCount;
-                    pageSize = totalCount - pageSize * (totalCount / pageSize);
-                }
-
-                StringBuilder sql = new StringBuilder(1000);
-                sql.Append("SELECT e.* FROM (");
-                sql.Append("SELECT TOP ");
-                sql.Append(pageSize.ToString());
-                sql.Append(" TimeUtc, SequenceNumber FROM (");
-                sql.Append("SELECT TOP ");
-                sql.Append(maxRecords.ToString());
-                sql.Append(" TimeUtc, SequenceNumber FROM Elmah_Error ");
-                sql.Append("WHERE Application = @Application ");
-                sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
-                sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
-                sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
-                sql.Append("ORDER BY e.TimeUtc DESC, e.SequenceNumber DESC");
-
-                command.CommandText = sql.ToString();
-
-                using (OleDbDataReader reader = command.ExecuteReader())
-                {
-                    Debug.Assert(reader != null);
-
-                    while (reader.Read())
+                    int maxRecords = pageSize * (pageIndex + 1);
+                    if (maxRecords > totalCount)
                     {
-                        string id = reader["ErrorId"].ToString();
-                        Guid guid = new Guid(id);
-
-                        Error error = NewError();
-
-                        error.ApplicationName = reader["Application"].ToString();
-                        error.HostName = reader["Host"].ToString();
-                        error.Type = reader["Type"].ToString();
-                        error.Source = reader["Source"].ToString();
-                        error.Message = reader["Message"].ToString();
-                        error.User = reader["UserName"].ToString();
-                        error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                        error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
-
-                        if (errorEntryList != null)
-                            errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                        maxRecords = totalCount;
+                        pageSize = totalCount - pageSize * (totalCount / pageSize);
                     }
 
-                    reader.Close();
+                    StringBuilder sql = new StringBuilder(1000);
+                    sql.Append("SELECT e.* FROM (");
+                    sql.Append("SELECT TOP ");
+                    sql.Append(pageSize.ToString());
+                    sql.Append(" TimeUtc, SequenceNumber FROM (");
+                    sql.Append("SELECT TOP ");
+                    sql.Append(maxRecords.ToString());
+                    sql.Append(" TimeUtc, SequenceNumber FROM Elmah_Error ");
+                    sql.Append("WHERE Application = @Application ");
+                    sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
+                    sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
+                    sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
+                    sql.Append("ORDER BY e.TimeUtc DESC, e.SequenceNumber DESC");
+
+                    command.CommandText = sql.ToString();
+
+                    using (OleDbDataReader reader = command.ExecuteReader())
+                    {
+                        Debug.Assert(reader != null);
+
+                        while (reader.Read())
+                        {
+                            string id = reader["ErrorId"].ToString();
+                            Guid guid = new Guid(id);
+
+                            Error error = NewError();
+
+                            error.ApplicationName = reader["Application"].ToString();
+                            error.HostName = reader["Host"].ToString();
+                            error.Type = reader["Type"].ToString();
+                            error.Source = reader["Source"].ToString();
+                            error.Message = reader["Message"].ToString();
+                            error.User = reader["UserName"].ToString();
+                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
+                            error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
+
+                            if (errorEntryList != null)
+                                errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                        }
+
+                        reader.Close();
+                    }
                 }
 
                 return totalCount;
