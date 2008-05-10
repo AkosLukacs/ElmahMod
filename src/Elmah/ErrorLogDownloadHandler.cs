@@ -170,7 +170,7 @@ namespace Elmah
 
                 csv.Field(error.ApplicationName)
                     .Field(error.HostName)
-                    .Field(time.ToString("yyyy-MM-dd hh:mm:ss", culture))
+                    .Field(time.ToString("yyyy-MM-dd HH:mm:ss", culture))
                     .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
                     .Field(error.Type)
                     .Field(error.Source)

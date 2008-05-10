@@ -42,7 +42,7 @@ using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 [assembly: AssemblyCulture("")]
 
 [assembly: AssemblyVersion("1.0.9414.0")]
-[assembly: AssemblyFileVersion("1.0.9414.1441")]
+[assembly: AssemblyFileVersion("1.0.10010.1153")]
 [assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
 
 [assembly: CLSCompliant(true)] 
