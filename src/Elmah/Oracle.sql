@@ -40,7 +40,7 @@ CREATE TABLE elmah$error
     -- haven't tested it against 9i
     errorid         NVARCHAR2(32) NOT NULL,
     application     NVARCHAR2(60) NOT NULL,
-    host            NVARCHAR2(50) NOT NULL,
+    host            NVARCHAR2(30) NOT NULL,
     type            NVARCHAR2(100) NOT NULL,
     source          NVARCHAR2(60) NOT NULL,
     message         NVARCHAR2(500) NOT NULL,
