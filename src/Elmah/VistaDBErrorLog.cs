@@ -204,11 +204,6 @@ namespace Elmah
         /// of logged time.
         /// </summary>
 
-        private static string EscapeApostrophes(string text)
-        {
-            return text.Replace("'", "''");
-        }
-
         public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
         {
             if (pageIndex < 0)
@@ -348,6 +343,11 @@ namespace Elmah
         private static string MapPath(string path)
         {
             return System.Web.Hosting.HostingEnvironment.MapPath(path);
+        }
+
+        private static string EscapeApostrophes(string text)
+        {
+            return text.Replace("'", "''");
         }
 
         private static string ResolveDataSourceFilePath(string path)
