@@ -221,10 +221,7 @@ namespace Elmah
             using (OleDbCommand command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
-                command.CommandText = "SELECT COUNT(*) FROM Elmah_Error WHERE Application = @Application";
-
-                OleDbParameterCollection parameters = command.Parameters;
-                parameters.Add("@Application", OleDbType.VarChar, _maxAppNameLength).Value = ApplicationName;
+                command.CommandText = "SELECT COUNT(*) FROM Elmah_Error";
 
                 connection.Open();
                 int totalCount = (int)command.ExecuteScalar();
@@ -246,7 +243,6 @@ namespace Elmah
                     sql.Append("SELECT TOP ");
                     sql.Append(maxRecords.ToString());
                     sql.Append(" TimeUtc, SequenceNumber FROM Elmah_Error ");
-                    sql.Append("WHERE Application = @Application ");
                     sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
                     sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
                     sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
@@ -317,12 +313,10 @@ namespace Elmah
             {
                 command.CommandText = "SELECT   AllXml " +
                                       "FROM     Elmah_Error " +
-                                      "WHERE    Application = @Application " + 
-                                      "AND      ErrorId = @ErrorId";
+                                      "WHERE    ErrorId = @ErrorId";
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
-                parameters.Add("@Application", OleDbType.VarChar, _maxAppNameLength).Value = ApplicationName;
                 parameters.Add("@ErrorId", OleDbType.VarChar, 32).Value = errorGuid.ToString("N");
 
                 connection.Open();
