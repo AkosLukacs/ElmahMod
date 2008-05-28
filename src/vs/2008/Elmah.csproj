@@ -93,6 +93,10 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
+    <Reference Include="VistaDB.NET20, Version=3.3.1.54, Culture=neutral, PublicKeyToken=dfc935afe2125461, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\VistaDB.NET20.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\Elmah\AboutPage.cs">
@@ -363,6 +367,10 @@
     </Compile>
     <Compile Include="..\..\Elmah\TestException.cs">
       <Link>TestException.cs</Link>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\VistaDBErrorLog.cs">
+      <Link>VistaDBErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Elmah\XmlFileErrorLog.cs">

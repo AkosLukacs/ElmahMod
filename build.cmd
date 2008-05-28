@@ -56,17 +56,19 @@ call :compile v1.1.4322 net-1.1 /d:NET_1_1 /r:System.Data.OracleClient.dll
 goto :EOF
 
 :net-2-0
-call :compile v2.0.50727 net-2.0 /d:NET_2_0 /r:lib\System.Data.SQLite.dll /nowarn:618
+call :compile v2.0.50727 net-2.0 /d:NET_2_0 /r:lib\System.Data.SQLite.dll /r:lib\VistaDB.NET20.dll /nowarn:618
 echo.
 echo Copying dependencies to output directories...
 for %%i in (Debug Release) do if exist bin\net-2.0\%%i copy lib\System.Data.SQLite.dll bin\net-2.0\%%i
+for %%i in (Debug Release) do if exist bin\net-2.0\%%i copy lib\VistaDB.NET20.dll bin\net-2.0\%%i
 goto :EOF
 
 :net-3-5
-call :compile v3.5 net-3.5 /d:NET_3_5 /r:lib\System.Data.SQLite.dll /nowarn:618
+call :compile v3.5 net-3.5 /d:NET_3_5 /r:lib\System.Data.SQLite.dll /r:lib\VistaDB.NET20.dll /nowarn:618
 echo.
 echo Copying dependencies to output directories...
 for %%i in (Debug Release) do if exist bin\net-3.5\%%i copy lib\System.Data.SQLite.dll bin\net-3.5\%%i
+for %%i in (Debug Release) do if exist bin\net-3.5\%%i copy lib\VistaDB.NET20.dll bin\net-3.5\%%i
 goto :EOF
 
 :compile
