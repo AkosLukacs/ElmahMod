@@ -145,33 +145,8 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            StringWriter sw = new StringWriter();
-
-#if !NET_1_0 && !NET_1_1
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.NewLineOnAttributes = true;
-            settings.CheckCharacters = false;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-#endif
-
-            try
-            {
-                writer.WriteStartElement("error");
-                error.ToXml(writer);
-                writer.WriteEndElement();
-                writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
-            }
-
             Guid id = Guid.NewGuid();
-            string errorXml = sw.ToString();
+            string errorXml = error.ToXmlString();
 
             using (OleDbConnection connection = new OleDbConnection(this.ConnectionString))
             using (OleDbCommand command = connection.CreateCommand())

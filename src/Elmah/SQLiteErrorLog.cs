@@ -44,7 +44,6 @@ namespace Elmah
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
-    using System.Runtime.CompilerServices;
     using System.Xml;
 
     #endregion
@@ -168,21 +167,7 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            StringWriter sw = new StringWriter();
-
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.NewLineOnAttributes = true;
-            settings.CheckCharacters = false;
-            using (XmlWriter writer = XmlWriter.Create(sw, settings))
-            {
-                writer.WriteStartElement("error");
-                error.ToXml(writer);
-                writer.WriteEndElement();
-                writer.Flush();
-            }
-
-            string errorXml = sw.ToString();
+            string errorXml = error.ToXmlString();
 
             const string query = @"
                 INSERT INTO Error (

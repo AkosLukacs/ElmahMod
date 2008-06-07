@@ -41,7 +41,6 @@ namespace Elmah
     using System;
     using System.Data;
     using System.IO;
-    using System.Runtime.CompilerServices;
     using System.Xml;
     using VistaDB;
     using VistaDB.DDA;
@@ -50,7 +49,6 @@ namespace Elmah
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
     using StringReader = System.IO.StringReader;
-    using StringWriter = System.IO.StringWriter;
 
     #endregion
 
@@ -153,27 +151,7 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            StringWriter sw = new StringWriter();
-
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.NewLineOnAttributes = true;
-            settings.CheckCharacters = false;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-
-            try
-            {
-                writer.WriteStartElement("error");
-                error.ToXml(writer);
-                writer.WriteEndElement();
-                writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
-            }
-
-            string errorXml = sw.ToString();
+            string errorXml = error.ToXmlString();
             Guid id = Guid.NewGuid();
 
             using (VistaDBConnection connection = new VistaDBConnection(this.ConnectionString))

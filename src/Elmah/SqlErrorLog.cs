@@ -44,7 +44,6 @@ namespace Elmah
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
     using StringReader = System.IO.StringReader;
-    using StringWriter = System.IO.StringWriter;
 
     #endregion
 
@@ -150,32 +149,7 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            StringWriter sw = new StringWriter();
-
-#if !NET_1_0 && !NET_1_1
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.NewLineOnAttributes = true;
-            settings.CheckCharacters = false;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-#endif
-
-            try
-            {
-                writer.WriteStartElement("error");
-                error.ToXml(writer);
-                writer.WriteEndElement();
-                writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
-            }
-
-            string errorXml = sw.ToString();
+            string errorXml = error.ToXmlString();
             Guid id = Guid.NewGuid();
 
             using (SqlConnection connection = new SqlConnection(this.ConnectionString))

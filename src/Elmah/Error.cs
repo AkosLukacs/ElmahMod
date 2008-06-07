@@ -32,7 +32,9 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.IO;
     using System.Web;
+    using System.Xml;
 
     using XmlReader = System.Xml.XmlReader;
     using XmlWriter = System.Xml.XmlWriter;
@@ -436,6 +438,40 @@ namespace Elmah
 
             WriteXmlAttributes(writer);
             WriteInnerXml(writer);
+        }
+
+        /// <summary>
+        /// Gets a default XML representation of the error data as a string.
+        /// </summary>
+        /// <returns>A string version of the XML representation.</returns>
+        public string ToXmlString()
+        {
+            StringWriter sw = new StringWriter();
+
+#if !NET_1_0 && !NET_1_1
+            XmlWriterSettings settings = new XmlWriterSettings();
+            settings.Indent = true;
+            settings.NewLineOnAttributes = true;
+            settings.CheckCharacters = false;
+            XmlWriter writer = XmlWriter.Create(sw, settings);
+#else
+            XmlTextWriter writer = new XmlTextWriter(sw);
+            writer.Formatting = Formatting.Indented;
+#endif
+
+            try
+            {
+                writer.WriteStartElement("error");
+                this.ToXml(writer);
+                writer.WriteEndElement();
+                writer.Flush();
+            }
+            finally
+            {
+                writer.Close();
+            }
+
+            return sw.ToString();
         }
 
         /// <summary>
