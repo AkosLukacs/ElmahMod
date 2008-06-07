@@ -40,10 +40,9 @@ namespace Elmah
     using System.Diagnostics;
     using System.Text;
     using System.Xml;
+    using System.IO;
 
     using IDictionary = System.Collections.IDictionary;
-    using StringReader = System.IO.StringReader;
-    using StringWriter = System.IO.StringWriter;
     using IList = System.Collections.IList;
 
     #endregion
@@ -80,6 +79,8 @@ namespace Elmah
                 throw new ApplicationException("Connection string is missing for the Access error log.");
 
             _connectionString = connectionString;
+
+            InitializeDatabase();
 
             //
             // Set the application name as this implementation provides
@@ -398,6 +399,58 @@ namespace Elmah
                 return string.Empty;
 
             return Configuration.AppSettings[connectionStringAppKey];
+        }
+
+
+        private const string ScriptResourceName = "mkmdb.vbs";
+
+        private void InitializeDatabase()
+        {
+            string connectionString = ConnectionString;
+            Debug.AssertStringNotEmpty(connectionString);
+
+            string dbFilePath = ConnectionStringHelper.GetDataSourceFilePath(connectionString);
+            if (File.Exists(dbFilePath))
+                return;
+
+            //
+            // Create a temporary copy of the mkmdb.vbs script
+            //
+
+            string tempVbsFile = Path.GetTempPath() + ScriptResourceName;
+            using (FileStream vbsFileStream = new FileStream(tempVbsFile, FileMode.Create, FileAccess.Write))
+            {
+                ManifestResourceHelper.WriteResourceToStream(vbsFileStream, ScriptResourceName);
+            }
+
+            //
+            // Run the script file to create the database using the supplied path
+            //
+
+            ProcessStartInfo processInfo = new ProcessStartInfo(tempVbsFile, string.Concat("\"", dbFilePath, "\""));
+            using (Process process = Process.Start(processInfo))
+            {
+                //
+                // 5 seconds should be plenty of time to create the database
+                //
+
+                if (!process.WaitForExit(5000))
+                {
+                    //
+                    // but it wasn't, so clean up and throw an exception!
+                    // Realistically, I don't expect to ever get here!
+                    //
+
+                    process.Kill();
+                    throw new Exception("The create Access database script took more than 5 seconds to execute, so it has been terminated prematurely.");
+                }
+            }
+
+            //
+            // Clean up after ourselves!!
+            //
+
+            File.Delete(tempVbsFile);
         }
     }
 }

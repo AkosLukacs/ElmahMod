@@ -147,6 +147,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ConnectionStringHelper.cs"
+                    Link = "..\..\Elmah\ConnectionStringHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Database.sql"
                     Link = "..\..\Elmah\Database.sql"
                     BuildAction = "Content"
@@ -361,6 +367,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ManifestResourceHelper.cs"
+                    Link = "..\..\Elmah\ManifestResourceHelper.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Mask.cs"
                     Link = "..\..\Elmah\Mask.cs"
                     SubType = "Code"
@@ -548,6 +560,11 @@
                     RelPath = "Elmah.mdb"
                     Link = "..\..\Elmah\Elmah.mdb"
                     BuildAction = "Content"
+                />
+                <File
+                    RelPath = "mkmdb.vbs"
+                    Link = "..\..\Elmah\mkmdb.vbs"
+                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>

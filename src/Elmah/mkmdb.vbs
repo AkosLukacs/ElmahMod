@@ -88,7 +88,6 @@ Function CreateTable(ByVal Catalog, ByVal Name)
     With Table.Columns
         .Append "ErrorId", adVarWChar, 32
         .Append "Application", adVarWChar, 60
-        ' TODO: Check why this is 30 in AccessErrorLog but 50 in original MDB?
         .Append "Host", adVarWChar, 30
         .Append "Type", adVarWChar, 100
         .Append "Source", adVarWChar, 60
@@ -108,19 +107,12 @@ Function CreateTable(ByVal Catalog, ByVal Name)
 
 End Function
 
-Sub Main()
+If WScript.Arguments.Count = 1 Then
+	Dim FileName
+	
+	FileName = WScript.Arguments(0)
 
-    ' TODO: See if the MDB file already exists?
-    ' Set Connection = CreateObject("ADODB.Connection")
-    ' Connection.Open "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=biblio.mdb"
-    ' Set Catalog.ActiveConnection = Connection
-    
-    ' TODO: Allow the file name to be sent in as an argument
-    
-    Set Catalog = CreateObject("ADOX.Catalog")
-    Catalog.Create "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=elmah.mdb"
-    CreateTable Catalog, "ELMAH_Error"
-
-End Sub
-
-Main
+	Set Catalog = CreateObject("ADOX.Catalog")
+	Catalog.Create "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & FileName
+	CreateTable Catalog, "ELMAH_Error"
+End If

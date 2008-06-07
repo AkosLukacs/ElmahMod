@@ -177,6 +177,9 @@
       <Link>ConfigurationSectionHelper.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ConnectionStringHelper.cs">
+      <Link>ConnectionStringHelper.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\Debug.cs">
       <Link>Debug.cs</Link>
       <SubType>Code</SubType>
@@ -304,6 +307,9 @@
       <Link>ManifestResourceHandler.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ManifestResourceHelper.cs">
+      <Link>ManifestResourceHelper.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\Mask.cs">
       <Link>Mask.cs</Link>
       <SubType>Code</SubType>
@@ -383,6 +389,9 @@
     <Content Include="..\..\Elmah\Elmah.mdb">
       <Link>Elmah.mdb</Link>
     </Content>
+    <EmbeddedResource Include="..\..\Elmah\mkmdb.vbs">
+      <Link>mkmdb.vbs</Link>
+    </EmbeddedResource>
     <Content Include="..\..\Elmah\Oracle.sql">
       <Link>Oracle.sql</Link>
     </Content>

@@ -66,44 +66,17 @@ namespace Elmah
         public void ProcessRequest(HttpContext context)
         {
             //
-            // Grab the resource stream from the manifest.
+            // Set the response headers for indicating the content type 
+            // and encoding (if specified).
             //
 
-            Type thisType = this.GetType();
+            HttpResponse response = context.Response;
+            response.ContentType = _contentType;
 
-            using (Stream stream = thisType.Assembly.GetManifestResourceStream(thisType, _resourceName))
-            {
+            if (_responseEncoding != null)
+                response.ContentEncoding = _responseEncoding;
 
-                //
-                // Allocate a buffer for reading the stream. The maximum size
-                // of this buffer is fixed to 4 KB.
-                //
-
-                byte[] buffer = new byte[Math.Min(stream.Length, 4096)];
-
-                //
-                // Set the response headers for indicating the content type 
-                // and encoding (if specified).
-                //
-
-                HttpResponse response = context.Response;
-                response.ContentType = _contentType;
-
-                if (_responseEncoding != null)
-                    response.ContentEncoding = _responseEncoding;
-
-                //
-                // Finally, write out the bytes!
-                //
-
-                int readLength = stream.Read(buffer, 0, buffer.Length);
-
-                while (readLength > 0)
-                {
-                    response.OutputStream.Write(buffer, 0, readLength);
-                    readLength = stream.Read(buffer, 0, buffer.Length);
-                }
-            }
+            ManifestResourceHelper.WriteResourceToStream(response.OutputStream, _resourceName);
         }
 
         public bool IsReusable
