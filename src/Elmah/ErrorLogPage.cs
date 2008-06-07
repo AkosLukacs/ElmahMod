@@ -383,7 +383,7 @@ namespace Elmah
                 messageLabel.Text = this.Server.HtmlEncode(error.Message);
 
                 HyperLink detailsLink = new HyperLink();
-                detailsLink.NavigateUrl = this.Request.Path + "/detail?id=" + errorEntry.Id;
+                detailsLink.NavigateUrl = BasePageName + "/detail?id=" + errorEntry.Id;
                 detailsLink.Text = "Details&hellip;";
 
                 messageCell.Controls.Add(messageLabel);
@@ -461,8 +461,8 @@ namespace Elmah
             Debug.Assert(pageIndex >= 0);
             Debug.Assert(pageSize >= 0);
 
-            string href = string.Format("{0}?page={1}&size={2}", 
-                this.Request.Path,
+            string href = string.Format("{0}?page={1}&size={2}",
+                BasePageName,
                 (pageIndex + 1).ToString(CultureInfo.InvariantCulture),
                 pageSize.ToString(CultureInfo.InvariantCulture));
 
