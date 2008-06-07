@@ -44,7 +44,6 @@ namespace Elmah
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
-    using System.Xml;
 
     #endregion
 
@@ -322,15 +321,9 @@ namespace Elmah
                 if (errorXml == null)
                     return null;
 
-                using (XmlReader reader = XmlReader.Create(new StringReader(errorXml)))
-                {
-                    if (!reader.IsStartElement("error"))
-                        throw new ApplicationException("The error XML is not in the expected format.");
-
-                    Error error = NewError();
-                    error.FromXml(reader);
-                    return new ErrorLogEntry(this, id, error);
-                }
+                Error error = NewError();
+                error.FromString(errorXml);
+                return new ErrorLogEntry(this, id, error);
             }
         }
 

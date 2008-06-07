@@ -41,14 +41,12 @@ namespace Elmah
     using System;
     using System.Data;
     using System.IO;
-    using System.Xml;
     using VistaDB;
     using VistaDB.DDA;
     using VistaDB.Provider;
 
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
-    using StringReader = System.IO.StringReader;
 
     #endregion
 
@@ -293,14 +291,8 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            StringReader sr = new StringReader(errorXml);
-            XmlTextReader reader = new XmlTextReader(sr);
-
-            if (!reader.IsStartElement("error"))
-                throw new ApplicationException("The error XML is not in the expected format.");
-
             Error error = NewError();
-            error.FromXml(reader);
+            error.FromString(errorXml);
 
             return new ErrorLogEntry(this, id, error);
         }

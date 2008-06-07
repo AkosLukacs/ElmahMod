@@ -313,6 +313,23 @@ namespace Elmah
         }
 
         /// <summary>
+        /// Loads the error object from a string XML representation.
+        /// </summary>
+
+        public void FromString(string errorXml)
+        {
+            using (StringReader sr = new StringReader(errorXml))
+            {
+                XmlTextReader reader = new XmlTextReader(sr);
+
+                if (!reader.IsStartElement("error"))
+                    throw new ApplicationException("The error XML is not in the expected format.");
+
+                FromXml(reader);
+            }
+        }
+
+        /// <summary>
         /// Loads the error object from its XML representation.
         /// </summary>
 

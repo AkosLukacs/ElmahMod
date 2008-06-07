@@ -42,11 +42,9 @@ namespace Elmah
     using System.Data.OracleClient;
     using System.IO;
     using System.Text;
-    using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
-    using StringReader = System.IO.StringReader;
 
     #endregion
 
@@ -312,14 +310,8 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            StringReader sr = new StringReader(errorXml);
-            XmlTextReader reader = new XmlTextReader(sr);
-
-            if (!reader.IsStartElement("error"))
-                throw new ApplicationException("The error XML is not in the expected format.");
-
             Error error = NewError();
-            error.FromXml(reader);
+            error.FromString(errorXml);
 
             return new ErrorLogEntry(this, id, error);
         }
