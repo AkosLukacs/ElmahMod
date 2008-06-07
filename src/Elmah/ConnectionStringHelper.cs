@@ -105,6 +105,8 @@ namespace Elmah
         /// <returns>File path to the Data Source element of a connection string</returns>
         public static string GetDataSourceFilePath(string connectionString)
         {
+            Debug.AssertStringNotEmpty(connectionString);
+
             string result = string.Empty;
             string loweredConnectionString = connectionString.ToLower();
             int dataSourcePosition = loweredConnectionString.IndexOf("data source");
@@ -139,17 +141,38 @@ namespace Elmah
         /// <returns>Full file path to the Data Source element of a connection string</returns>
         public static string GetDataSourceFilePath(string connectionString)
         {
+            Debug.AssertStringNotEmpty(connectionString);
+
             DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
             return GetDataSourceFilePath(builder, connectionString);
         }
+
+        /// <summary>
+        /// Gets the connection string from the given configuration,
+        /// resolving ~/ and |DataDirectory| if necessary
+        /// </summary>
+        /// <param name="config">The configuration</param>
+        /// <param name="resolveDataSource">if <c>true</c> resolves the connection string before returning it</param>
+        /// <returns>The connection string</returns>
+        public static string GetConnectionString(IDictionary config, bool resolveDataSource)
+        {
+            string connectionString = GetConnectionString(config);
+            if (resolveDataSource)
+                return GetResolvedConnectionString(connectionString);
+            else
+                return connectionString;
+        }
+
         /// <summary>
         /// Converts the supplied connection string so that the Data Source element
         /// contains the full path and not ~/ or |DataDirectory|
         /// </summary>
         /// <param name="connectionString">The connection string</param>
         /// <returns>The converted connection string</returns>
-        public static string GetFilePathResolvedConnectionString(string connectionString)
+        public static string GetResolvedConnectionString(string connectionString)
         {
+            Debug.AssertStringNotEmpty(connectionString);
+
             DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
             builder["Data Source"] = GetDataSourceFilePath(builder, connectionString);
             return builder.ToString();

@@ -61,6 +61,7 @@ namespace Elmah
     public class VistaDBErrorLog : ErrorLog
     {
         private readonly string _connectionString;
+        private readonly string _databasePath;
 
         // TODO - don't think we have to limit strings in VistaDB, so decide if we really need this
         // Is it better to keep it for consistency, or better to exploit the full potential of the database??
@@ -77,6 +78,7 @@ namespace Elmah
                 throw new ArgumentNullException("config");
 
             _connectionString = ConnectionStringHelper.GetConnectionString(config);
+            _databasePath = ConnectionStringHelper.GetDataSourceFilePath(_connectionString);
 
             //
             // If there is no connection string to use then throw an 
@@ -114,6 +116,7 @@ namespace Elmah
                 throw new ArgumentException(null, "connectionString");
 
             _connectionString = connectionString;
+            _databasePath = ConnectionStringHelper.GetDataSourceFilePath(_connectionString);
 
             InitializeDatabase();
         }
@@ -217,7 +220,7 @@ namespace Elmah
             // Use the VistaDB Direct Data Access objects
             IVistaDBDDA ddaObjects = VistaDBEngine.Connections.OpenDDA();
             // Create a connection object to a VistaDB database
-            IVistaDBDatabase vistaDB = ddaObjects.OpenDatabase(ResolveDataSourceFilePath(builder.DataSource), builder.OpenMode, builder.Password);
+            IVistaDBDatabase vistaDB = ddaObjects.OpenDatabase(_databasePath, builder.OpenMode, builder.Password);
             // Open the table
             IVistaDBTable elmahTable = vistaDB.OpenTable("ELMAH_Error", false, true);
 
@@ -333,58 +336,9 @@ namespace Elmah
             return new Error();
         }
 
-        /// <remarks>
-        /// This method is excluded from inlining so that if 
-        /// HostingEnvironment does not need JIT-ing if it is not implicated
-        /// by the caller.
-        /// </remarks>
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static string MapPath(string path)
-        {
-            return System.Web.Hosting.HostingEnvironment.MapPath(path);
-        }
-
         private static string EscapeApostrophes(string text)
         {
             return text.Replace("'", "''");
-        }
-
-        private static string ResolveDataSourceFilePath(string path)
-        {
-            const string DataDirectoryMacroString = "|datadirectory|";
-
-            if (string.IsNullOrEmpty(path))
-                return string.Empty;
-
-            // check to see if it starts with a ~/ and if so map it and return it
-            if (path.StartsWith("~/"))
-                return MapPath(path);
-
-            // else see if it uses the |DataDirectory| macro and if so perform the appropriate substitution
-            if (path.StartsWith(DataDirectoryMacroString, StringComparison.OrdinalIgnoreCase))
-            {
-                // first try to get the data directory from the CurrentDomain
-                string baseDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
-                // if not, try the BaseDirectory
-                if (string.IsNullOrEmpty(baseDirectory))
-                    baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                // make sure we haven't got a null string
-                if (baseDirectory == null)
-                    baseDirectory = string.Empty;
-                // work out if we've got backslashes at the end of our variables
-                int length = DataDirectoryMacroString.Length;
-                bool baseDirectoryHasBackSlash = (0 < baseDirectory.Length) && (baseDirectory[baseDirectory.Length - 1] == '\\');
-                bool dbFilePathHasBackSlash = (length < path.Length) && (path[length] == '\\');
-                // piece the filepath back together correctly!
-                if (!baseDirectoryHasBackSlash && !dbFilePathHasBackSlash)
-                    return baseDirectory + '\\' + path.Substring(length);
-                if (baseDirectoryHasBackSlash && dbFilePathHasBackSlash)
-                    return baseDirectory + path.Substring(length + 1);
-                return baseDirectory + path.Substring(length);
-            }
-
-            // simply return what was passed in
-            return path;
         }
 
         private void InitializeDatabase()
@@ -392,13 +346,10 @@ namespace Elmah
             string connectionString = ConnectionString;
             Debug.AssertStringNotEmpty(connectionString);
 
-            VistaDBConnectionStringBuilder builder = new VistaDBConnectionStringBuilder(connectionString);
-
-            // get the supplied data source
-            string dbFilePath = ResolveDataSourceFilePath(builder.DataSource);
-
-            if (File.Exists(dbFilePath))
+            if (File.Exists(_databasePath))
                 return;
+
+            VistaDBConnectionStringBuilder builder = new VistaDBConnectionStringBuilder(connectionString);
 
             using (VistaDBConnection connection = new VistaDBConnection())
             using (VistaDBCommand command = connection.CreateCommand())
@@ -408,7 +359,7 @@ namespace Elmah
                     passwordClause = " PASSWORD '" + EscapeApostrophes(builder.Password) + "',";
 
                 // create the database using the webserver's default locale
-                command.CommandText = "CREATE DATABASE '" + EscapeApostrophes(dbFilePath) + "'" + passwordClause + ", PAGE SIZE 1, CASE SENSITIVE FALSE;";
+                command.CommandText = "CREATE DATABASE '" + EscapeApostrophes(_databasePath) + "'" + passwordClause + ", PAGE SIZE 1, CASE SENSITIVE FALSE;";
                 command.ExecuteNonQuery();
 
                 command.CommandText = @"

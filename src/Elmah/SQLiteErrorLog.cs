@@ -67,7 +67,7 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            string connectionString = ConnectionStringHelper.GetConnectionString(config);
+            string connectionString = ConnectionStringHelper.GetConnectionString(config, true);
 
             //
             // If there is no connection string to use then throw an 
@@ -77,7 +77,7 @@ namespace Elmah
             if (connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the SQLite error log.");
 
-            _connectionString = CompleteConnectionString(connectionString);
+            _connectionString = connectionString;
 
             InitializeDatabase();
 
@@ -97,40 +97,9 @@ namespace Elmah
             if (connectionString.Length == 0)
                 throw new ArgumentException(null, "connectionString");
 
-            _connectionString = CompleteConnectionString(connectionString);
+            _connectionString = ConnectionStringHelper.GetResolvedConnectionString(connectionString);
 
             InitializeDatabase();
-        }
-
-        /// <summary>
-        /// Takes a connection string whose Data Source component uses
-        /// the root operator format (~/...) and resolves it to the
-        /// physical path within the web application.
-        /// </summary>
-
-        private static string CompleteConnectionString(string value)
-        {
-            Debug.AssertStringNotEmpty(value);
-
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(value);
-
-            if (!builder.DataSource.StartsWith("~/"))
-                return value;
-
-            builder.DataSource = MapPath(builder.DataSource);
-            return builder.ToString();
-        }
-
-        /// <remarks>
-        /// This method is excluded from inlining so that if 
-        /// HostingEnvironment does not need JIT-ing if it is not implicated
-        /// by the caller.
-        /// </remarks>
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static string MapPath(string path)
-        {
-            return System.Web.Hosting.HostingEnvironment.MapPath(path);
         }
 
         private void InitializeDatabase()
@@ -138,9 +107,7 @@ namespace Elmah
             string connectionString = ConnectionString;
             Debug.AssertStringNotEmpty(connectionString);
 
-            SQLiteConnectionStringBuilder builder = new SQLiteConnectionStringBuilder(connectionString);
-
-            string dbFilePath = builder.DataSource;
+            string dbFilePath = ConnectionStringHelper.GetDataSourceFilePath(connectionString);
 
             if (File.Exists(dbFilePath))
                 return;
