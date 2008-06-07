@@ -40,7 +40,6 @@ namespace Elmah
 
     using System;
     using System.Collections;
-    using System.Configuration;
     using System.Data;
     using System.Data.SQLite;
     using System.Globalization;
@@ -68,7 +67,7 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            string connectionString = GetConnectionString(config);
+            string connectionString = ConnectionStringHelper.GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
@@ -390,57 +389,6 @@ namespace Elmah
         protected virtual Error NewError()
         {
             return new Error();
-        }
-
-        /// <summary>
-        /// Gets the connection string from the given configuration.
-        /// </summary>
-
-        private static string GetConnectionString(IDictionary config)
-        {
-            Debug.Assert(config != null);
-
-            //
-            // First look for a connection string name that can be 
-            // subsequently indexed into the <connectionStrings> section of 
-            // the configuration to get the actual connection string.
-            //
-
-            string connectionStringName = (string) config["connectionStringName"] ?? string.Empty;
-
-            if (connectionStringName.Length > 0)
-            {
-                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
-
-                if (settings == null)
-                    return string.Empty;
-
-                return settings.ConnectionString ?? string.Empty;
-            }
-
-            //
-            // Connection string name not found so see if a connection 
-            // string was given directly.
-            //
-
-            string connectionString = Mask.NullString((string) config["connectionString"]);
-
-            if (connectionString.Length > 0)
-                return connectionString;
-
-            //
-            // As a last resort, check for another setting called 
-            // connectionStringAppKey. The specifies the key in 
-            // <appSettings> that contains the actual connection string to 
-            // be used.
-            //
-
-            string connectionStringAppKey = Mask.NullString((string) config["connectionStringAppKey"]);
-
-            if (connectionStringAppKey.Length == 0)
-                return string.Empty;
-
-            return Configuration.AppSettings[connectionStringAppKey];
         }
     }
 }

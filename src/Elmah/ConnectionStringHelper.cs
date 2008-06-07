@@ -34,14 +34,75 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Configuration;
     using System.Data.Common;
     using System.Runtime.CompilerServices;
+    using IDictionary = System.Collections.IDictionary;
 
     #endregion
 
-    public class ConnectionStringHelper
+    internal class ConnectionStringHelper
     {
+
+        /// <summary>
+        /// Gets the connection string from the given configuration.
+        /// </summary>
+
+        public static string GetConnectionString(IDictionary config)
+        {
+            Debug.Assert(config != null);
+
+#if !NET_1_1 && !NET_1_0
+            //
+            // First look for a connection string name that can be 
+            // subsequently indexed into the <connectionStrings> section of 
+            // the configuration to get the actual connection string.
+            //
+
+            string connectionStringName = (string)config["connectionStringName"] ?? string.Empty;
+
+            if (connectionStringName.Length > 0)
+            {
+                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
+
+                if (settings == null)
+                    return string.Empty;
+
+                return settings.ConnectionString ?? string.Empty;
+            }
+#endif
+
+            //
+            // Connection string name not found so see if a connection 
+            // string was given directly.
+            //
+
+            string connectionString = Mask.NullString((string)config["connectionString"]);
+
+            if (connectionString.Length > 0)
+                return connectionString;
+
+            //
+            // As a last resort, check for another setting called 
+            // connectionStringAppKey. The specifies the key in 
+            // <appSettings> that contains the actual connection string to 
+            // be used.
+            //
+
+            string connectionStringAppKey = Mask.NullString((string)config["connectionStringAppKey"]);
+
+            if (connectionStringAppKey.Length == 0)
+                return string.Empty;
+
+            return Configuration.AppSettings[connectionStringAppKey];
+        }
+
 #if NET_1_1 || NET_1_0
+        /// <summary>
+        /// Extracts the Data Source file path from a connection string
+        /// </summary>
+        /// <param name="connectionString">The connection string</param>
+        /// <returns>File path to the Data Source element of a connection string</returns>
         public static string GetDataSourceFilePath(string connectionString)
         {
             string result = string.Empty;
@@ -70,11 +131,23 @@ namespace Elmah
             return result;
         }
 #else
+        /// <summary>
+        /// Extracts the Data Source file path from a connection string
+        /// ~/ gets resolved as does |DataDirectory|
+        /// </summary>
+        /// <param name="connectionString">The connection string</param>
+        /// <returns>Full file path to the Data Source element of a connection string</returns>
         public static string GetDataSourceFilePath(string connectionString)
         {
             DbConnectionStringBuilder builder = new DbConnectionStringBuilder();
             return GetDataSourceFilePath(builder, connectionString);
         }
+        /// <summary>
+        /// Converts the supplied connection string so that the Data Source element
+        /// contains the full path and not ~/ or |DataDirectory|
+        /// </summary>
+        /// <param name="connectionString">The connection string</param>
+        /// <returns>The converted connection string</returns>
         public static string GetFilePathResolvedConnectionString(string connectionString)
         {
             DbConnectionStringBuilder builder = new DbConnectionStringBuilder();

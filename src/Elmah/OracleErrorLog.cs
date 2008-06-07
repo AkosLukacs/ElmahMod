@@ -38,7 +38,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Configuration;
     using System.Data;
     using System.Data.OracleClient;
     using System.IO;
@@ -46,9 +45,9 @@ namespace Elmah
     using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
+    using IList = System.Collections.IList;
     using StringReader = System.IO.StringReader;
     using StringWriter = System.IO.StringWriter;
-    using IList = System.Collections.IList;
 
     #endregion
 
@@ -72,7 +71,7 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            string connectionString = GetConnectionString(config);
+            string connectionString = ConnectionStringHelper.GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
@@ -358,59 +357,6 @@ namespace Elmah
         protected virtual Error NewError()
         {
             return new Error();
-        }
-
-        /// <summary>
-        /// Gets the connection string from the given configuration.
-        /// </summary>
-
-        private static string GetConnectionString(IDictionary config)
-        {
-            Debug.Assert(config != null);
-
-#if !NET_1_1
-            //
-            // First look for a connection string name that can be 
-            // subsequently indexed into the <connectionStrings> section of 
-            // the configuration to get the actual connection string.
-            //
-
-            string connectionStringName = (string)config["connectionStringName"] ?? string.Empty;
-
-            if (connectionStringName.Length > 0)
-            {
-                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings[connectionStringName];
-
-                if (settings == null)
-                    return string.Empty;
-
-                return settings.ConnectionString ?? string.Empty;
-            }
-#endif
-
-            //
-            // Connection string name not found so see if a connection 
-            // string was given directly.
-            //
-
-            string connectionString = Mask.NullString((string)config["connectionString"]);
-
-            if (connectionString.Length > 0)
-                return connectionString;
-
-            //
-            // As a last resort, check for another setting called 
-            // connectionStringAppKey. The specifies the key in 
-            // <appSettings> that contains the actual connection string to 
-            // be used.
-            //
-
-            string connectionStringAppKey = Mask.NullString((string)config["connectionStringAppKey"]);
-
-            if (connectionStringAppKey.Length == 0)
-                return string.Empty;
-
-            return Configuration.AppSettings[connectionStringAppKey];
         }
     }
 }
