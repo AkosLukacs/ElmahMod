@@ -193,34 +193,35 @@ namespace Elmah
 
             InvariantStringArray.Sort(files, 0, count);
             Array.Reverse(files, 0, count);
-            
-            /* Find the proper page */
-            int firstIndex = pageIndex * pageSize;
-            int lastIndex = (firstIndex + pageSize < count) ? firstIndex + pageSize : count;
 
-            /* Open them up and rehydrate the list */
-            for (int i = firstIndex; i < lastIndex; i++)
+            if (errorEntryList != null)
             {
-                XmlTextReader reader = new XmlTextReader(files[i]);
+                /* Find the proper page */
+                int firstIndex = pageIndex * pageSize;
+                int lastIndex = (firstIndex + pageSize < count) ? firstIndex + pageSize : count;
 
-                try
+                /* Open them up and rehydrate the list */
+                for (int i = firstIndex; i < lastIndex; i++)
                 {
-                    while (reader.IsStartElement("error"))
+                    XmlTextReader reader = new XmlTextReader(files[i]);
+
+                    try
                     {
-                        string id = reader.GetAttribute("errorId");
-                        
-                        Error error = new Error();
-                        error.FromXml(reader);
+                        while (reader.IsStartElement("error"))
+                        {
+                            string id = reader.GetAttribute("errorId");
 
-                        if (errorEntryList != null)
+                            Error error = new Error();
+                            error.FromXml(reader);
+
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
-                    } 
+                        }
+                    }
+                    finally
+                    {
+                        reader.Close();
+                    }
                 }
-                finally
-                {
-                    reader.Close();
-                }
-
             }
     
             /* Return how many are total */

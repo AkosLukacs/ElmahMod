@@ -230,26 +230,27 @@ namespace Elmah
                 {
                     Debug.Assert(reader != null);
 
-                    while (reader.Read())
+                    if (errorEntryList != null)
                     {
-                        string id = reader["ErrorId"].ToString();
-                        Guid guid = new Guid(id);
+                        while (reader.Read())
+                        {
+                            string id = reader["ErrorId"].ToString();
+                            Guid guid = new Guid(id);
 
-                        Error error = NewError();
+                            Error error = NewError();
 
-                        error.ApplicationName = reader["Application"].ToString();
-                        error.HostName = reader["Host"].ToString();
-                        error.Type = reader["Type"].ToString();
-                        error.Source = reader["Source"].ToString();
-                        error.Message = reader["Message"].ToString();
-                        error.User = reader["UserName"].ToString();
-                        error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                        error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
+                            error.ApplicationName = reader["Application"].ToString();
+                            error.HostName = reader["Host"].ToString();
+                            error.Type = reader["Type"].ToString();
+                            error.Source = reader["Source"].ToString();
+                            error.Message = reader["Message"].ToString();
+                            error.User = reader["UserName"].ToString();
+                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
+                            error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
 
-                        if (errorEntryList != null)
                             errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                        }
                     }
-
                     reader.Close();
                 }
 

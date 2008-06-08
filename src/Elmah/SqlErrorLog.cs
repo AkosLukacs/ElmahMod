@@ -309,15 +309,17 @@ namespace Elmah
         {
             Debug.Assert(reader != null);
 
-            while (reader.IsStartElement("error"))
+            if (errorEntryList != null)
             {
-                string id = reader.GetAttribute("errorId");
+                while (reader.IsStartElement("error"))
+                {
+                    string id = reader.GetAttribute("errorId");
 
-                Error error = NewError();
-                error.FromXml(reader);
+                    Error error = NewError();
+                    error.FromXml(reader);
 
-                if (errorEntryList != null)
                     errorEntryList.Add(new ErrorLogEntry(this, id, error));
+                }
             }
         }
 

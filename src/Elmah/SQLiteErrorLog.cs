@@ -246,23 +246,25 @@ namespace Elmah
 
                 using (SQLiteDataReader reader = command.ExecuteReader())
                 {
-                    while (reader.Read())
+                    if (errorEntryList != null)
                     {
-                        string id = reader["ErrorId"].ToString();
+                        while (reader.Read())
+                        {
+                            string id = reader["ErrorId"].ToString();
 
-                        Error error = NewError();
+                            Error error = NewError();
 
-                        error.ApplicationName = reader["Application"].ToString();
-                        error.HostName = reader["Host"].ToString();
-                        error.Type = reader["Type"].ToString();
-                        error.Source = reader["Source"].ToString();
-                        error.Message = reader["Message"].ToString();
-                        error.User = reader["User"].ToString();
-                        error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                        error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
+                            error.ApplicationName = reader["Application"].ToString();
+                            error.HostName = reader["Host"].ToString();
+                            error.Type = reader["Type"].ToString();
+                            error.Source = reader["Source"].ToString();
+                            error.Message = reader["Message"].ToString();
+                            error.User = reader["User"].ToString();
+                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
+                            error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
 
-                        if (errorEntryList != null)
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
+                        }
                     }
 
                     //

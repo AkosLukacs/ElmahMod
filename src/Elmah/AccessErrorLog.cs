@@ -199,7 +199,7 @@ namespace Elmah
                 connection.Open();
                 int totalCount = (int)command.ExecuteScalar();
 
-                if (pageIndex * pageSize < totalCount)
+                if (errorEntryList != null && pageIndex * pageSize < totalCount)
                 {
                     int maxRecords = pageSize * (pageIndex + 1);
                     if (maxRecords > totalCount)
@@ -243,8 +243,7 @@ namespace Elmah
                             error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
                             error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
 
-                            if (errorEntryList != null)
-                                errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                            errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
                         }
 
                         reader.Close();
