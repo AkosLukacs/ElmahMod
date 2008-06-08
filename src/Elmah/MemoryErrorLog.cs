@@ -262,17 +262,19 @@ namespace Elmah
                 _lock.ReleaseReaderLock();
             }
 
-            //
-            // Return copies of fetched entries. If the Error class would 
-            // be immutable then this step wouldn't be necessary.
-            //
-
-            foreach (ErrorLogEntry entry in selectedEntries)
+            if (errorEntryList != null)
             {
-                Error error = (Error) ((ICloneable) entry.Error).Clone();
-                errorEntryList.Add(new ErrorLogEntry(this, entry.Id, error));
-            }
+                //
+                // Return copies of fetched entries. If the Error class would 
+                // be immutable then this step wouldn't be necessary.
+                //
 
+                foreach (ErrorLogEntry entry in selectedEntries)
+                {
+                    Error error = (Error)((ICloneable)entry.Error).Clone();
+                    errorEntryList.Add(new ErrorLogEntry(this, entry.Id, error));
+                }
+            }
             return totalCount;
         }
 
