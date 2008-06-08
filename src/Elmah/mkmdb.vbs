@@ -92,7 +92,7 @@ Function CreateTable(ByVal Catalog, ByVal Name)
         .Append "Type", adVarWChar, 100
         .Append "Source", adVarWChar, 60
         .Append "Message", adLongVarWChar
-        .Append "User", adVarWChar, 60
+        .Append "UserName", adVarWChar, 60
         .Append "StatusCode", adInteger
         .Append "TimeUtc", adDate
         .Append "SequenceNumber", adInteger
