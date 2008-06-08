@@ -275,6 +275,9 @@
       <Link>ExceptionFiltering.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\FixIIS5xWildcardMappingModule.cs">
+      <Link>FixIIS5xWildcardMappingModule.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\HtmlLinkType.cs">
       <Link>HtmlLinkType.cs</Link>
     </Compile>
