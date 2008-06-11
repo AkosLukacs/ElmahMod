@@ -61,13 +61,8 @@ namespace Elmah
         // Mainly cribbed from an idea at http://forums.asp.net/t/1113541.aspx.
         //
 
-        public FixIIS5xWildcardMappingModule()
-        {
-        }
-
-        public void Dispose()
-        { 
-        }
+        private string _handlerPathWithForwardSlash;
+        private int _handlerPathLength;
 
 #if !NET_1_1
         public string GetHandlerPath()
@@ -155,9 +150,6 @@ namespace Elmah
             }
         }
 
-        private string _handlerPathWithForwardSlash;
-        private int _handlerPathLength;
-
         private void OnBeginRequest(object sender, EventArgs e)
         {
             HttpApplication app = sender as HttpApplication;
@@ -180,6 +172,9 @@ namespace Elmah
                     path.Substring(handlerPosition + _handlerPathLength),
                     context.Request.QueryString.ToString());
         }
+
+        public void Dispose() { /* NOP */ }
+
     }
 }
 #endif
