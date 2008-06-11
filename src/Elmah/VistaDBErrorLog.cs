@@ -35,12 +35,12 @@
 
 namespace Elmah
 {
-
     #region Imports
 
     using System;
     using System.Data;
     using System.IO;
+    using System.Text.RegularExpressions;
     using VistaDB;
     using VistaDB.DDA;
     using VistaDB.Provider;
@@ -332,7 +332,7 @@ namespace Elmah
                 command.CommandText = "CREATE DATABASE '" + EscapeApostrophes(_databasePath) + "'" + passwordClause + ", PAGE SIZE 1, CASE SENSITIVE FALSE;";
                 command.ExecuteNonQuery();
 
-                command.CommandText = @"
+                const string ddlScript = @"
                     CREATE TABLE [ELMAH_Error]
                     (
                         [ErrorId] UNIQUEIDENTIFIER NOT NULL DEFAULT '(newid())',
@@ -347,18 +347,19 @@ namespace Elmah
                         [Sequence] INT NOT NULL,
                         [AllXml] NTEXT NOT NULL,
                         CONSTRAINT [PK_ELMAH_Error] PRIMARY KEY ([ErrorId])
-                    )";
-                command.ExecuteNonQuery();
+                    )
 
-                command.CommandText = @"
+                    GO
+
                     ALTER TABLE [ELMAH_Error]
-                    ALTER COLUMN [Sequence] INT NOT NULL IDENTITY (1, 1)";
-                command.ExecuteNonQuery();
+                    ALTER COLUMN [Sequence] INT NOT NULL IDENTITY (1, 1)
 
-                command.CommandText = "CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)";
-                command.ExecuteNonQuery();
+                    GO
 
-                command.CommandText = @"
+                    CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)
+
+                    GO
+
                     CREATE PROCEDURE [ELMAH_GetErrorXml]
                         @ErrorId        UniqueIdentifier
                     AS
@@ -366,10 +367,10 @@ namespace Elmah
                         SELECT  AllXml
                         FROM    ELMAH_Error
                         WHERE   ErrorId = @ErrorId;
-                    END";
-                command.ExecuteNonQuery();
+                    END
 
-                command.CommandText = @"
+                    GO
+
                     CREATE PROCEDURE [ELMAH_LogError]
                         @ErrorId        UniqueIdentifier,
                         @Application    NVarChar,
@@ -412,8 +413,22 @@ namespace Elmah
                             @TimeUtc
                         );
                     END";
-                command.ExecuteNonQuery();
+
+                foreach (string batch in ScriptToBatches(ddlScript))
+                {
+                    command.CommandText = batch;
+                    command.ExecuteNonQuery();
+                }
             }
+        }
+
+        private static string[] ScriptToBatches(string script)
+        {
+            return Regex.Split(script, @"^ \s* GO \s* $\n?",
+                        RegexOptions.IgnoreCase
+                        | RegexOptions.Multiline
+                        | RegexOptions.CultureInvariant
+                        | RegexOptions.IgnorePatternWhitespace);
         }
     }
 }
