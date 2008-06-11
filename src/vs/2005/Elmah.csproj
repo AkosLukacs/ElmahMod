@@ -129,10 +129,6 @@
       <Link>Assertions\CompositeAssertion.cs</Link>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="..\..\Elmah\Assertions\ConnectionStringHelper.cs">
-      <Link>Assertions\ConnectionStringHelper.cs</Link>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="..\..\Elmah\Assertions\DataBinder.cs">
       <Link>Assertions\DataBinder.cs</Link>
       <SubType>Code</SubType>
@@ -177,6 +173,10 @@
     </Compile>
     <Compile Include="..\..\Elmah\ConfigurationSectionHelper.cs">
       <Link>ConfigurationSectionHelper.cs</Link>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\ConnectionStringHelper.cs">
+      <Link>ConnectionStringHelper.cs</Link>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Elmah\Debug.cs">
