@@ -55,7 +55,7 @@ namespace Elmah
     /// reason for this module.
     /// </remarks>
 
-    public class FixIIS5xWildcardMappingModule : IHttpModule
+    public sealed class FixIIS5xWildcardMappingModule : IHttpModule
     {
         //
         // Mainly cribbed from an idea at http://forums.asp.net/t/1113541.aspx.
@@ -174,7 +174,6 @@ namespace Elmah
         }
 
         public void Dispose() { /* NOP */ }
-
     }
 }
 #endif
