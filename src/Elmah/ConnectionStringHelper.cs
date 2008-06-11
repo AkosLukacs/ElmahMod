@@ -37,15 +37,21 @@ namespace Elmah
     using System;
     using System.Configuration;
     using System.Data.Common;
+    using System.IO;
     using System.Runtime.CompilerServices;
     using IDictionary = System.Collections.IDictionary;
 
     #endregion
 
+    /// <summary>
+    /// Helper class for resolving connection strings.
+    /// </summary>
+
     internal class ConnectionStringHelper
     {
         /// <summary>
-        /// Gets the connection string from the given configuration.
+        /// Gets the connection string from the given configuration 
+        /// dictionary.
         /// </summary>
 
         public static string GetConnectionString(IDictionary config)
@@ -137,8 +143,7 @@ namespace Elmah
         /// Extracts the Data Source file path from a connection string
         /// ~/ gets resolved as does |DataDirectory|
         /// </summary>
-        /// <param name="connectionString">The connection string</param>
-        /// <returns>Full file path to the Data Source element of a connection string</returns>
+        
         public static string GetDataSourceFilePath(string connectionString)
         {
             Debug.AssertStringNotEmpty(connectionString);
@@ -149,26 +154,20 @@ namespace Elmah
 
         /// <summary>
         /// Gets the connection string from the given configuration,
-        /// resolving ~/ and |DataDirectory| if necessary
+        /// resolving ~/ and DataDirectory if necessary.
         /// </summary>
-        /// <param name="config">The configuration</param>
-        /// <param name="resolveDataSource">if <c>true</c> resolves the connection string before returning it</param>
-        /// <returns>The connection string</returns>
+
         public static string GetConnectionString(IDictionary config, bool resolveDataSource)
         {
             string connectionString = GetConnectionString(config);
-            if (resolveDataSource)
-                return GetResolvedConnectionString(connectionString);
-            else
-                return connectionString;
+            return resolveDataSource ? GetResolvedConnectionString(connectionString) : connectionString;
         }
 
         /// <summary>
-        /// Converts the supplied connection string so that the Data Source element
-        /// contains the full path and not ~/ or |DataDirectory|
+        /// Converts the supplied connection string so that the Data Source 
+        /// specification contains the full path and not ~/ or DataDirectory.
         /// </summary>
-        /// <param name="connectionString">The connection string</param>
-        /// <returns>The converted connection string</returns>
+        
         public static string GetResolvedConnectionString(string connectionString)
         {
             Debug.AssertStringNotEmpty(connectionString);
@@ -191,39 +190,50 @@ namespace Elmah
             return ResolveDataSourceFilePath(dataSource);
         }
 
+        private static readonly char[] _dirSeparators = new char[] { Path.DirectorySeparatorChar };
+
         private static string ResolveDataSourceFilePath(string path)
         {
-            const string DataDirectoryMacroString = "|datadirectory|";
+            const string dataDirectoryMacroString = "|DataDirectory|";
 
-            // check to see if it starts with a ~/ and if so map it and return it
+            //
+            // Check to see if it starts with a ~/ and if so map it and return it.
+            //
+
             if (path.StartsWith("~/"))
                 return MapPath(path);
 
-            // else see if it uses the |DataDirectory| macro and if so perform the appropriate substitution
-            if (path.StartsWith(DataDirectoryMacroString, StringComparison.OrdinalIgnoreCase))
-            {
-                // first try to get the data directory from the CurrentDomain
-                string baseDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
-                // if not, try the BaseDirectory
-                if (string.IsNullOrEmpty(baseDirectory))
-                    baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-                // make sure we haven't got a null string
-                if (baseDirectory == null)
-                    baseDirectory = "";
-                // work out if we've got backslashes at the end of our variables
-                int length = DataDirectoryMacroString.Length;
-                bool baseDirectoryHasBackSlash = (0 < baseDirectory.Length) && (baseDirectory[baseDirectory.Length - 1] == '\\');
-                bool dbFilePathHasBackSlash = (length < path.Length) && (path[length] == '\\');
-                // piece the filepath back together correctly!
-                if (!baseDirectoryHasBackSlash && !dbFilePathHasBackSlash)
-                    return baseDirectory + '\\' + path.Substring(length);
-                if (baseDirectoryHasBackSlash && dbFilePathHasBackSlash)
-                    return baseDirectory + path.Substring(length + 1);
-                return baseDirectory + path.Substring(length);
-            }
+            //
+            // Else see if it uses the DataDirectory macro/substitution 
+            // string, and if so perform the appropriate substitution.
+            //
 
-            // simply return what was passed in
-            return path;
+            if (!path.StartsWith(dataDirectoryMacroString, StringComparison.OrdinalIgnoreCase))
+                return path;
+
+            //
+            // Look-up the data directory from the current AppDomain.
+            // See "Working with local databases" for more:
+            // http://blogs.msdn.com/smartclientdata/archive/2005/08/26/456886.aspx
+            //
+
+            string baseDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
+            
+            //
+            // If not, try the current AppDomain's base directory.
+            //
+
+            if (string.IsNullOrEmpty(baseDirectory))
+                baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            //
+            // Piece the file path back together, taking leading and 
+            // trailing backslashes into account to avoid duplication.
+            //
+
+            return Mask.NullString(baseDirectory).TrimEnd(_dirSeparators) 
+                 + Path.DirectorySeparatorChar
+                 + path.Substring(dataDirectoryMacroString.Length).TrimStart(_dirSeparators);
         }
 #endif
 
