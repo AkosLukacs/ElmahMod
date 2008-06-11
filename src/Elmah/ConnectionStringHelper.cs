@@ -6,6 +6,7 @@
 //
 //  Author(s):
 //
+//      Atif Aziz, http://www.raboof.com
 //      James Driscoll, mailto:jamesdriscoll@btinternet.com
 //
 // This library is free software; you can redistribute it and/or modify it 
@@ -43,7 +44,6 @@ namespace Elmah
 
     internal class ConnectionStringHelper
     {
-
         /// <summary>
         /// Gets the connection string from the given configuration.
         /// </summary>
@@ -226,5 +226,7 @@ namespace Elmah
             return path;
         }
 #endif
+
+        private ConnectionStringHelper() {}
     }
 }
