@@ -46,17 +46,19 @@ namespace Elmah
     #endregion
 
     /// <summary>
-    /// HTTP module that resolves issues in Elmah when Wilcard mapping
+    /// HTTP module that resolves issues in ELMAH when wilcard mapping
     /// is implemented in IIS 5.x.
     /// </summary>
+    /// <remarks>
+    /// See <a href="http://groups.google.com/group/elmah/browse_thread/thread/c22b85ace3812da1">Elmah 
+    /// with existing wildcard mapping</a> for more information behind the 
+    /// reason for this module.
+    /// </remarks>
 
     public class FixIIS5xWildcardMappingModule : IHttpModule
     {
         //
-        // See http://groups.google.com/group/elmah/browse_thread/thread/c22b85ace3812da1
-        // for more information behind the reason for this module.
-        //
-        // Mainly cribbed from an idea at http://forums.asp.net/t/1113541.aspx 
+        // Mainly cribbed from an idea at http://forums.asp.net/t/1113541.aspx.
         //
 
         public FixIIS5xWildcardMappingModule()
