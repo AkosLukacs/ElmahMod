@@ -65,7 +65,7 @@ namespace Elmah
         private int _handlerPathLength;
 
 #if !NET_1_1
-        public string GetHandlerPath()
+        private static string GetHandlerPath()
         {
             System.Web.Configuration.HttpHandlersSection handlersSection = System.Configuration.ConfigurationManager.GetSection("system.web/httpHandlers") as System.Web.Configuration.HttpHandlersSection;
             string elmahHandlerTypeName = typeof(ErrorLogPageFactory).AssemblyQualifiedName;
@@ -77,7 +77,7 @@ namespace Elmah
         }
 #else
         private const string DefaultHandlerPath = "elmah.axd";
-        public string GetHandlerPath()
+        private static string GetHandlerPath()
         {
             System.Xml.XmlDocument xml = new System.Xml.XmlDocument();
             try
