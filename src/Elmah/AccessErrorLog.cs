@@ -152,10 +152,12 @@ namespace Elmah
             {
                 connection.Open();
 
-                command.CommandText = "INSERT INTO Elmah_Error " + 
-                                        "(ErrorId, Application, Host, Type, Source, Message, UserName, StatusCode, TimeUtc, AllXml) " + 
-                                      "VALUES " + 
-                                        "(@ErrorId, @Application, @Host, @Type, @Source, @Message, @UserName, @StatusCode, @TimeUtc, @AllXml)";
+                command.CommandText = @"INSERT INTO Elmah_Error
+                                            (ErrorId, Application, Host, Type, Source, 
+                                            Message, UserName, StatusCode, TimeUtc, AllXml)
+                                        VALUES
+                                            (@ErrorId, @Application, @Host, @Type, @Source, 
+                                            @Message, @UserName, @StatusCode, @TimeUtc, @AllXml)";
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
@@ -283,9 +285,9 @@ namespace Elmah
             using (OleDbConnection connection = new OleDbConnection(this.ConnectionString))
             using (OleDbCommand command = connection.CreateCommand())
             {
-                command.CommandText = "SELECT   AllXml " +
-                                      "FROM     Elmah_Error " +
-                                      "WHERE    ErrorId = @ErrorId";
+                command.CommandText = @"SELECT   AllXml
+                                        FROM     Elmah_Error
+                                        WHERE    ErrorId = @ErrorId";
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
