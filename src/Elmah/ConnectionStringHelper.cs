@@ -186,6 +186,8 @@ namespace Elmah
         private static string GetDataSourceFilePath(DbConnectionStringBuilder builder, string connectionString)
         {
             builder.ConnectionString = connectionString;
+            if (!builder.ContainsKey("Data Source"))
+                throw new ArgumentException("A 'Data Source' parameter was expected in the supplied connection string, but it was not found.");
             string dataSource = builder["Data Source"].ToString();
             return ResolveDataSourceFilePath(dataSource);
         }

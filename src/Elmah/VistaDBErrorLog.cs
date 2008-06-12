@@ -74,7 +74,6 @@ namespace Elmah
                 throw new ArgumentNullException("config");
 
             _connectionString = ConnectionStringHelper.GetConnectionString(config);
-            _databasePath = ConnectionStringHelper.GetDataSourceFilePath(_connectionString);
 
             //
             // If there is no connection string to use then throw an 
@@ -84,6 +83,7 @@ namespace Elmah
             if (_connectionString.Length == 0)
                 throw new ApplicationException("Connection string is missing for the VistaDB error log.");
 
+            _databasePath = ConnectionStringHelper.GetDataSourceFilePath(_connectionString);
             InitializeDatabase();
 
             string appName = Mask.NullString((string)config["applicationName"]);
