@@ -156,8 +156,13 @@ namespace Elmah
             using (VistaDBCommand command = connection.CreateCommand())
             {
                 connection.Open();
-                command.CommandText = "ELMAH_LogError";
-                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = @"INSERT INTO ELMAH_Error
+                                            (ErrorId, Application, Host, Type, Source, 
+                                            Message, [User], AllXml, StatusCode, TimeUtc)
+                                        VALUES
+                                            (@ErrorId, @Application, @Host, @Type, @Source,
+                                            @Message, @User, @AllXml, @StatusCode, @TimeUtc)";
+                command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
                 parameters.Clear();
@@ -269,8 +274,10 @@ namespace Elmah
             using (VistaDBConnection connection = new VistaDBConnection(this.ConnectionString))
             using (VistaDBCommand command = connection.CreateCommand())
             {
-                command.CommandText = "ELMAH_GetErrorXml";
-                command.CommandType = CommandType.StoredProcedure;
+                command.CommandText = @"SELECT  AllXml
+                                        FROM    ELMAH_Error
+                                        WHERE   ErrorId = @ErrorId";
+                command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
                 parameters.Add("@ErrorId", VistaDBType.UniqueIdentifier).Value = errorGuid;
@@ -356,63 +363,7 @@ namespace Elmah
 
                     GO
 
-                    CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)
-
-                    GO
-
-                    CREATE PROCEDURE [ELMAH_GetErrorXml]
-                        @ErrorId        UniqueIdentifier
-                    AS
-                    BEGIN
-                        SELECT  AllXml
-                        FROM    ELMAH_Error
-                        WHERE   ErrorId = @ErrorId;
-                    END
-
-                    GO
-
-                    CREATE PROCEDURE [ELMAH_LogError]
-                        @ErrorId        UniqueIdentifier,
-                        @Application    NVarChar,
-                        @Host           NVarChar,
-                        @Type           NVarChar,
-                        @Source         NVarChar,
-                        @Message        NVarChar,
-                        @User           NVarChar,
-                        @AllXml         NText,
-                        @StatusCode     Int,
-                        @TimeUtc        DateTime
-                    AS
-                    BEGIN
-                    INSERT
-                    INTO
-                        ELMAH_Error
-                        (
-                            ErrorId,
-                            Application,
-                            Host,
-                            Type,
-                            Source,
-                            Message,
-                            [User],
-                            AllXml,
-                            StatusCode,
-                            TimeUtc
-                        )
-                    VALUES
-                        (
-                            @ErrorId,
-                            @Application,
-                            @Host,
-                            @Type,
-                            @Source,
-                            @Message,
-                            @User,
-                            @AllXml,
-                            @StatusCode,
-                            @TimeUtc
-                        );
-                    END";
+                    CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)";
 
                 foreach (string batch in ScriptToBatches(ddlScript))
                 {
