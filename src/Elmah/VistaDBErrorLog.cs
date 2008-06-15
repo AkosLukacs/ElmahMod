@@ -318,7 +318,7 @@ namespace Elmah
             return text.Replace("'", "''");
         }
 
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;

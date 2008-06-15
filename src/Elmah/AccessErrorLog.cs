@@ -316,7 +316,7 @@ namespace Elmah
         }
 
         private const string ScriptResourceName = "mkmdb.vbs";
-        private static object _lock = new object();
+        private static readonly object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;
