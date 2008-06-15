@@ -100,6 +100,7 @@ namespace Elmah
             InitializeDatabase();
         }
 
+        private static object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;
@@ -110,9 +111,23 @@ namespace Elmah
             if (File.Exists(dbFilePath))
                 return;
 
-            SQLiteConnection.CreateFile(dbFilePath);
+            //
+            // Make sure that we don't have multiple threads all trying to create the database
+            //
 
-            const string sql = @"
+            lock (_lock)
+            {
+                //
+                // Just double check that no other thread has created the database while
+                // we were waiting for the lock
+                //
+
+                if (File.Exists(dbFilePath))
+                    return;
+
+                SQLiteConnection.CreateFile(dbFilePath);
+
+                const string sql = @"
                 CREATE TABLE Error (
                     ErrorId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                     Application TEXT NOT NULL,
@@ -126,11 +141,12 @@ namespace Elmah
                     AllXml TEXT NOT NULL
                 )";
 
-            using (SQLiteConnection connection = new SQLiteConnection(connectionString))
-            using (SQLiteCommand command = new SQLiteCommand(sql, connection))
-            {
-                connection.Open();
-                command.ExecuteNonQuery();
+                using (SQLiteConnection connection = new SQLiteConnection(connectionString))
+                using (SQLiteCommand command = new SQLiteCommand(sql, connection))
+                {
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
             }
         }
 
