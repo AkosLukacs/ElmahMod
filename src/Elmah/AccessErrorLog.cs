@@ -316,7 +316,7 @@ namespace Elmah
         }
 
         private const string ScriptResourceName = "mkmdb.vbs";
-
+        private static object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;
@@ -327,43 +327,63 @@ namespace Elmah
                 return;
 
             //
-            // Create a temporary copy of the mkmdb.vbs script
+            // Make sure that we don't have multiple threads all trying to create the database
             //
 
-            string tempVbsFile = Path.GetTempPath() + ScriptResourceName;
-            using (FileStream vbsFileStream = new FileStream(tempVbsFile, FileMode.Create, FileAccess.Write))
-            {
-                ManifestResourceHelper.WriteResourceToStream(vbsFileStream, ScriptResourceName);
-            }
-
-            //
-            // Run the script file to create the database using the supplied path
-            //
-
-            ProcessStartInfo processInfo = new ProcessStartInfo(tempVbsFile, string.Concat("\"", dbFilePath, "\""));
-            using (Process process = Process.Start(processInfo))
+            lock (_lock)
             {
                 //
-                // 5 seconds should be plenty of time to create the database
+                // Just double check that no other thread has created the database while
+                // we were waiting for the lock
                 //
 
-                if (!process.WaitForExit(5000))
+                if (File.Exists(dbFilePath))
+                    return;
+
+                //
+                // Create a temporary copy of the mkmdb.vbs script
+                //
+
+                string tempVbsFile = Path.GetTempPath() + ScriptResourceName;
+                using (FileStream vbsFileStream = new FileStream(tempVbsFile, FileMode.Create, FileAccess.Write))
+                {
+                    ManifestResourceHelper.WriteResourceToStream(vbsFileStream, ScriptResourceName);
+                }
+
+                //
+                // Run the script file to create the database using the supplied path
+                //
+
+                ProcessStartInfo processInfo = new ProcessStartInfo(tempVbsFile, string.Concat("\"", dbFilePath, "\""));
+                try
+                {
+                    using (Process process = Process.Start(processInfo))
+                    {
+                        //
+                        // 2 seconds should be plenty of time to create the database
+                        //
+
+                        if (!process.WaitForExit(2000))
+                        {
+                            //
+                            // but it wasn't, so clean up and throw an exception!
+                            // Realistically, I don't expect to ever get here!
+                            //
+
+                            process.Kill();
+                            throw new Exception("The create Access database script took more than 2 seconds to execute, so it has been terminated prematurely.");
+                        }
+                    }
+                }
+                finally
                 {
                     //
-                    // but it wasn't, so clean up and throw an exception!
-                    // Realistically, I don't expect to ever get here!
+                    // Clean up after ourselves!!
                     //
 
-                    process.Kill();
-                    throw new Exception("The create Access database script took more than 5 seconds to execute, so it has been terminated prematurely.");
+                    File.Delete(tempVbsFile);
                 }
             }
-
-            //
-            // Clean up after ourselves!!
-            //
-
-            File.Delete(tempVbsFile);
         }
     }
 }
