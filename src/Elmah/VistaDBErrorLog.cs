@@ -318,6 +318,7 @@ namespace Elmah
             return text.Replace("'", "''");
         }
 
+        private static object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;
@@ -326,20 +327,34 @@ namespace Elmah
             if (File.Exists(_databasePath))
                 return;
 
-            VistaDBConnectionStringBuilder builder = new VistaDBConnectionStringBuilder(connectionString);
+            //
+            // Make sure that we don't have multiple threads all trying to create the database
+            //
 
-            using (VistaDBConnection connection = new VistaDBConnection())
-            using (VistaDBCommand command = connection.CreateCommand())
+            lock (_lock)
             {
-                string passwordClause = string.Empty;
-                if (!string.IsNullOrEmpty(builder.Password))
-                    passwordClause = " PASSWORD '" + EscapeApostrophes(builder.Password) + "',";
+                //
+                // Just double check that no other thread has created the database while
+                // we were waiting for the lock
+                //
 
-                // create the database using the webserver's default locale
-                command.CommandText = "CREATE DATABASE '" + EscapeApostrophes(_databasePath) + "'" + passwordClause + ", PAGE SIZE 1, CASE SENSITIVE FALSE;";
-                command.ExecuteNonQuery();
+                if (File.Exists(_databasePath))
+                    return;
 
-                const string ddlScript = @"
+                VistaDBConnectionStringBuilder builder = new VistaDBConnectionStringBuilder(connectionString);
+
+                using (VistaDBConnection connection = new VistaDBConnection())
+                using (VistaDBCommand command = connection.CreateCommand())
+                {
+                    string passwordClause = string.Empty;
+                    if (!string.IsNullOrEmpty(builder.Password))
+                        passwordClause = " PASSWORD '" + EscapeApostrophes(builder.Password) + "',";
+
+                    // create the database using the webserver's default locale
+                    command.CommandText = "CREATE DATABASE '" + EscapeApostrophes(_databasePath) + "'" + passwordClause + ", PAGE SIZE 1, CASE SENSITIVE FALSE;";
+                    command.ExecuteNonQuery();
+
+                    const string ddlScript = @"
                     CREATE TABLE [ELMAH_Error]
                     (
                         [ErrorId] UNIQUEIDENTIFIER NOT NULL DEFAULT '(newid())',
@@ -365,10 +380,11 @@ namespace Elmah
 
                     CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)";
 
-                foreach (string batch in ScriptToBatches(ddlScript))
-                {
-                    command.CommandText = batch;
-                    command.ExecuteNonQuery();
+                    foreach (string batch in ScriptToBatches(ddlScript))
+                    {
+                        command.CommandText = batch;
+                        command.ExecuteNonQuery();
+                    }
                 }
             }
         }
