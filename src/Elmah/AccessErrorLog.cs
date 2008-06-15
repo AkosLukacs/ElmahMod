@@ -342,9 +342,11 @@ namespace Elmah
 
                 //
                 // Create a temporary copy of the mkmdb.vbs script
+                // We do this in the same directory as the resulting database for security permission purposes
                 //
 
-                string tempVbsFile = Path.GetTempPath() + ScriptResourceName;
+                string tempVbsFile = Path.Combine(Path.GetDirectoryName(dbFilePath), ScriptResourceName);
+
                 using (FileStream vbsFileStream = new FileStream(tempVbsFile, FileMode.Create, FileAccess.Write))
                 {
                     ManifestResourceHelper.WriteResourceToStream(vbsFileStream, ScriptResourceName);
