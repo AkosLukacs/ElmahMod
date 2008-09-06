@@ -42,7 +42,7 @@ CREATE TABLE elmah$error
     application     NVARCHAR2(60) NOT NULL,
     host            NVARCHAR2(30) NOT NULL,
     type            NVARCHAR2(100) NOT NULL,
-    source          NVARCHAR2(60) NOT NULL,
+    source          NVARCHAR2(60),
     message         NVARCHAR2(500) NOT NULL,
     username        NVARCHAR2(50) NOT NULL,
     statuscode      NUMBER NOT NULL,
