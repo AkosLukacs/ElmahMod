@@ -44,7 +44,7 @@ CREATE TABLE elmah$error
     type            NVARCHAR2(100) NOT NULL,
     source          NVARCHAR2(60),
     message         NVARCHAR2(500) NOT NULL,
-    username        NVARCHAR2(50) NOT NULL,
+    username        NVARCHAR2(50),
     statuscode      NUMBER NOT NULL,
     timeutc         DATE NOT NULL,
     sequencenumber  NUMBER NOT NULL,
