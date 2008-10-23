@@ -54,6 +54,9 @@ namespace Elmah
         private readonly string _connectionString;
 
         private const int _maxAppNameLength = 60;
+        private const string _scriptResourceName = "mkmdb.vbs";
+
+        private static readonly object _mdbInitializationLock = new object();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AccessErrorLog"/> class
@@ -315,8 +318,6 @@ namespace Elmah
             return new Error();
         }
 
-        private const string ScriptResourceName = "mkmdb.vbs";
-        private static readonly object _lock = new object();
         private void InitializeDatabase()
         {
             string connectionString = ConnectionString;
@@ -327,45 +328,47 @@ namespace Elmah
                 return;
 
             //
-            // Make sure that we don't have multiple threads all trying to create the database
+            // Make sure that we don't have multiple instances trying to create the database.
             //
 
-            lock (_lock)
+            lock (_mdbInitializationLock)
             {
                 //
-                // Just double check that no other thread has created the database while
-                // we were waiting for the lock
+                // Just double-check that no other thread has created the database while
+                // we were waiting for the lock.
                 //
 
                 if (File.Exists(dbFilePath))
                     return;
 
                 //
-                // Create a temporary copy of the mkmdb.vbs script
-                // We do this in the same directory as the resulting database for security permission purposes
+                // Create a temporary copy of the mkmdb.vbs script.
+                // We do this in the same directory as the resulting database for security permission purposes.
                 //
 
-                string tempVbsFile = Path.Combine(Path.GetDirectoryName(dbFilePath), ScriptResourceName);
+                string scriptPath = Path.Combine(Path.GetDirectoryName(dbFilePath), _scriptResourceName);
 
-                using (FileStream vbsFileStream = new FileStream(tempVbsFile, FileMode.Create, FileAccess.Write))
+                using (FileStream scriptStream = new FileStream(scriptPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    ManifestResourceHelper.WriteResourceToStream(vbsFileStream, ScriptResourceName);
+                    ManifestResourceHelper.WriteResourceToStream(scriptStream, _scriptResourceName);
                 }
 
                 //
-                // Run the script file to create the database using the supplied path
+                // Run the script file to create the database.
                 //
 
-                ProcessStartInfo processInfo = new ProcessStartInfo(tempVbsFile, string.Concat("\"", dbFilePath, "\""));
+                ProcessStartInfo psi = new ProcessStartInfo(scriptPath, "\"" + dbFilePath + "\"");
+                
                 try
                 {
-                    using (Process process = Process.Start(processInfo))
+                    using (Process process = Process.Start(psi))
                     {
                         //
-                        // 2 seconds should be plenty of time to create the database
+                        // A few seconds should be plenty of time to create the database.
                         //
 
-                        if (!process.WaitForExit(2000))
+                        var tolerance = TimeSpan.FromSeconds(2);
+                        if (!process.WaitForExit((int) tolerance.TotalMilliseconds))
                         {
                             //
                             // but it wasn't, so clean up and throw an exception!
@@ -373,7 +376,11 @@ namespace Elmah
                             //
 
                             process.Kill();
-                            throw new Exception("The create Access database script took more than 2 seconds to execute, so it has been terminated prematurely.");
+
+                            throw new Exception(string.Format(
+                                "The Microsoft Access database creation script took longer than the allocated time of {0} seconds to execute. "
+                                + "The script was terminated prematurely.", 
+                                tolerance.TotalSeconds));
                         }
                     }
                 }
@@ -383,7 +390,7 @@ namespace Elmah
                     // Clean up after ourselves!!
                     //
 
-                    File.Delete(tempVbsFile);
+                    File.Delete(scriptPath);
                 }
             }
         }
