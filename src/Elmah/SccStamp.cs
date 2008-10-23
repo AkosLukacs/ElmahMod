@@ -55,9 +55,22 @@ namespace Elmah
 
         static SccStamp()
         {
+            //
+            // Expression to help parse:
+            //
+            // STAMP := "$Id:" FILENAME REVISION DATE TIME "Z" USERNAME "$"
+            // DATE  := 4-DIGIT-YEAR "-" 2-DIGIT-MONTH "-" 2-DIGIT-DAY
+            // TIME  := HH ":" MM ":" SS
+            //
+
             _regex = new Regex(
                 @"^\$id:\s*(?<f>[^\s]+)\s+(?<r>[0-9]+)\s+((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2}))\s+((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z)\s+(?<a>\w+)",
-                RegexOptions.CultureInvariant | RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Singleline | RegexOptions.ExplicitCapture | RegexOptions.Compiled);
+                RegexOptions.CultureInvariant 
+                | RegexOptions.IgnoreCase 
+                | RegexOptions.IgnorePatternWhitespace 
+                | RegexOptions.Singleline 
+                | RegexOptions.ExplicitCapture 
+                | RegexOptions.Compiled);
         }
 
         /// <summary>
