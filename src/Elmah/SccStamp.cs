@@ -34,6 +34,7 @@ namespace Elmah
     using System;
     using System.Collections;
     using System.Globalization;
+    using System.IO;
     using System.Reflection;
     using System.Text.RegularExpressions;
 
@@ -63,13 +64,21 @@ namespace Elmah
             // TIME  := HH ":" MM ":" SS
             //
 
+            string escapedNonFileNameChars = Regex.Escape(new string(
+            #if NET_1_0 || NET_1_1
+                Path.InvalidPathChars
+            #else
+                Path.GetInvalidFileNameChars() // obsoletes InvalidPathChars .NET 2.0 onwards
+            #endif
+            ));
+
             _regex = new Regex(
-                @"^\$id:\s*(?<f>[^\s]+)\s+(?<r>[0-9]+)\s+((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2}))\s+((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z)\s+(?<a>\w+)",
-                RegexOptions.CultureInvariant 
-                | RegexOptions.IgnoreCase 
-                | RegexOptions.IgnorePatternWhitespace 
-                | RegexOptions.Singleline 
-                | RegexOptions.ExplicitCapture 
+                @"\$id:\s*(?<f>[^" + escapedNonFileNameChars + @"]+)\s+(?<r>[0-9]+)\s+((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2}))\s+((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z)\s+(?<a>\w+)",
+                RegexOptions.CultureInvariant
+                | RegexOptions.IgnoreCase
+                | RegexOptions.IgnorePatternWhitespace
+                | RegexOptions.Singleline
+                | RegexOptions.ExplicitCapture
                 | RegexOptions.Compiled);
         }
 
