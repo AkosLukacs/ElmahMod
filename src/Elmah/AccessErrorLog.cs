@@ -45,9 +45,13 @@ namespace Elmah
     #endregion
 
     /// <summary>
-    /// An <see cref="ErrorLog"/> implementation that uses Microsoft Access as its backing store.
-    /// Use the supplied Elmah.mdb as the database.
+    /// An <see cref="ErrorLog"/> implementation that uses Microsoft Access 
+    /// as its backing store.
     /// </summary>
+    /// <remarks>
+    /// The MDB file is automatically created at the path specified in the 
+    /// connection string if it does not already exist.
+    /// </remarks>
 
     public class AccessErrorLog : ErrorLog
     {
