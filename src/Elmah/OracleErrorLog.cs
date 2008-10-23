@@ -27,7 +27,7 @@
 
 #endregion
 
-// All code in this file requires .NET Framework 1.x or later.
+// All code in this file requires .NET Framework 1.1 or later.
 
 #if !NET_1_0
 
