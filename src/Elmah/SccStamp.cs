@@ -94,7 +94,7 @@ namespace Elmah
             int minute = int.Parse(groups["mi"].Value);
             int second = int.Parse(groups["s"].Value);
             
-            _lastChanged = new DateTime(year, month, day, hour, minute, second);
+            _lastChanged = new DateTime(year, month, day, hour, minute, second).ToLocalTime();
         }
 
         /// <summary>
@@ -134,7 +134,7 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Gets the last modification time component of the SCC stamp ID.
+        /// Gets the last modification time component of the SCC stamp ID in local time.
         /// </summary>
 
         public DateTime LastChanged
