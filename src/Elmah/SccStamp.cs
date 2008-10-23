@@ -134,12 +134,22 @@ namespace Elmah
         }
 
         /// <summary>
-        /// Gets the last modification time component of the SCC stamp ID in local time.
+        /// Gets the last modification time component of the SCC stamp ID.
         /// </summary>
 
         public DateTime LastChanged
         {
             get { return _lastChanged; }
+        }
+
+        /// <summary>
+        /// Gets the last modification time, in coordinated universal time 
+        /// (UTC), component of the SCC stamp ID in local time.
+        /// </summary>
+
+        public DateTime LastChangedUtc
+        {
+            get { return _lastChanged.ToUniversalTime(); }
         }
 
         public override string ToString()
