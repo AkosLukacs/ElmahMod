@@ -73,7 +73,12 @@ namespace Elmah
             ));
 
             _regex = new Regex(
-                @"\$id:\s*(?<f>[^" + escapedNonFileNameChars + @"]+)\s+(?<r>[0-9]+)\s+((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2}))\s+((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z)\s+(?<a>\w+)",
+                @"\$ id: \s* 
+                     (?<f>[^" + escapedNonFileNameChars + @"]+) \s+         # FILENAME
+                     (?<r>[0-9]+) \s+                                       # REVISION
+                     ((?<y>[0-9]{4})-(?<mo>[0-9]{2})-(?<d>[0-9]{2})) \s+    # DATE
+                     ((?<h>[0-9]{2})\:(?<mi>[0-9]{2})\:(?<s>[0-9]{2})Z) \s+ # TIME (UTC)
+                     (?<a>\w+)                                              # AUTHOR",
                 RegexOptions.CultureInvariant
                 | RegexOptions.IgnoreCase
                 | RegexOptions.IgnorePatternWhitespace
