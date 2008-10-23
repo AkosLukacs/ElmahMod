@@ -388,9 +388,6 @@
     <Content Include="..\..\Elmah\Database.sql">
       <Link>Database.sql</Link>
     </Content>
-    <Content Include="..\..\Elmah\Elmah.mdb">
-      <Link>Elmah.mdb</Link>
-    </Content>
     <EmbeddedResource Include="..\..\Elmah\mkmdb.vbs">
       <Link>mkmdb.vbs</Link>
     </EmbeddedResource>

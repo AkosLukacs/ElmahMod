@@ -563,11 +563,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Elmah.mdb"
-                    Link = "..\..\Elmah\Elmah.mdb"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "mkmdb.vbs"
                     Link = "..\..\Elmah\mkmdb.vbs"
                     BuildAction = "EmbeddedResource"

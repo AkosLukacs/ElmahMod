@@ -152,11 +152,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Elmah.mdb"
-                    Link = "..\..\Elmah\Elmah.mdb"
-                    BuildAction = "Content"
-                />
-                <File
                     RelPath = "Error.cs"
                     Link = "..\..\Elmah\Error.cs"
                     SubType = "Code"
