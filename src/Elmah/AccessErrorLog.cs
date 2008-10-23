@@ -377,7 +377,7 @@ namespace Elmah
                         // A few seconds should be plenty of time to create the database.
                         //
 
-                        var tolerance = TimeSpan.FromSeconds(2);
+                        TimeSpan tolerance = TimeSpan.FromSeconds(2);
                         if (!process.WaitForExit((int) tolerance.TotalMilliseconds))
                         {
                             //
