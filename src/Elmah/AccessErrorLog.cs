@@ -392,6 +392,13 @@ namespace Elmah
                                 + "The script was terminated prematurely.", 
                                 tolerance.TotalSeconds));
                         }
+
+                        if (process.ExitCode != 0)
+                        {
+                            throw new Exception(string.Format(
+                                "The Microsoft Access database creation script failed with exit code {0}.",
+                                process.ExitCode));
+                        }
                     }
                 }
                 finally

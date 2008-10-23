@@ -107,12 +107,40 @@ Function CreateTable(ByVal Catalog, ByVal Name)
 
 End Function
 
-If WScript.Arguments.Count = 1 Then
-	Dim FileName
-	
-	FileName = WScript.Arguments(0)
+Sub Main()
 
-	Set Catalog = CreateObject("ADOX.Catalog")
-	Catalog.Create "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & FileName
-	CreateTable Catalog, "ELMAH_Error"
-End If
+    Const ecMissingArgument = 1
+    Const ecObjectCreationError = 2
+    Const ecCatalogCreationError = 3
+    Const ecTableCreationError = 4
+
+    If WScript.Arguments.Count = 0 Then 
+        QuitWithError ecMissingArgument, "Missing MDB file path argument."
+    End If
+
+    Dim FileName : FileName = WScript.Arguments(0)
+
+    On Error Resume Next
+
+    Set Catalog = CreateObject("ADOX.Catalog") : QuitOnError ecObjectCreationError
+    Catalog.Create "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" & FileName : QuitOnError ecCatalogCreationError
+    CreateTable Catalog, "ELMAH_Error" : QuitOnError ecTableCreationError
+
+End Sub
+
+Sub QuitOnError(ByVal ExitCode)
+
+    If Err.Number = 0 Then Exit Sub
+    WScript.StdErr.WriteLine Err.Source & ": " & Err.Description
+    WScript.Quit(ExitCode)
+
+End Sub
+
+Sub QuitWithError(ByVal ExitCode, ByVal Message)
+
+    WScript.StdErr.WriteLine Message
+    WScript.Quit(ExitCode)
+
+End Sub
+
+Main()
