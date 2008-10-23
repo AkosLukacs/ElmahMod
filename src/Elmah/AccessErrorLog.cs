@@ -354,10 +354,16 @@ namespace Elmah
                 }
 
                 //
-                // Run the script file to create the database.
+                // Run the script file to create the database using batch 
+                // mode (//B), which suppresses script errors and prompts 
+                // from displaying.
                 //
 
-                ProcessStartInfo psi = new ProcessStartInfo(scriptPath, "\"" + dbFilePath + "\"");
+                ProcessStartInfo psi = new ProcessStartInfo(
+                    "cscript", scriptPath + " \"" + dbFilePath + "\" //B //NoLogo");
+                
+                psi.UseShellExecute = false;    // i.e. CreateProcess
+                psi.CreateNoWindow = true;      // Stay lean, stay mean
                 
                 try
                 {
