@@ -159,7 +159,7 @@ namespace Elmah
             {
                 connection.Open();
 
-                command.CommandText = @"INSERT INTO Elmah_Error
+                command.CommandText = @"INSERT INTO ELMAH_Error
                                             (ErrorId, Application, Host, Type, Source, 
                                             Message, UserName, StatusCode, TimeUtc, AllXml)
                                         VALUES
@@ -203,7 +203,7 @@ namespace Elmah
             using (OleDbCommand command = connection.CreateCommand())
             {
                 command.CommandType = CommandType.Text;
-                command.CommandText = "SELECT COUNT(*) FROM Elmah_Error";
+                command.CommandText = "SELECT COUNT(*) FROM ELMAH_Error";
 
                 connection.Open();
                 int totalCount = (int)command.ExecuteScalar();
@@ -224,7 +224,7 @@ namespace Elmah
                     sql.Append(" TimeUtc, SequenceNumber FROM (");
                     sql.Append("SELECT TOP ");
                     sql.Append(maxRecords.ToString());
-                    sql.Append(" TimeUtc, SequenceNumber FROM Elmah_Error ");
+                    sql.Append(" TimeUtc, SequenceNumber FROM ELMAH_Error ");
                     sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
                     sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
                     sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
@@ -287,13 +287,13 @@ namespace Elmah
                 throw new ArgumentException(e.Message, "id", e);
             }
 
-            string errorXml = null;
+            string errorXml;
 
             using (OleDbConnection connection = new OleDbConnection(this.ConnectionString))
             using (OleDbCommand command = connection.CreateCommand())
             {
                 command.CommandText = @"SELECT   AllXml
-                                        FROM     Elmah_Error
+                                        FROM     ELMAH_Error
                                         WHERE    ErrorId = @ErrorId";
                 command.CommandType = CommandType.Text;
 
