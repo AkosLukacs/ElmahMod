@@ -152,7 +152,7 @@ namespace Elmah
                 throw new ArgumentNullException("error");
 
             Guid id = Guid.NewGuid();
-            string errorXml = error.ToXmlString();
+            string errorXml = ErrorXml.EncodeString(error);
 
             using (OleDbConnection connection = new OleDbConnection(this.ConnectionString))
             using (OleDbCommand command = connection.CreateCommand())
@@ -307,9 +307,7 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = new Error();
-            error.FromString(errorXml);
-
+            Error error = ErrorXml.DecodeString(errorXml);
             return new ErrorLogEntry(this, id, error);
         }
 

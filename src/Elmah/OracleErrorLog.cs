@@ -145,7 +145,7 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            string errorXml = error.ToXmlString();
+            string errorXml = ErrorXml.EncodeString(error);
             Guid id = Guid.NewGuid();
 
             using (OracleConnection connection = new OracleConnection(this.ConnectionString))
@@ -311,9 +311,7 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = new Error();
-            error.FromString(errorXml);
-
+            Error error = ErrorXml.DecodeString(errorXml);
             return new ErrorLogEntry(this, id, error);
         }
     }

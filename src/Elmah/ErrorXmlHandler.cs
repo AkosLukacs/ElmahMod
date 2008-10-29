@@ -88,7 +88,7 @@ namespace Elmah
 
             writer.WriteStartDocument();
             writer.WriteStartElement("error");
-            entry.Error.ToXml(writer);
+            ErrorXml.Encode(entry.Error, writer);
             writer.WriteEndElement(/* error */);
             writer.WriteEndDocument();
             writer.Flush();

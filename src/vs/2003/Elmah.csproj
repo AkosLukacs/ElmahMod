@@ -311,6 +311,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorXml.cs"
+                    Link = "..\..\Elmah\ErrorXml.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorXmlHandler.cs"
                     Link = "..\..\Elmah\ErrorXmlHandler.cs"
                     SubType = "Code"

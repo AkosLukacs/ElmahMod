@@ -148,7 +148,7 @@ namespace Elmah
                 writer.Formatting = Formatting.Indented;
                 writer.WriteStartElement("error");
                 writer.WriteAttributeString("errorId", errorId);
-                error.ToXml(writer);
+                ErrorXml.Encode(error, writer);
                 writer.WriteEndElement();
                 writer.Flush();
             }
@@ -210,10 +210,7 @@ namespace Elmah
                         while (reader.IsStartElement("error"))
                         {
                             string id = reader.GetAttribute("errorId");
-
-                            Error error = new Error();
-                            error.FromXml(reader);
-
+                            Error error = ErrorXml.Decode(reader);
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
                         }
                     }
@@ -258,8 +255,7 @@ namespace Elmah
             
             try
             {
-                Error error = new Error();
-                error.FromXml(reader);
+                Error error = ErrorXml.Decode(reader);
                 return new ErrorLogEntry(this, id, error);
             }
             finally

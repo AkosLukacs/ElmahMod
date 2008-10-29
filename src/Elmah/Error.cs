@@ -32,16 +32,10 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.IO;
     using System.Web;
     using System.Xml;
-
-    using XmlReader = System.Xml.XmlReader;
-    using XmlWriter = System.Xml.XmlWriter;
     using Thread = System.Threading.Thread;
     using NameValueCollection = System.Collections.Specialized.NameValueCollection;
-    using XmlConvert = System.Xml.XmlConvert;
-    using WriteState = System.Xml.WriteState;
 
     #endregion
 
@@ -51,7 +45,7 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-    public sealed class Error : IXmlExportable, ICloneable
+    public sealed class Error : ICloneable
     {
         private readonly Exception _exception;
         private string _applicationName;
@@ -145,8 +139,8 @@ namespace Elmah
         /// </summary>
         /// <remarks>
         /// This is a run-time property only that is not written or read 
-        /// during XML serialization via <see cref="FromXml"/> and 
-        /// <see cref="ToXml"/>.
+        /// during XML serialization via <see cref="ErrorXml.Decode"/> and 
+        /// <see cref="ErrorXml.Encode"/>.
         /// </remarks>
 
         public Exception Exception
@@ -310,245 +304,6 @@ namespace Elmah
         public override string ToString()
         {
             return this.Message;
-        }
-
-        /// <summary>
-        /// Loads the error object from a string XML representation.
-        /// </summary>
-
-        public void FromString(string errorXml)
-        {
-            using (StringReader sr = new StringReader(errorXml))
-            {
-                XmlTextReader reader = new XmlTextReader(sr);
-
-                if (!reader.IsStartElement("error"))
-                    throw new ApplicationException("The error XML is not in the expected format.");
-
-                FromXml(reader);
-            }
-        }
-
-        /// <summary>
-        /// Loads the error object from its XML representation.
-        /// </summary>
-
-        public void FromXml(XmlReader reader)
-        {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
-
-            //
-            // Reader must be positioned on an element!
-            //
-
-            if (!reader.IsStartElement())
-                throw new ArgumentException("Reader is not positioned at the start of an element.", "reader");
-
-            //
-            // Read out the attributes that contain the simple
-            // typed state.
-            //
-
-            ReadXmlAttributes(reader);
-
-            //
-            // Move past the element. If it's not empty, then
-            // read also the inner XML that contains complex
-            // types like collections.
-            //
-
-            bool isEmpty = reader.IsEmptyElement;
-            reader.Read();
-
-            if (!isEmpty)
-            {
-                ReadInnerXml(reader);
-                reader.ReadEndElement();
-            }
-        }
-
-        /// <summary>
-        /// Reads the error data in XML attributes.
-        /// </summary>
-        
-        private void ReadXmlAttributes(XmlReader reader)
-        {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
-
-            if (!reader.IsStartElement())
-                throw new ArgumentException("Reader is not positioned at the start of an element.", "reader");
-
-            _applicationName = reader.GetAttribute("application");
-            _hostName = reader.GetAttribute("host");
-            _typeName = reader.GetAttribute("type");
-            _message = reader.GetAttribute("message");
-            _source = reader.GetAttribute("source");
-            _detail = reader.GetAttribute("detail");
-            _user = reader.GetAttribute("user");
-            string timeString = Mask.NullString(reader.GetAttribute("time"));
-            _time = timeString.Length == 0 ? new DateTime() : XmlConvert.ToDateTime(timeString);
-            string statusCodeString = Mask.NullString(reader.GetAttribute("statusCode"));
-            _statusCode = statusCodeString.Length == 0 ? 0 : XmlConvert.ToInt32(statusCodeString);
-            _webHostHtmlMessage = reader.GetAttribute("webHostHtmlMessage");
-        }
-
-        /// <summary>
-        /// Reads the error data in child nodes.
-        /// </summary>
-
-        private void ReadInnerXml(XmlReader reader)
-        {
-            if (reader == null)
-                throw new ArgumentNullException("reader");
-
-            //
-            // Loop through the elements, reading those that we
-            // recognize. If an unknown element is found then
-            // this method bails out immediately without
-            // consuming it, assuming that it belongs to a subclass.
-            //
-
-            while (reader.IsStartElement())
-            {
-                //
-                // Optimization Note: This block could be re-wired slightly 
-                // to be more efficient by not causing a collection to be
-                // created if the element is going to be empty.
-                //
-
-                NameValueCollection collection;
-
-                switch (reader.LocalName)
-                {
-                    case "serverVariables" : collection = this.ServerVariables; break;
-                    case "queryString"     : collection = this.QueryString; break;
-                    case "form"            : collection = this.Form; break;
-                    case "cookies"         : collection = this.Cookies; break;
-                    default                : return;
-                }
-
-                if (reader.IsEmptyElement)
-                    reader.Read();
-                else
-                    ((IXmlExportable) collection).FromXml(reader);
-            }
-        }
-
-        /// <summary>
-        /// Writes the error data to its XML representation.
-        /// </summary>
-
-        public void ToXml(XmlWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException("writer");
-
-            if (writer.WriteState != WriteState.Element)
-                throw new ArgumentException("Writer is not in the expected Element state.", "writer");
-
-            //
-            // Write out the basic typed information in attributes
-            // followed by collections as inner elements.
-            //
-
-            WriteXmlAttributes(writer);
-            WriteInnerXml(writer);
-        }
-
-        /// <summary>
-        /// Gets a default XML representation of the error data as a string.
-        /// </summary>
-        /// <returns>A string version of the XML representation.</returns>
-        public string ToXmlString()
-        {
-            StringWriter sw = new StringWriter();
-
-#if !NET_1_0 && !NET_1_1
-            XmlWriterSettings settings = new XmlWriterSettings();
-            settings.Indent = true;
-            settings.NewLineOnAttributes = true;
-            settings.CheckCharacters = false;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-#endif
-
-            try
-            {
-                writer.WriteStartElement("error");
-                this.ToXml(writer);
-                writer.WriteEndElement();
-                writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
-            }
-
-            return sw.ToString();
-        }
-
-        /// <summary>
-        /// Writes the error data that belongs in XML attributes.
-        /// </summary>
-
-        private void WriteXmlAttributes(XmlWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException("writer");
-
-            WriteXmlAttribute(writer, "application", _applicationName);
-            WriteXmlAttribute(writer, "host", _hostName);
-            WriteXmlAttribute(writer, "type", _typeName);
-            WriteXmlAttribute(writer, "message", _message);
-            WriteXmlAttribute(writer, "source", _source);
-            WriteXmlAttribute(writer, "detail", _detail);
-            WriteXmlAttribute(writer, "user", _user);
-            if (_time != DateTime.MinValue)
-                WriteXmlAttribute(writer, "time", XmlConvert.ToString(_time));
-            if (_statusCode != 0)
-                WriteXmlAttribute(writer, "statusCode", XmlConvert.ToString(_statusCode));
-            WriteXmlAttribute(writer, "webHostHtmlMessage", _webHostHtmlMessage);
-        }
-
-        /// <summary>
-        /// Writes the error data that belongs in child nodes.
-        /// </summary>
-
-        private void WriteInnerXml(XmlWriter writer)
-        {
-            if (writer == null)
-                throw new ArgumentNullException("writer");
-
-            WriteCollection(writer, "serverVariables", _serverVariables);
-            WriteCollection(writer, "queryString", _queryString);
-            WriteCollection(writer, "form", _form);
-            WriteCollection(writer, "cookies", _cookies);
-        }
-
-        private static void WriteCollection(XmlWriter writer, string name, NameValueCollection collection)
-        {
-            Debug.Assert(writer != null);
-            Debug.AssertStringNotEmpty(name);
-
-            if (collection != null && collection.Count != 0)
-            {
-                writer.WriteStartElement(name);
-                ((IXmlExportable) collection).ToXml(writer);
-                writer.WriteEndElement();
-            }
-        }
-
-        private static void WriteXmlAttribute(XmlWriter writer, string name, string value)
-        {
-            Debug.Assert(writer != null);
-            Debug.AssertStringNotEmpty(name);
-
-            if (value != null && value.Length != 0)
-                writer.WriteAttributeString(name, value);
         }
 
         /// <summary>

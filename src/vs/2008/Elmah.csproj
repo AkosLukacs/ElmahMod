@@ -274,6 +274,9 @@
       <Link>ErrorTextFormatter.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorXml.cs">
+      <Link>ErrorXml.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorXmlHandler.cs">
       <Link>ErrorXmlHandler.cs</Link>
     </Compile>
