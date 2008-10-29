@@ -51,7 +51,7 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-    public class Error : IXmlExportable, ICloneable
+    public sealed class Error : IXmlExportable, ICloneable
     {
         private readonly Exception _exception;
         private string _applicationName;
@@ -372,7 +372,7 @@ namespace Elmah
         /// Reads the error data in XML attributes.
         /// </summary>
         
-        protected virtual void ReadXmlAttributes(XmlReader reader)
+        private void ReadXmlAttributes(XmlReader reader)
         {
             if (reader == null)
                 throw new ArgumentNullException("reader");
@@ -398,7 +398,7 @@ namespace Elmah
         /// Reads the error data in child nodes.
         /// </summary>
 
-        protected virtual void ReadInnerXml(XmlReader reader)
+        private void ReadInnerXml(XmlReader reader)
         {
             if (reader == null)
                 throw new ArgumentNullException("reader");
@@ -495,7 +495,7 @@ namespace Elmah
         /// Writes the error data that belongs in XML attributes.
         /// </summary>
 
-        protected virtual void WriteXmlAttributes(XmlWriter writer)
+        private void WriteXmlAttributes(XmlWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException("writer");
@@ -518,7 +518,7 @@ namespace Elmah
         /// Writes the error data that belongs in child nodes.
         /// </summary>
 
-        protected virtual void WriteInnerXml(XmlWriter writer)
+        private void WriteInnerXml(XmlWriter writer)
         {
             if (writer == null)
                 throw new ArgumentNullException("writer");

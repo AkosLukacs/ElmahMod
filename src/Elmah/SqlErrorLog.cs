@@ -315,7 +315,7 @@ namespace Elmah
                 {
                     string id = reader.GetAttribute("errorId");
 
-                    Error error = NewError();
+                    Error error = new Error();
                     error.FromXml(reader);
 
                     errorEntryList.Add(new ErrorLogEntry(this, id, error));
@@ -360,19 +360,10 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = NewError();
+            Error error = new Error();
             error.FromString(errorXml);
 
             return new ErrorLogEntry(this, id, error);
-        }
-
-        /// <summary>
-        /// Creates a new and empty instance of the <see cref="Error"/> class.
-        /// </summary>
-
-        protected virtual Error NewError()
-        {
-            return new Error();
         }
 
         private sealed class Commands

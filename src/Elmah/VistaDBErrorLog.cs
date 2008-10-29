@@ -223,7 +223,7 @@ namespace Elmah
                         rowsProcessed++;
 
                         Guid guid = (Guid)elmahTable.Get("ErrorId").Value;
-                        Error error = NewError();
+                        Error error = new Error();
 
                         error.ApplicationName = (string)elmahTable.Get("Application").Value;
                         error.HostName = (string)elmahTable.Get("Host").Value;
@@ -298,19 +298,10 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = NewError();
+            Error error = new Error();
             error.FromString(errorXml);
 
             return new ErrorLogEntry(this, id, error);
-        }
-
-        /// <summary>
-        /// Creates a new and empty instance of the <see cref="Error"/> class.
-        /// </summary>
-
-        protected virtual Error NewError()
-        {
-            return new Error();
         }
 
         private static string EscapeApostrophes(string text)

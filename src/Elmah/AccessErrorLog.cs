@@ -241,7 +241,7 @@ namespace Elmah
                             string id = reader["ErrorId"].ToString();
                             Guid guid = new Guid(id);
 
-                            Error error = NewError();
+                            Error error = new Error();
 
                             error.ApplicationName = reader["Application"].ToString();
                             error.HostName = reader["Host"].ToString();
@@ -307,19 +307,10 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = NewError();
+            Error error = new Error();
             error.FromString(errorXml);
 
             return new ErrorLogEntry(this, id, error);
-        }
-
-        /// <summary>
-        /// Creates a new and empty instance of the <see cref="Error"/> class.
-        /// </summary>
-
-        protected virtual Error NewError()
-        {
-            return new Error();
         }
 
         private void InitializeDatabase()
