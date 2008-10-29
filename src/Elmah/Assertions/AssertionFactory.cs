@@ -32,6 +32,7 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
+    using System.Collections;
     using System.Configuration;
     using System.Reflection;
     using System.Web;
@@ -112,7 +113,37 @@ namespace Elmah.Assertions
         {
             return new RegexMatchAssertion(config);
         }
-        
+
+        public static IAssertion assert_jscript(XmlElement config)
+        {
+            if (config == null) throw new ArgumentNullException("config");
+            
+            //
+            // The expression can be specified via an attribute or a
+            // a child element named "expression". The element form takes
+            // precedence.
+            //
+
+            // TODO More rigorous validation
+            // For example, expression should not appear as an attribute and 
+            // a child node. Also multiple child expressions should result in
+            // an error.
+
+            string expression = null;
+
+            XmlElement expressionElement = config["expression"];
+            if (expressionElement != null)
+                expression = expressionElement.InnerText;
+
+            if (expression == null)
+                expression = config.GetAttribute("expression");
+
+            return new JScriptAssertion(
+                expression,
+                DeserializeStringArray(config, "assemblies", "assembly", "name"), 
+                DeserializeStringArray(config, "imports", "import", "namespace"));
+        }
+
         public static IAssertion Create(XmlElement config)
         {
             if (config == null)
@@ -199,7 +230,28 @@ namespace Elmah.Assertions
             return s.Length >= prefix.Length && 
                 string.CompareOrdinal(s.Substring(0, prefix.Length), prefix) == 0;
         }
- 
+
+        private static string[] DeserializeStringArray(XmlElement config,
+            string containerName, string elementName, string valueName)
+        {
+            Debug.Assert(config != null);
+            Debug.AssertStringNotEmpty(containerName);
+            Debug.AssertStringNotEmpty(elementName);
+            Debug.AssertStringNotEmpty(valueName);
+
+            ArrayList list = new ArrayList(4);
+
+            string xpath = containerName + "/" + elementName + "/@" + valueName;
+            foreach (XmlAttribute attribute in config.SelectNodes(xpath))
+            {
+                string value = Mask.NullString(attribute.Value);
+                if (value.Length > 0)
+                    list.Add(attribute.Value);
+            }
+
+            return (string[]) list.ToArray(typeof(string));
+        }
+
         private AssertionFactory()
         {
             throw new NotSupportedException();

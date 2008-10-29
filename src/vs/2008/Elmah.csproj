@@ -72,6 +72,8 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.JScript" />
+    <Reference Include="Microsoft.Vsa" />
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -142,6 +144,9 @@
     <Compile Include="..\..\Elmah\Assertions\IAssertion.cs">
       <Link>Assertions\IAssertion.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\Assertions\JScriptAssertion.cs">
+      <Link>Assertions\JScriptAssertion.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\Assertions\LogicalAssertion.cs">
       <Link>Assertions\LogicalAssertion.cs</Link>

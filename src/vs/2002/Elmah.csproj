@@ -58,6 +58,16 @@
             </Settings>
             <References>
                 <Reference
+                    Name = "Microsoft.JScript"
+                    AssemblyName = "Microsoft.JScript"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\Microsoft.JScript.dll"
+                />
+                <Reference
+                    Name = "Microsoft.Vsa"
+                    AssemblyName = "Microsoft.Vsa"
+                    HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\Microsoft.Vsa.dll"
+                />
+                <Reference
                     Name = "System"
                     AssemblyName = "System"
                     HintPath = "..\..\..\..\WINDOWS\Microsoft.NET\Framework\v1.0.3705\System.dll"
@@ -505,6 +515,12 @@
                 <File
                     RelPath = "Assertions\IAssertion.cs"
                     Link = "..\..\Elmah\Assertions\IAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\JScriptAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\JScriptAssertion.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
