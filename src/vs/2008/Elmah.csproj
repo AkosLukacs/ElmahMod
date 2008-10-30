@@ -219,6 +219,12 @@
       <Link>ErrorHtmlPage.cs</Link>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorJson.cs">
+      <Link>ErrorJson.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Elmah\ErrorJsonHandler.cs">
+      <Link>ErrorJsonHandler.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorLog.cs">
       <Link>ErrorLog.cs</Link>
       <SubType>Code</SubType>
@@ -305,6 +311,9 @@
     </Compile>
     <Compile Include="..\..\Elmah\InvariantStringArray.cs">
       <Link>InvariantStringArray.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Elmah\JsonTextWriter.cs">
+      <Link>JsonTextWriter.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\ManifestResourceHandler.cs">
       <Link>ManifestResourceHandler.cs</Link>

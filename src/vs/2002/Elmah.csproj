@@ -210,6 +210,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorJson.cs"
+                    Link = "..\..\Elmah\ErrorJson.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ErrorJsonHandler.cs"
+                    Link = "..\..\Elmah\ErrorJsonHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorLog.cs"
                     Link = "..\..\Elmah\ErrorLog.cs"
                     SubType = "Code"
@@ -349,6 +361,12 @@
                 <File
                     RelPath = "InvariantStringArray.cs"
                     Link = "..\..\Elmah\InvariantStringArray.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "JsonTextWriter.cs"
+                    Link = "..\..\Elmah\JsonTextWriter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -207,16 +207,27 @@ namespace Elmah
             }
 
             //
-            // Add a link to the source XML data.
+            // Add a link to the source XML and JSON data.
             //
 
             writer.RenderBeginTag(HtmlTextWriterTag.Li);
+            writer.Write("Raw/Source data in ");
+            
             writer.AddAttribute(HtmlTextWriterAttribute.Href, "xml" + Request.Url.Query);
             writer.AddAttribute("rel", HtmlLinkType.Alternate);
             writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/xml");
             writer.RenderBeginTag(HtmlTextWriterTag.A);
-            writer.Write("Raw/Source data in XML");
+            writer.Write("XML");
             writer.RenderEndTag(); // </a>
+            writer.Write(" or in ");
+
+            writer.AddAttribute(HtmlTextWriterAttribute.Href, "json" + Request.Url.Query);
+            writer.AddAttribute("rel", HtmlLinkType.Alternate);
+            writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/json");
+            writer.RenderBeginTag(HtmlTextWriterTag.A);
+            writer.Write("JSON");
+            writer.RenderEndTag(); // </a>
+            
             writer.RenderEndTag(); // </li>
 
             //

@@ -109,6 +109,9 @@ namespace Elmah
                 case "xml":
                     return new ErrorXmlHandler();
 
+                case "json":
+                    return new ErrorJsonHandler();
+
                 case "rss":
                     return new ErrorRssHandler();
 
