@@ -365,20 +365,8 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "HttpValuesCollection.cs"
-                    Link = "..\..\Elmah\HttpValuesCollection.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "InvariantStringArray.cs"
                     Link = "..\..\Elmah\InvariantStringArray.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IXmlExportable.cs"
-                    Link = "..\..\Elmah\IXmlExportable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

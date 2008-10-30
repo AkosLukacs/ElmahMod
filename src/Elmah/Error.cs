@@ -140,7 +140,7 @@ namespace Elmah
         /// <remarks>
         /// This is a run-time property only that is not written or read 
         /// during XML serialization via <see cref="ErrorXml.Decode"/> and 
-        /// <see cref="ErrorXml.Encode"/>.
+        /// <see cref="ErrorXml.Encode(Error,XmlWriter)"/>.
         /// </remarks>
 
         public Exception Exception
@@ -335,7 +335,7 @@ namespace Elmah
             if (collection == null || collection.Count == 0)
                 return null;
 
-            return new HttpValuesCollection(collection);
+            return new NameValueCollection(collection);
         }
 
         private static NameValueCollection CopyCollection(HttpCookieCollection cookies)
@@ -343,7 +343,7 @@ namespace Elmah
             if (cookies == null || cookies.Count == 0)
                 return null;
 
-            NameValueCollection copy = new HttpValuesCollection(cookies.Count);
+            NameValueCollection copy = new NameValueCollection(cookies.Count);
 
             for (int i = 0; i < cookies.Count; i++)
             {
@@ -363,7 +363,7 @@ namespace Elmah
         private static NameValueCollection FaultIn(ref NameValueCollection collection)
         {
             if (collection == null)
-                collection = new HttpValuesCollection();
+                collection = new NameValueCollection();
 
             return collection;
         }

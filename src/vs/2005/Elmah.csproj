@@ -302,16 +302,8 @@
     <Compile Include="..\..\Elmah\HttpStatus.cs">
       <Link>HttpStatus.cs</Link>
     </Compile>
-    <Compile Include="..\..\Elmah\HttpValuesCollection.cs">
-      <Link>HttpValuesCollection.cs</Link>
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="..\..\Elmah\InvariantStringArray.cs">
       <Link>InvariantStringArray.cs</Link>
-    </Compile>
-    <Compile Include="..\..\Elmah\IXmlExportable.cs">
-      <Link>IXmlExportable.cs</Link>
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\..\Elmah\ManifestResourceHandler.cs">
       <Link>ManifestResourceHandler.cs</Link>

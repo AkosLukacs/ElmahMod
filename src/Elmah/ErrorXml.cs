@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Collections.Specialized;
     using System.IO;
     using System.Web;
     using System.Xml;
@@ -179,7 +180,7 @@ namespace Elmah
                 if (reader.IsEmptyElement)
                     reader.Read();
                 else
-                    ((IXmlExportable) collection).FromXml(reader);
+                    UpcodeTo(reader, collection);
             }
         }
 
@@ -285,7 +286,7 @@ namespace Elmah
             if (collection != null && collection.Count != 0)
             {
                 writer.WriteStartElement(name);
-                ((IXmlExportable) collection).ToXml(writer);
+                Encode(collection, writer);
                 writer.WriteEndElement();
             }
         }
@@ -297,6 +298,106 @@ namespace Elmah
 
             if (value != null && value.Length != 0)
                 writer.WriteAttributeString(name, value);
+        }
+
+        /// <summary>
+        /// Encodes an XML representation for a 
+        /// <see cref="NameValueCollection" /> object.
+        /// </summary>
+
+        private static void Encode(NameValueCollection collection, XmlWriter writer) 
+        {
+            if (collection == null) 
+                throw new ArgumentNullException("collection");
+            
+            if (writer == null)
+                throw new ArgumentNullException("writer");
+
+            if (collection.Count == 0)
+            {
+                return;
+            }
+
+            //
+            // Write out a named multi-value collection as follows 
+            // (example here is the ServerVariables collection):
+            //
+            //      <item name="HTTP_URL">
+            //          <value string="/myapp/somewhere/page.aspx" />
+            //      </item>
+            //      <item name="QUERY_STRING">
+            //          <value string="a=1&amp;b=2" />
+            //      </item>
+            //      ...
+            //
+
+            foreach (string key in collection.Keys)
+            {
+                writer.WriteStartElement("item");
+                writer.WriteAttributeString("name", key);
+                
+                string[] values = collection.GetValues(key);
+
+                if (values != null)
+                {
+                    foreach (string value in values)
+                    {
+                        writer.WriteStartElement("value");
+                        writer.WriteAttributeString("string", value);
+                        writer.WriteEndElement();
+                    }
+                }
+                
+                writer.WriteEndElement();
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing <see cref="NameValueCollection" /> object from
+        /// its XML representation.
+        /// </summary>
+
+        private static void UpcodeTo(XmlReader reader, NameValueCollection collection)
+        {
+            if (collection == null)
+                throw new ArgumentNullException("collection");
+
+            if (reader == null)
+                throw new ArgumentNullException("reader");
+
+            reader.Read();
+
+            //
+            // Add entries into the collection as <item> elements
+            // with child <value> elements are found.
+            //
+
+            while (reader.IsStartElement("item"))
+            {
+                string name = reader.GetAttribute("name");
+                bool isNull = reader.IsEmptyElement;
+
+                reader.Read(); // <item>
+
+                if (!isNull)
+                {
+
+                    while (reader.IsStartElement("value")) // <value ...>
+                    {
+                        string value = reader.GetAttribute("string");
+                        collection.Add(name, value);
+                        reader.Read();
+                    }
+
+                    reader.ReadEndElement(); // </item>
+                }
+                else
+                {
+                    collection.Add(name, null);
+                }
+            }
+
+            reader.ReadEndElement();
         }
     }
 }
