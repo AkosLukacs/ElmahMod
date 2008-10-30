@@ -151,7 +151,6 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            Guid id = Guid.NewGuid();
             string errorXml = ErrorXml.EncodeString(error);
 
             using (OleDbConnection connection = new OleDbConnection(this.ConnectionString))
@@ -159,17 +158,17 @@ namespace Elmah
             {
                 connection.Open();
 
+                command.CommandType = CommandType.Text;
                 command.CommandText = @"INSERT INTO ELMAH_Error
-                                            (ErrorId, Application, Host, Type, Source, 
+                                            (Application, Host, Type, Source, 
                                             Message, UserName, StatusCode, TimeUtc, AllXml)
                                         VALUES
-                                            (@ErrorId, @Application, @Host, @Type, @Source, 
+                                            (@Application, @Host, @Type, @Source, 
                                             @Message, @UserName, @StatusCode, @TimeUtc, @AllXml)";
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
 
-                parameters.Add("@ErrorId", OleDbType.VarChar, 32).Value = id.ToString("N");
                 parameters.Add("@Application", OleDbType.VarChar, _maxAppNameLength).Value = ApplicationName;
                 parameters.Add("@Host", OleDbType.VarChar, 30).Value = error.HostName;
                 parameters.Add("@Type", OleDbType.VarChar, 100).Value = error.Type;
@@ -182,7 +181,13 @@ namespace Elmah
                 
                 command.ExecuteNonQuery();
 
-                return id.ToString();
+                using (OleDbCommand identityCommand = connection.CreateCommand())
+                {
+                    identityCommand.CommandType = CommandType.Text;
+                    identityCommand.CommandText = "SELECT @@IDENTITY";
+
+                    return identityCommand.ExecuteScalar().ToString();
+                }
             }
         }
 
@@ -221,14 +226,14 @@ namespace Elmah
                     sql.Append("SELECT e.* FROM (");
                     sql.Append("SELECT TOP ");
                     sql.Append(pageSize.ToString());
-                    sql.Append(" TimeUtc, SequenceNumber FROM (");
+                    sql.Append(" TimeUtc, ErrorId FROM (");
                     sql.Append("SELECT TOP ");
                     sql.Append(maxRecords.ToString());
-                    sql.Append(" TimeUtc, SequenceNumber FROM ELMAH_Error ");
-                    sql.Append("ORDER BY TimeUtc DESC, SequenceNumber DESC) ");
-                    sql.Append("ORDER BY TimeUtc ASC, SequenceNumber ASC) AS i ");
-                    sql.Append("INNER JOIN Elmah_Error AS e ON i.SequenceNumber = e.SequenceNumber ");
-                    sql.Append("ORDER BY e.TimeUtc DESC, e.SequenceNumber DESC");
+                    sql.Append(" TimeUtc, ErrorId FROM ELMAH_Error ");
+                    sql.Append("ORDER BY TimeUtc DESC, ErrorId DESC) ");
+                    sql.Append("ORDER BY TimeUtc ASC, ErrorId ASC) AS i ");
+                    sql.Append("INNER JOIN Elmah_Error AS e ON i.ErrorId = e.ErrorId ");
+                    sql.Append("ORDER BY e.TimeUtc DESC, e.ErrorId DESC");
 
                     command.CommandText = sql.ToString();
 
@@ -239,7 +244,6 @@ namespace Elmah
                         while (reader.Read())
                         {
                             string id = reader["ErrorId"].ToString();
-                            Guid guid = new Guid(id);
 
                             Error error = new Error();
 
@@ -252,7 +256,7 @@ namespace Elmah
                             error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
                             error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
 
-                            errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                            errorEntryList.Add(new ErrorLogEntry(this, id, error));
                         }
 
                         reader.Close();
@@ -276,13 +280,16 @@ namespace Elmah
             if (id.Length == 0)
                 throw new ArgumentException(null, "id");
 
-            Guid errorGuid;
-
+            int errorId;
             try
             {
-                errorGuid = new Guid(id);
+                errorId = int.Parse(id);
             }
             catch (FormatException e)
+            {
+                throw new ArgumentException(e.Message, "id", e);
+            }
+            catch (OverflowException e)
             {
                 throw new ArgumentException(e.Message, "id", e);
             }
@@ -298,7 +305,7 @@ namespace Elmah
                 command.CommandType = CommandType.Text;
 
                 OleDbParameterCollection parameters = command.Parameters;
-                parameters.Add("@ErrorId", OleDbType.VarChar, 32).Value = errorGuid.ToString("N");
+                parameters.Add("@ErrorId", OleDbType.Integer).Value = errorId;
 
                 connection.Open();
                 errorXml = (string)command.ExecuteScalar();

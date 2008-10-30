@@ -86,7 +86,8 @@ Function CreateTable(ByVal Catalog, ByVal Name)
     ' type mappings between MS Access and ADOX
 
     With Table.Columns
-        .Append "ErrorId", adVarWChar, 32
+        .Append "ErrorId", adInteger
+        .Item("ErrorId").Properties("AutoIncrement") = True
         .Append "Application", adVarWChar, 60
         .Append "Host", adVarWChar, 30
         .Append "Type", adVarWChar, 100
@@ -95,8 +96,6 @@ Function CreateTable(ByVal Catalog, ByVal Name)
         .Append "UserName", adVarWChar, 60
         .Append "StatusCode", adInteger
         .Append "TimeUtc", adDate
-        .Append "SequenceNumber", adInteger
-        .Item("SequenceNumber").Properties("AutoIncrement") = True
         .Append "AllXml", adLongVarWChar
     End With
 
