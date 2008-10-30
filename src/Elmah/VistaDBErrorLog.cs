@@ -150,23 +150,21 @@ namespace Elmah
                 throw new ArgumentNullException("error");
 
             string errorXml = ErrorXml.EncodeString(error);
-            Guid id = Guid.NewGuid();
 
             using (VistaDBConnection connection = new VistaDBConnection(this.ConnectionString))
             using (VistaDBCommand command = connection.CreateCommand())
             {
                 connection.Open();
                 command.CommandText = @"INSERT INTO ELMAH_Error
-                                            (ErrorId, Application, Host, Type, Source, 
+                                            (Application, Host, Type, Source, 
                                             Message, [User], AllXml, StatusCode, TimeUtc)
                                         VALUES
-                                            (@ErrorId, @Application, @Host, @Type, @Source,
+                                            (@Application, @Host, @Type, @Source,
                                             @Message, @User, @AllXml, @StatusCode, @TimeUtc)";
                 command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
                 parameters.Clear();
-                parameters.Add("@ErrorId", VistaDBType.UniqueIdentifier).Value = id;
                 parameters.Add("@Application", VistaDBType.NVarChar, _maxAppNameLength).Value = ApplicationName;
                 parameters.Add("@Host", VistaDBType.NVarChar, 30).Value = error.HostName;
                 parameters.Add("@Type", VistaDBType.NVarChar, 100).Value = error.Type;
@@ -178,7 +176,14 @@ namespace Elmah
                 parameters.Add("@TimeUtc", VistaDBType.DateTime).Value = error.Time.ToUniversalTime();
 
                 command.ExecuteNonQuery();
-                return id.ToString();
+
+                using (VistaDBCommand identityCommand = connection.CreateCommand())
+                {
+                    identityCommand.CommandType = CommandType.Text;
+                    identityCommand.CommandText = "SELECT @@IDENTITY";
+
+                    return identityCommand.ExecuteScalar().ToString();
+                }
             }
         }
 
@@ -205,7 +210,7 @@ namespace Elmah
             // Open the table
             IVistaDBTable elmahTable = vistaDB.OpenTable("ELMAH_Error", false, true);
 
-            elmahTable.ActiveIndex = "IX_ELMAH_Error_App_Time_Seq";
+            elmahTable.ActiveIndex = "IX_ELMAH_Error_App_Time_Id";
 
             if (errorEntryList != null)
             {
@@ -222,7 +227,7 @@ namespace Elmah
                     {
                         rowsProcessed++;
 
-                        Guid guid = (Guid)elmahTable.Get("ErrorId").Value;
+                        int errorId = (int)elmahTable.Get("ErrorId").Value;
                         Error error = new Error();
 
                         error.ApplicationName = (string)elmahTable.Get("Application").Value;
@@ -234,7 +239,7 @@ namespace Elmah
                         error.StatusCode = (int)elmahTable.Get("StatusCode").Value;
                         error.Time = ((DateTime)elmahTable.Get("TimeUtc").Value).ToLocalTime();
 
-                        errorEntryList.Add(new ErrorLogEntry(this, guid.ToString(), error));
+                        errorEntryList.Add(new ErrorLogEntry(this, errorId.ToString(), error));
 
                         // move to the next record
                         elmahTable.Next();
@@ -258,13 +263,16 @@ namespace Elmah
             if (id.Length == 0)
                 throw new ArgumentException(null, "id");
 
-            Guid errorGuid;
-
+            int errorId;
             try
             {
-                errorGuid = new Guid(id);
+                errorId = int.Parse(id);
             }
             catch (FormatException e)
+            {
+                throw new ArgumentException(e.Message, "id", e);
+            }
+            catch (OverflowException e)
             {
                 throw new ArgumentException(e.Message, "id", e);
             }
@@ -280,7 +288,7 @@ namespace Elmah
                 command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
-                parameters.Add("@ErrorId", VistaDBType.UniqueIdentifier).Value = errorGuid;
+                parameters.Add("@ErrorId", VistaDBType.Int).Value = errorId;
 
                 connection.Open();
                 
@@ -346,7 +354,7 @@ namespace Elmah
                     const string ddlScript = @"
                     CREATE TABLE [ELMAH_Error]
                     (
-                        [ErrorId] UNIQUEIDENTIFIER NOT NULL DEFAULT '(newid())',
+                        [ErrorId] INT NOT NULL,
                         [Application] NVARCHAR (60) NOT NULL,
                         [Host] NVARCHAR (50) NOT NULL,
                         [Type] NVARCHAR (100) NOT NULL,
@@ -355,7 +363,6 @@ namespace Elmah
                         [User] NVARCHAR (50) NOT NULL,
                         [StatusCode] INT NOT NULL,
                         [TimeUtc] DATETIME NOT NULL,
-                        [Sequence] INT NOT NULL,
                         [AllXml] NTEXT NOT NULL,
                         CONSTRAINT [PK_ELMAH_Error] PRIMARY KEY ([ErrorId])
                     )
@@ -363,11 +370,11 @@ namespace Elmah
                     GO
 
                     ALTER TABLE [ELMAH_Error]
-                    ALTER COLUMN [Sequence] INT NOT NULL IDENTITY (1, 1)
+                    ALTER COLUMN [ErrorId] INT NOT NULL IDENTITY (1, 1)
 
                     GO
 
-                    CREATE INDEX [IX_ELMAH_Error_App_Time_Seq] ON [ELMAH_Error] ([TimeUtc] DESC, [Sequence] DESC)";
+                    CREATE INDEX [IX_ELMAH_Error_App_Time_Id] ON [ELMAH_Error] ([TimeUtc] DESC, [ErrorId] DESC)";
 
                     foreach (string batch in ScriptToBatches(ddlScript))
                     {
