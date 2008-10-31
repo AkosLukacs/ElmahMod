@@ -284,7 +284,7 @@ namespace Elmah
             int errorId;
             try
             {
-                errorId = int.Parse(id);
+                errorId = int.Parse(id, CultureInfo.InvariantCulture);
             }
             catch (FormatException e)
             {
