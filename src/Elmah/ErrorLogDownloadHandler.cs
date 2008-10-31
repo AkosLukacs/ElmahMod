@@ -186,25 +186,17 @@ namespace Elmah
             Debug.Assert(result != null);
 
             int total = _log.EndGetErrors(result);
+            _format.Entries(_errorEntryList, total);
 
             HttpResponse response = _context.Response;
-
-            if (_errorEntryList.Count == 0) // End of list?
-            {
-                _format.Footer(total);
-                _context.Response.Flush();
-                _result.Complete(false, _callback);
-                return;
-            }
-
-            _format.Entries(_errorEntryList, total);
             response.Flush();
 
             //
-            // If only one page of results was needed then we're done.
+            // Done if we're at the end of the list (no more errors found)
+            // or only a single page was requested.
             //
 
-            if (_onePageOnly)
+            if (_errorEntryList.Count == 0 || _onePageOnly)
             {
                 _result.Complete(false, _callback);
                 return;
@@ -252,7 +244,6 @@ namespace Elmah
 
             public virtual void Header() {}
             public abstract void Entries(IList entries, int total);
-            public virtual void Footer(int total) {}
         }
 
         private sealed class CsvFormat : Format
@@ -271,6 +262,9 @@ namespace Elmah
             public override void Entries(IList entries, int total)
             {
                 Debug.Assert(entries != null);
+
+                if (entries.Count == 0)
+                    return;
 
                 //
                 // Setup to emit CSV records.
@@ -389,11 +383,6 @@ namespace Elmah
                 writer.WriteLine(");");
 
                 Context.Response.Output.Write(writer);
-            }
-
-            public override void Footer(int total)
-            {
-                Entries(new ErrorLogEntry[0], total);
             }
         }
 
