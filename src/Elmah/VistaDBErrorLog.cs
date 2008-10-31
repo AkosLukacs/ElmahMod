@@ -161,7 +161,9 @@ namespace Elmah
                                             Message, [User], AllXml, StatusCode, TimeUtc)
                                         VALUES
                                             (@Application, @Host, @Type, @Source,
-                                            @Message, @User, @AllXml, @StatusCode, @TimeUtc)";
+                                            @Message, @User, @AllXml, @StatusCode, @TimeUtc);
+
+                                        SELECT @@IDENTITY";
                 command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
@@ -176,15 +178,7 @@ namespace Elmah
                 parameters.Add("@StatusCode", VistaDBType.Int).Value = error.StatusCode;
                 parameters.Add("@TimeUtc", VistaDBType.DateTime).Value = error.Time.ToUniversalTime();
 
-                command.ExecuteNonQuery();
-
-                using (VistaDBCommand identityCommand = connection.CreateCommand())
-                {
-                    identityCommand.CommandType = CommandType.Text;
-                    identityCommand.CommandText = "SELECT @@IDENTITY";
-
-                    return Convert.ToString(identityCommand.ExecuteScalar(), CultureInfo.InvariantCulture);
-                }
+                return Convert.ToString(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
 
