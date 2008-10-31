@@ -31,12 +31,12 @@ namespace Elmah
 {
     internal sealed class CdoConfigurationFields
     {
-        public static readonly string SendUsing = "http://schemas.microsoft.com/cdo/configuration/sendusing";
-        public static readonly string SmtpServer = "http://schemas.microsoft.com/cdo/configuration/smtpserver";
-        public static readonly string SmtpServerPort = "http://schemas.microsoft.com/cdo/configuration/smtpserverport";
-        public static readonly string SmtpAuthenticate = "http://schemas.microsoft.com/cdo/configuration/smtpauthenticate";
-        public static readonly string SendUserName = "http://schemas.microsoft.com/cdo/configuration/sendusername";
-        public static readonly string SendPassword = "http://schemas.microsoft.com/cdo/configuration/sendpassword";
+        public const string SendUsing = "http://schemas.microsoft.com/cdo/configuration/sendusing";
+        public const string SmtpServer = "http://schemas.microsoft.com/cdo/configuration/smtpserver";
+        public const string SmtpServerPort = "http://schemas.microsoft.com/cdo/configuration/smtpserverport";
+        public const string SmtpAuthenticate = "http://schemas.microsoft.com/cdo/configuration/smtpauthenticate";
+        public const string SendUserName = "http://schemas.microsoft.com/cdo/configuration/sendusername";
+        public const string SendPassword = "http://schemas.microsoft.com/cdo/configuration/sendpassword";
         
         private CdoConfigurationFields() {}
     }
