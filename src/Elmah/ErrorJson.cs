@@ -91,15 +91,23 @@ namespace Elmah
             if (writer == null)
                 throw new ArgumentNullException("writer");
 
-            Encode(error, new JsonTextWriter(writer));
+            EncodeEnclosed(error, new JsonTextWriter(writer));
         }
 
-        private static void Encode(Error error, JsonTextWriter writer)
+        private static void EncodeEnclosed(Error error, JsonTextWriter writer)
         {
             Debug.Assert(error != null);
             Debug.Assert(writer != null);
 
             writer.Object();
+            Encode(error, writer);
+            writer.Pop();
+        }
+
+        internal static void Encode(Error error, JsonTextWriter writer)
+        {
+            Debug.Assert(error != null);
+            Debug.Assert(writer != null);
 
             Member(writer, "application", error.ApplicationName);
             Member(writer, "host", error.HostName);
@@ -115,8 +123,6 @@ namespace Elmah
             Member(writer, "queryString", error.QueryString);
             Member(writer, "form", error.Form);
             Member(writer, "cookies", error.Cookies);
-
-            writer.Pop();
         }
 
         private static void Member(JsonTextWriter writer, string name, int value, int defaultValue)

@@ -33,8 +33,10 @@ namespace Elmah
 
     using System;
     using System.Collections;
+    using System.Collections.Specialized;
     using System.Globalization;
     using System.IO;
+    using System.Text.RegularExpressions;
     using System.Threading;
     using System.Web;
 
@@ -42,12 +44,19 @@ namespace Elmah
 
     internal sealed class ErrorLogDownloadHandler : IHttpAsyncHandler
     {
-        private const int _pageSize = 100;
         private static readonly TimeSpan _beatPollInterval = TimeSpan.FromSeconds(3);
+
+        private const int _maximumPageSize = 100;
+        private const int _minimumPageSize = 10;
+        private const int _defaultPageSize = _maximumPageSize;
+
+        private int _pageIndex;
+        private int _pageSize;
+        private Format _format;
+        private bool _onePageOnly;
 
         private AsyncResult _result;
         private ErrorLog _log;
-        private int _pageIndex;
         private DateTime _lastBeatTime;
         private ArrayList _errorEntryList;
         private HttpContext _context;
@@ -71,23 +80,63 @@ namespace Elmah
             if (_result != null)
                 throw new InvalidOperationException("An asynchronous operation is already pending.");
 
-            HttpResponse response = context.Response;
-            response.BufferOutput = false;
+            HttpRequest request = context.Request;
 
-            response.AppendHeader("Content-Type", "text/csv; header=present");
-            response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.csv");
+            //
+            // Get the page index and size parameters within their bounds.
+            //
 
-            response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
+            NameValueCollection query = request.QueryString;
+            string queryPageSize = Mask.NullString(query["size"]);
+            string queryPageNumber = Mask.NullString(query["page"]);
+
+            if (queryPageSize.Length > 0)
+            {
+                _pageSize = Convert.ToInt32(queryPageSize, CultureInfo.InvariantCulture);
+                _pageSize = Math.Min(_maximumPageSize, Math.Max(0, _pageSize));
+            }
+
+            if (_pageSize == 0)
+                _pageSize = _defaultPageSize;
+            else if (_pageSize < _minimumPageSize)
+                _pageSize = _minimumPageSize;
+
+            if (queryPageNumber.Length > 0)
+                _pageIndex = Math.Max(1, Convert.ToInt32(queryPageNumber, CultureInfo.InvariantCulture)) - 1;
+
+            _onePageOnly = queryPageSize.Length > 0 || queryPageNumber.Length > 0;
+
+            //
+            // Determine the desired output format.
+            //
+
+            string format = Mask.EmptyString(query["format"], "csv").ToLower(CultureInfo.InvariantCulture);
+
+            switch (format)
+            {
+                case "csv": _format = new CsvFormat(context); break;
+                case "jsonp": _format = new JsonPaddingFormat(context); break;
+                default:
+                    throw new Exception("Request log format is not supported.");
+            }
+
+            Debug.Assert(_format != null);
+
+            //
+            // Emit format header, initialize and then fetch results.
+            //
+
+            context.Response.BufferOutput = false;
+            _format.Header();
 
             AsyncResult result = _result = new AsyncResult(extraData);
             _log = ErrorLog.GetDefault(context);
-            _pageIndex = 0;
             _lastBeatTime = DateTime.Now;
             _context = context;
             _callback = cb;
             _errorEntryList = new ArrayList(_pageSize);
 
-            _log.BeginGetErrors(0, _pageSize, _errorEntryList, 
+            _log.BeginGetErrors(_pageIndex, _pageSize, _errorEntryList, 
                 new AsyncCallback(GetErrorsCallback), null);
 
             return result;
@@ -136,53 +185,30 @@ namespace Elmah
         {
             Debug.Assert(result != null);
 
-            _log.EndGetErrors(result);
+            int total = _log.EndGetErrors(result);
 
             HttpResponse response = _context.Response;
 
-            if (_errorEntryList.Count == 0)
+            if (_errorEntryList.Count == 0) // End of list?
             {
-                response.Flush();
+                _format.Footer(total);
+                _context.Response.Flush();
                 _result.Complete(false, _callback);
                 return;
             }
 
-            //
-            // Setup to emit CSV records.
-            //
-
-            StringWriter writer = new StringWriter();
-            writer.NewLine = "\r\n";
-            CsvWriter csv = new CsvWriter(writer);
-
-            CultureInfo culture = CultureInfo.InvariantCulture;
-            DateTime epoch = new DateTime(1970, 1, 1);
-
-            //
-            // For each error, emit a CSV record.
-            //
-
-            foreach (ErrorLogEntry entry in _errorEntryList)
-            {
-                Error error = entry.Error;
-                DateTime time = error.Time.ToUniversalTime();
-                Uri url = new Uri(_context.Request.Url, "detail?id=" + entry.Id);
-
-                csv.Field(error.ApplicationName)
-                    .Field(error.HostName)
-                    .Field(time.ToString("yyyy-MM-dd HH:mm:ss", culture))
-                    .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
-                    .Field(error.Type)
-                    .Field(error.Source)
-                    .Field(error.User)
-                    .Field(error.StatusCode.ToString(culture))
-                    .Field(error.Message)
-                    .Field(url.ToString())
-                    .Record();
-            }
-
-            response.Output.Write(writer.ToString());
+            _format.Entries(_errorEntryList, total);
             response.Flush();
+
+            //
+            // If only one page of results was needed then we're done.
+            //
+
+            if (_onePageOnly)
+            {
+                _result.Complete(false, _callback);
+                return;
+            }
 
             //
             // Poll whether the client is still connected so we are not
@@ -203,13 +229,172 @@ namespace Elmah
             }
 
             //
-            // More or done?
+            // Fetch next page of results.
             //
 
             _errorEntryList.Clear();
 
             _log.BeginGetErrors(++_pageIndex, _pageSize, _errorEntryList,
                 new AsyncCallback(GetErrorsCallback), null);
+        }
+
+        private abstract class Format
+        {
+            private readonly HttpContext _context;
+
+            protected Format(HttpContext context)
+            {
+                Debug.Assert(context != null);
+                _context = context;
+            }
+
+            protected HttpContext Context { get { return _context; } }
+
+            public virtual void Header() {}
+            public abstract void Entries(IList entries, int total);
+            public virtual void Footer(int total) {}
+        }
+
+        private sealed class CsvFormat : Format
+        {
+            public CsvFormat(HttpContext context) : 
+                base(context) {}
+
+            public override void Header()
+            {
+                HttpResponse response = Context.Response;
+                response.AppendHeader("Content-Type", "text/csv; header=present");
+                response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.csv");
+                response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
+            }
+
+            public override void Entries(IList entries, int total)
+            {
+                Debug.Assert(entries != null);
+
+                //
+                // Setup to emit CSV records.
+                //
+
+                StringWriter writer = new StringWriter();
+                writer.NewLine = "\r\n";
+                CsvWriter csv = new CsvWriter(writer);
+
+                CultureInfo culture = CultureInfo.InvariantCulture;
+                DateTime epoch = new DateTime(1970, 1, 1);
+
+                //
+                // For each error, emit a CSV record.
+                //
+
+                foreach (ErrorLogEntry entry in entries)
+                {
+                    Error error = entry.Error;
+                    DateTime time = error.Time.ToUniversalTime();
+                    Uri url = new Uri(Context.Request.Url, "detail?id=" + entry.Id);
+
+                    csv.Field(error.ApplicationName)
+                       .Field(error.HostName)
+                       .Field(time.ToString("yyyy-MM-dd HH:mm:ss", culture))
+                       .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
+                       .Field(error.Type)
+                       .Field(error.Source)
+                       .Field(error.User)
+                       .Field(error.StatusCode.ToString(culture))
+                       .Field(error.Message)
+                       .Field(url.ToString())
+                       .Record();
+                }
+
+                Context.Response.Output.Write(writer.ToString());
+            }
+        }
+
+        private sealed class JsonPaddingFormat : Format
+        {
+            private static readonly Regex _callbackExpression = new Regex(@"^ 
+                     [a-z_] [a-z0-9_]+ ( \[ [0-9]+ \] )?
+                ( \. [a-z_] [a-z0-9_]+ ( \[ [0-9]+ \] )? )* $",
+                RegexOptions.IgnoreCase
+                | RegexOptions.Singleline
+                | RegexOptions.ExplicitCapture
+                | RegexOptions.IgnorePatternWhitespace
+                | RegexOptions.CultureInvariant);
+
+            private string _callback;
+
+            public JsonPaddingFormat(HttpContext context) : 
+                base(context) {}
+
+            public override void Header()
+            {
+                string callback = Mask.NullString(Context.Request.QueryString["callback"]);
+                
+                if (callback.Length == 0)
+                    throw new Exception("The JSONP callback parameter is missing.");
+
+                if (!_callbackExpression.IsMatch(callback))
+                    throw new Exception("The JSONP callback parameter is not in an acceptable format.");
+                
+                _callback = callback;
+
+                HttpResponse response = Context.Response;
+                response.AppendHeader("Content-Type", "text/javascript");
+                response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.js");
+            }
+
+            public override void Entries(IList entries, int total)
+            {
+                Debug.Assert(entries != null);
+
+                StringWriter writer = new StringWriter();
+                writer.NewLine = "\n";
+                writer.Write(_callback);
+                writer.Write('(');
+
+                JsonTextWriter json = new JsonTextWriter(writer);
+                json.Object()
+                    .Member("total").Number(total)
+                    .Member("errors").Array();
+
+                int count = 0;
+                foreach (ErrorLogEntry entry in entries)
+                {
+                    writer.WriteLine();
+                    if (count++ == 0) writer.Write(' ');
+                    writer.Write("  ");
+
+                    string urlTemplate = new Uri(Context.Request.Url, "{0}?id=" + entry.Id).ToString();
+                    
+                    json.Object();
+                        ErrorJson.Encode(entry.Error, json);
+                        json.Member("hrefs")
+                        .Array()
+                            .Object()
+                                .Member("type").String("text/html")
+                                .Member("href").String(string.Format(urlTemplate, "detail")).Pop()
+                            .Object()
+                                .Member("type").String("aplication/json")
+                                .Member("href").String(string.Format(urlTemplate, "json")).Pop()
+                            .Object()
+                                .Member("type").String("application/xml")
+                                .Member("href").String(string.Format(urlTemplate, "xml")).Pop()
+                        .Pop()
+                    .Pop();
+                }
+
+                json.Pop();
+                json.Pop();
+                if (count > 0) writer.WriteLine();
+                writer.WriteLine(");");
+
+                Context.Response.Output.Write(writer);
+            }
+
+            public override void Footer(int total)
+            {
+                Entries(new ErrorLogEntry[0], total);
+            }
         }
 
         private sealed class AsyncResult : IAsyncResult
