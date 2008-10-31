@@ -39,6 +39,7 @@ namespace Elmah
 
     using System;
     using System.Data;
+    using System.Globalization;
     using System.IO;
     using System.Text.RegularExpressions;
     using VistaDB;
@@ -182,7 +183,7 @@ namespace Elmah
                     identityCommand.CommandType = CommandType.Text;
                     identityCommand.CommandText = "SELECT @@IDENTITY";
 
-                    return identityCommand.ExecuteScalar().ToString();
+                    return Convert.ToString(identityCommand.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
             }
         }
@@ -239,7 +240,8 @@ namespace Elmah
                         error.StatusCode = (int)elmahTable.Get("StatusCode").Value;
                         error.Time = ((DateTime)elmahTable.Get("TimeUtc").Value).ToLocalTime();
 
-                        errorEntryList.Add(new ErrorLogEntry(this, errorId.ToString(), error));
+                        errorEntryList.Add(new ErrorLogEntry(this, 
+                            errorId.ToString(CultureInfo.InvariantCulture), error));
 
                         // move to the next record
                         elmahTable.Next();

@@ -37,6 +37,7 @@ namespace Elmah
     using System.Data;
     using System.Data.OleDb;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Text;
     using IDictionary = System.Collections.IDictionary;
@@ -186,7 +187,7 @@ namespace Elmah
                     identityCommand.CommandType = CommandType.Text;
                     identityCommand.CommandText = "SELECT @@IDENTITY";
 
-                    return identityCommand.ExecuteScalar().ToString();
+                    return Convert.ToString(identityCommand.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
             }
         }
