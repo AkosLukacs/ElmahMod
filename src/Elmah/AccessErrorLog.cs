@@ -244,7 +244,7 @@ namespace Elmah
 
                         while (reader.Read())
                         {
-                            string id = reader["ErrorId"].ToString();
+                            string id = Convert.ToString(reader["ErrorId"], CultureInfo.InvariantCulture);
 
                             Error error = new Error();
 

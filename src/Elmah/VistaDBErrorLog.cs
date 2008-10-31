@@ -221,7 +221,7 @@ namespace Elmah
                     {
                         rowsProcessed++;
 
-                        int errorId = (int)elmahTable.Get("ErrorId").Value;
+                        string id = Convert.ToString(elmahTable.Get("ErrorId").Value, CultureInfo.InvariantCulture);
                         Error error = new Error();
 
                         error.ApplicationName = (string)elmahTable.Get("Application").Value;
@@ -233,8 +233,7 @@ namespace Elmah
                         error.StatusCode = (int)elmahTable.Get("StatusCode").Value;
                         error.Time = ((DateTime)elmahTable.Get("TimeUtc").Value).ToLocalTime();
 
-                        errorEntryList.Add(new ErrorLogEntry(this, 
-                            errorId.ToString(CultureInfo.InvariantCulture), error));
+                        errorEntryList.Add(new ErrorLogEntry(this, id, error));
 
                         // move to the next record
                         elmahTable.Next();
