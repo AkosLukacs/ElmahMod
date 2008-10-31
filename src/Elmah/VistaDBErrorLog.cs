@@ -167,7 +167,6 @@ namespace Elmah
                 command.CommandType = CommandType.Text;
 
                 VistaDBParameterCollection parameters = command.Parameters;
-                parameters.Clear();
                 parameters.Add("@Application", VistaDBType.NVarChar, _maxAppNameLength).Value = ApplicationName;
                 parameters.Add("@Host", VistaDBType.NVarChar, 30).Value = error.HostName;
                 parameters.Add("@Type", VistaDBType.NVarChar, 100).Value = error.Type;
