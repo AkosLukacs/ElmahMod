@@ -245,7 +245,7 @@ namespace Elmah
             string[] files = Directory.GetFiles(LogPath, string.Format("error-*-{0}.xml", id));
             
             if (files.Length < 1)
-                throw new System.ApplicationException(string.Format("Cannot locate error file for error with ID {0}.", id));
+                throw new FileNotFoundException(string.Format("Cannot locate error file for error with ID {0}.", id));
 
             FileInfo file = new FileInfo(files[0]);
             if (!IsUserFile(file.Attributes))
