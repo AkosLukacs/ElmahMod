@@ -40,7 +40,7 @@ namespace Elmah.Assertions
     {
         private readonly string _expression;
 
-        public DataBoundAssertion(XmlElement config)
+        protected DataBoundAssertion(XmlElement config)
         {
             if (config == null)
                 throw new ArgumentNullException("config");
