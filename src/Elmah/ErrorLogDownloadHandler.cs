@@ -116,6 +116,7 @@ namespace Elmah
             {
                 case "csv": _format = new CsvFormat(context); break;
                 case "jsonp": _format = new JsonPaddingFormat(context); break;
+                case "html-jsonp": _format = new JsonPaddingFormat(context, /* wrapped */ true); break;
                 default:
                     throw new Exception("Request log format is not supported.");
             }
@@ -198,6 +199,8 @@ namespace Elmah
 
             if (_errorEntryList.Count == 0 || _onePageOnly)
             {
+                if (_onePageOnly && _errorEntryList.Count > 0)
+                    _format.Entries(new ErrorLogEntry[0], total);
                 _result.Complete(false, _callback);
                 return;
             }
@@ -285,7 +288,7 @@ namespace Elmah
                 {
                     Error error = entry.Error;
                     DateTime time = error.Time.ToUniversalTime();
-                    Uri url = new Uri(Context.Request.Url, "detail?id=" + entry.Id);
+                    Uri url = new Uri(Context.Request.Url, "detail?id=" + /* FIXME URI encoding */ entry.Id);
 
                     csv.Field(error.ApplicationName)
                        .Field(error.HostName)
@@ -316,25 +319,50 @@ namespace Elmah
                 | RegexOptions.CultureInvariant);
 
             private string _callback;
+            private readonly bool _wrapped;
 
-            public JsonPaddingFormat(HttpContext context) : 
-                base(context) {}
+            public JsonPaddingFormat(HttpContext context) :
+                this(context, false) {}
+
+            public JsonPaddingFormat(HttpContext context, bool wrapped) : 
+                base(context)
+            {
+                _wrapped = wrapped;
+            }
 
             public override void Header()
             {
-                string callback = Mask.NullString(Context.Request.QueryString["callback"]);
+                string callback = Mask.NullString(Context.Request.QueryString[Mask.EmptyString(null, "callback")]);
                 
                 if (callback.Length == 0)
                     throw new Exception("The JSONP callback parameter is missing.");
 
                 if (!_callbackExpression.IsMatch(callback))
                     throw new Exception("The JSONP callback parameter is not in an acceptable format.");
-                
+
                 _callback = callback;
 
                 HttpResponse response = Context.Response;
-                response.AppendHeader("Content-Type", "text/javascript");
-                response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.js");
+
+                if (!_wrapped)
+                {
+                    response.AppendHeader("Content-Type", "text/javascript");
+                    response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.js");
+                }
+                else
+                {
+                    response.AppendHeader("Content-Type", "text/html");
+
+                    TextWriter output = response.Output;
+                    output.WriteLine("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">");
+                    output.WriteLine(@"
+                    <html xmlns='http://www.w3.org/1999/xhtml'>
+                    <head>
+                        <title>Error Log in HTML-Wrapped JSONP Format</title>
+                    </head>
+                    <body>
+                        <p>This page is primarily designed to be used in an IFRAME of a parent HTML document.</p>");
+                }
             }
 
             public override void Entries(IList entries, int total)
@@ -343,6 +371,13 @@ namespace Elmah
 
                 StringWriter writer = new StringWriter();
                 writer.NewLine = "\n";
+
+                if (_wrapped)
+                {
+                    writer.WriteLine("<script type='text/javascript' language='javascript'>");
+                    writer.WriteLine("//<[!CDATA[");
+                }
+                
                 writer.Write(_callback);
                 writer.Write('(');
 
@@ -352,13 +387,15 @@ namespace Elmah
                     .Member("errors").Array();
 
                 int count = 0;
+                Uri requestUrl = Context.Request.Url;
+
                 foreach (ErrorLogEntry entry in entries)
                 {
                     writer.WriteLine();
                     if (count++ == 0) writer.Write(' ');
                     writer.Write("  ");
 
-                    string urlTemplate = new Uri(Context.Request.Url, "{0}?id=" + entry.Id).ToString();
+                    string urlTemplate = new Uri(requestUrl, "{0}?id=" + /* FIXME URI encoding */ entry.Id).ToString();
                     
                     json.Object();
                         ErrorJson.Encode(entry.Error, json);
@@ -379,8 +416,18 @@ namespace Elmah
 
                 json.Pop();
                 json.Pop();
+
                 if (count > 0) writer.WriteLine();
                 writer.WriteLine(");");
+
+                if (_wrapped)
+                {
+                    writer.WriteLine("//]]>");
+                    writer.WriteLine("</script>");
+
+                    if (entries.Count == 0)
+                        writer.WriteLine(@"</body></html>");
+                }
 
                 Context.Response.Output.Write(writer);
             }
