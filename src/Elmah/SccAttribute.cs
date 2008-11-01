@@ -49,6 +49,7 @@ namespace Elmah
         public string Id
         {
             get { return Mask.NullString(_id); }
+            set { _id = value; }
         }
 
         public override string ToString()
