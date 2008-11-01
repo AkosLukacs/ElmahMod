@@ -46,12 +46,12 @@ namespace Elmah
     {
         public static void Sort(string[] keys)
         {
-            Array.Sort(keys, 0, keys.Length);
+            Sort(keys, 0, keys.Length);
         }
 
         public static void Sort(string[] keys, int index, int length)
         {
-            Array.Sort(keys, index, length);
+            Sort(keys, null, index, length);
         }
         
         public static void Sort(string[] keys, Array items, int index, int length)
