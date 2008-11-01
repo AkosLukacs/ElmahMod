@@ -46,14 +46,12 @@ namespace Elmah
     {
         private static readonly TimeSpan _beatPollInterval = TimeSpan.FromSeconds(3);
 
-        private const int _maximumPageSize = 100;
-        private const int _minimumPageSize = 10;
-        private const int _defaultPageSize = _maximumPageSize;
+        private const int _pageSize = 100;
 
-        private int _pageIndex;
-        private int _pageSize;
         private Format _format;
-        private bool _onePageOnly;
+        private int _pageIndex;
+        private int _downloadCount;
+        private int _maxDownloadCount;
 
         private AsyncResult _result;
         private ErrorLog _log;
@@ -87,24 +85,10 @@ namespace Elmah
             //
 
             NameValueCollection query = request.QueryString;
-            string queryPageSize = Mask.NullString(query["size"]);
-            string queryPageNumber = Mask.NullString(query["page"]);
+            string queryLimit = Mask.NullString(query["limit"]);
 
-            if (queryPageSize.Length > 0)
-            {
-                _pageSize = Convert.ToInt32(queryPageSize, CultureInfo.InvariantCulture);
-                _pageSize = Math.Min(_maximumPageSize, Math.Max(0, _pageSize));
-            }
-
-            if (_pageSize == 0)
-                _pageSize = _defaultPageSize;
-            else if (_pageSize < _minimumPageSize)
-                _pageSize = _minimumPageSize;
-
-            if (queryPageNumber.Length > 0)
-                _pageIndex = Math.Max(1, Convert.ToInt32(queryPageNumber, CultureInfo.InvariantCulture)) - 1;
-
-            _onePageOnly = queryPageSize.Length > 0 || queryPageNumber.Length > 0;
+            if (queryLimit.Length > 0)
+                _maxDownloadCount = Math.Max(0, Convert.ToInt32(queryLimit, CultureInfo.InvariantCulture));
 
             //
             // Determine the desired output format.
@@ -132,6 +116,7 @@ namespace Elmah
 
             AsyncResult result = _result = new AsyncResult(extraData);
             _log = ErrorLog.GetDefault(context);
+            _pageIndex = 0;
             _lastBeatTime = DateTime.Now;
             _context = context;
             _callback = cb;
@@ -187,7 +172,13 @@ namespace Elmah
             Debug.Assert(result != null);
 
             int total = _log.EndGetErrors(result);
+
+            int remaining = _maxDownloadCount <= 0 ? 0 : _maxDownloadCount - (_downloadCount + _errorEntryList.Count);
+            if (remaining < 0)
+                _errorEntryList.RemoveRange(_errorEntryList.Count + remaining, Math.Abs(remaining));
+
             _format.Entries(_errorEntryList, total);
+            _downloadCount += _errorEntryList.Count;
 
             HttpResponse response = _context.Response;
             response.Flush();
@@ -197,9 +188,9 @@ namespace Elmah
             // or only a single page was requested.
             //
 
-            if (_errorEntryList.Count == 0 || _onePageOnly)
+            if (_errorEntryList.Count == 0 || remaining < 0)
             {
-                if (_onePageOnly && _errorEntryList.Count > 0)
+                if (remaining < 0 && _errorEntryList.Count > 0)
                     _format.Entries(new ErrorLogEntry[0], total);
                 _result.Complete(false, _callback);
                 return;

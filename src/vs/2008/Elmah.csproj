@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -151,6 +151,9 @@
     <Compile Include="..\..\Elmah\Assertions\LogicalAssertion.cs">
       <Link>Assertions\LogicalAssertion.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\Assertions\MembershipAssertion.cs">
+      <Link>Assertions\MembershipAssertion.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\Assertions\RegexMatchAssertion.cs">
       <Link>Assertions\RegexMatchAssertion.cs</Link>
