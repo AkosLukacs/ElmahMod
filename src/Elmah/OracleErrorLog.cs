@@ -104,8 +104,8 @@ namespace Elmah
             if(_schemaOwner.Length > _maxSchemaNameLength)
             {
                 throw new ApplicationException(string.Format(
-                    "Oracle schema owner is too long.  Maximum length allowed is {0} characters.",
-                    _maxSchemaNameLength.ToString("NO")));
+                    "Oracle schema owner is too long. Maximum length allowed is {0} characters.",
+                    _maxSchemaNameLength.ToString("N0")));
             }
 
             if (_schemaOwner.Length > 0)
