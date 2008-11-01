@@ -29,14 +29,21 @@
 
 namespace Elmah.Assertions
 {
+    #region Imports
+
+    using System;
+
+    #endregion
+
     public sealed class UnaryNotAssertion : IAssertion
     {
         private readonly IAssertion _operand;
         
         public UnaryNotAssertion(IAssertion operand)
         {
-            Debug.Assert(operand != null);
-            
+            if (operand == null) 
+                throw new ArgumentNullException("operand");
+
             _operand = operand;
         }
 
