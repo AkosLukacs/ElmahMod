@@ -288,7 +288,7 @@ namespace Elmah
                 {
                     Error error = entry.Error;
                     DateTime time = error.Time.ToUniversalTime();
-                    Uri url = new Uri(Context.Request.Url, "detail?id=" + /* FIXME URI encoding */ entry.Id);
+                    Uri url = new Uri(Context.Request.Url, "detail?id=" + HttpUtility.UrlEncode(entry.Id));
 
                     csv.Field(error.ApplicationName)
                        .Field(error.HostName)
@@ -395,7 +395,7 @@ namespace Elmah
                     if (count++ == 0) writer.Write(' ');
                     writer.Write("  ");
 
-                    string urlTemplate = new Uri(requestUrl, "{0}?id=" + /* FIXME URI encoding */ entry.Id).ToString();
+                    string urlTemplate = new Uri(requestUrl, "{0}?id=" + HttpUtility.UrlEncode(entry.Id)).ToString();
                     
                     json.Object();
                         ErrorJson.Encode(entry.Error, json);

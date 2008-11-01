@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
 
@@ -198,7 +199,7 @@ namespace Elmah
             if (error.WebHostHtmlMessage.Length != 0)
             {
                 writer.RenderBeginTag(HtmlTextWriterTag.Li);
-                string htmlUrl = this.BasePageName + "/html?id=" + _errorEntry.Id;
+                string htmlUrl = this.BasePageName + "/html?id=" + HttpUtility.UrlEncode(_errorEntry.Id);
                 writer.AddAttribute(HtmlTextWriterAttribute.Href, htmlUrl);
                 writer.RenderBeginTag(HtmlTextWriterTag.A);
                 writer.Write("Original ASP.NET error page");

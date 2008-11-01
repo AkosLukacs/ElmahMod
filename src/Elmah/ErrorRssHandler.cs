@@ -96,7 +96,7 @@ namespace Elmah
 
                 item.title = error.Message;
                 item.description = "An error of type " + error.Type + " occurred. " + error.Message;
-                item.link = channel.link + "/detail?id=" + errorEntry.Id;
+                item.link = channel.link + "/detail?id=" + HttpUtility.UrlEncode(errorEntry.Id);
                 item.pubDate = error.Time.ToUniversalTime().ToString("r");
 
                 channel.item[index] = item;

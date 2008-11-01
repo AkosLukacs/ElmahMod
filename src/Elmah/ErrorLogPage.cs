@@ -383,7 +383,7 @@ namespace Elmah
                 messageLabel.Text = this.Server.HtmlEncode(error.Message);
 
                 HyperLink detailsLink = new HyperLink();
-                detailsLink.NavigateUrl = BasePageName + "/detail?id=" + errorEntry.Id;
+                detailsLink.NavigateUrl = BasePageName + "/detail?id=" + HttpUtility.UrlEncode(errorEntry.Id);
                 detailsLink.Text = "Details&hellip;";
 
                 messageCell.Controls.Add(messageLabel);
