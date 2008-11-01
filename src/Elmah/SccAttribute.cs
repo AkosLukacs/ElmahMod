@@ -37,7 +37,7 @@ namespace Elmah
 
     [ Serializable ]
     [ AttributeUsage(AttributeTargets.Class | AttributeTargets.Assembly, AllowMultiple = true) ]
-    public class SccAttribute : Attribute
+    public sealed class SccAttribute : Attribute
     {
         private string _id;
 
