@@ -79,7 +79,7 @@ namespace Elmah
 
         public virtual void Dispose() { /* NOP */ }
 
-        protected void OnPostMapRequestHandler(object sender, EventArgs args)
+        private void OnPostMapRequestHandler(object sender, EventArgs args)
         {
             HttpContext context = ((HttpApplication) sender).Context;
 
