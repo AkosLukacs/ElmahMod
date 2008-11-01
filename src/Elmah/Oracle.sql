@@ -227,17 +227,18 @@ END pkg_elmah$error;
 
 
 /* 
--- Optional steps to make Elmah publicly available across Oracle users.
+-- If you are securing the package above, you will need to grant execute
+-- privileges on its so that it can be called by the user connecting to the database.
 -- NB As long as you use the schema owner for the connection string, this is not necessary.
 
--- replace OWNER for the schema owner in the following 2 statements
-CREATE OR REPLACE PUBLIC SYNONYM pkg_elmah$error FOR OWNER.pkg_elmah$error;
+-- Option 1) Allow any user to execute the package (not recommended)
+-- replace OWNER for the schema owner in the following statement
 GRANT EXECUTE ON OWNER.pkg_elmah$error TO PUBLIC;
 
+-- Option 2) Allow a single user to execute the package (preferred)
 -- Alternatively make available to a single Oracle user.
--- first log on as the user that you want to access the Elmah data
--- replace OWNER for the schema owner in the following 2 statements
-CREATE OR REPLACE SYNONYM pkg_elmah$error FOR OWNER.pkg_elmah$error;
--- now log on as OWNER and substitute USER_NAME for the user
+-- replace OWNER for the schema owner in the following statement
 GRANT EXECUTE ON OWNER.pkg_elmah$error TO USER_NAME;
+
+-- NB if you do take this approach, be sure to set the schemaOwner parameter in your web.config
 */

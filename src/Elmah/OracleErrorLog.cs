@@ -7,6 +7,7 @@
 //  Author(s):
 //
 //      James Driscoll, mailto:jamesdriscoll@btinternet.com
+//      with contributions from Hath1
 //
 // This library is free software; you can redistribute it and/or modify it 
 // under the terms of the New BSD License, a copy of which should have 
@@ -55,8 +56,10 @@ namespace Elmah
     public class OracleErrorLog : ErrorLog
     {
         private readonly string _connectionString;
+        private readonly string _schemaOwner;
 
         private const int _maxAppNameLength = 60;
+        private const int _maxSchemaNameLength = 30;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="OracleErrorLog"/> class
@@ -95,6 +98,18 @@ namespace Elmah
             }
 
             ApplicationName = appName;
+
+            _schemaOwner = Mask.NullString((string)config["schemaOwner"]);
+
+            if(_schemaOwner.Length > _maxSchemaNameLength)
+            {
+                throw new ApplicationException(string.Format(
+                    "Oracle schema owner is too long.  Maximum length allowed is {0} characters.",
+                    _maxSchemaNameLength.ToString("NO")));
+            }
+
+            if (_schemaOwner.Length > 0)
+                _schemaOwner = _schemaOwner + ".";
         }
 
         /// <summary>
@@ -175,7 +190,7 @@ namespace Elmah
                     xmlLob.Write(tempbuff,0,tempbuff.Length);
                     xmlLob.EndBatch();
 
-                    command.CommandText = "pkg_elmah$error.LogError";
+                    command.CommandText = _schemaOwner + "pkg_elmah$error.LogError";
                     command.CommandType = CommandType.StoredProcedure;
 
                     parameters.Clear();
@@ -213,7 +228,7 @@ namespace Elmah
             using (OracleConnection connection = new OracleConnection(this.ConnectionString))
             using (OracleCommand command = connection.CreateCommand())
             {
-                command.CommandText = "pkg_elmah$error.GetErrorsXml";
+                command.CommandText = _schemaOwner + "pkg_elmah$error.GetErrorsXml";
                 command.CommandType = CommandType.StoredProcedure;
 
                 OracleParameterCollection parameters = command.Parameters;
@@ -287,7 +302,7 @@ namespace Elmah
             using (OracleConnection connection = new OracleConnection(this.ConnectionString))
             using (OracleCommand command = connection.CreateCommand())
             {
-                command.CommandText = "pkg_elmah$error.GetErrorXml";
+                command.CommandText = _schemaOwner + "pkg_elmah$error.GetErrorXml";
                 command.CommandType = CommandType.StoredProcedure;
 
                 OracleParameterCollection parameters = command.Parameters;
