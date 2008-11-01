@@ -40,17 +40,12 @@ namespace Elmah
     [ Serializable ]
     internal sealed class SecurityConfiguration
     {
-        public static readonly SecurityConfiguration Default;
+        public static readonly SecurityConfiguration Default = new SecurityConfiguration((IDictionary)Configuration.GetSubsection("security"));
 
         private readonly bool _allowRemoteAccess;
 
         private static readonly string[] _trues = new string[] { "true", "yes", "on", "1" };
 
-        static SecurityConfiguration()
-        {
-            Default = new SecurityConfiguration((IDictionary) Configuration.GetSubsection("security"));
-        }
-        
         public SecurityConfiguration(IDictionary options)
         {
             _allowRemoteAccess = GetBoolean(options, "allowRemoteAccess");
