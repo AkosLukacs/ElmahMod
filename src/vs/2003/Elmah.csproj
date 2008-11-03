@@ -163,8 +163,8 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Database.sql"
-                    Link = "..\..\Elmah\Database.sql"
+                    RelPath = "SqlServer.sql"
+                    Link = "..\..\Elmah\SqlServer.sql"
                     BuildAction = "Content"
                 />
                 <File
