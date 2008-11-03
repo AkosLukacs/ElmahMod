@@ -57,14 +57,14 @@ namespace Elmah
             lock (_lock)
             {
                 //
-                // Allocate map of modules per application on demand.
+                // On-demand allocate a map of modules per application.
                 //
 
                 if (_moduleListByApp == null)
                     _moduleListByApp = new Hashtable();
 
                 //
-                // Get the list of modules fot the application. If this is
+                // Get the list of modules for the application. If this is
                 // the first registration for the supplied application object
                 // then setup a new and empty list.
                 //
@@ -167,7 +167,7 @@ namespace Elmah
             {
                 //
                 // Pass through because probably this is a partially trusted
-                // environment that does have access to the modules 
+                // environment that does not have access to the modules 
                 // collection over HttpApplication so we have to resort
                 // to our own devices...
                 //
