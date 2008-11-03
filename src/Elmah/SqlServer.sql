@@ -26,6 +26,8 @@
   
 */
 
+-- ELMAH DDL script for Microsoft SQL Server 2000 or later.
+
 CREATE TABLE dbo.ELMAH_Error
 (
     ErrorId     UNIQUEIDENTIFIER NOT NULL,
