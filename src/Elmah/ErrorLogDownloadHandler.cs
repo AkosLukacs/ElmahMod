@@ -153,11 +153,11 @@ namespace Elmah
             catch (Exception e)
             {
                 //
-                // If anything goes wrong during the processing of the 
-                // callback then the exception needs to be captured
-                // and the raising delayed until EndProcessRequest.
-                // Meanwhile, the BeginProcessRequest called is notified
-                // immediately of completion.
+                // If anything goes wrong during callback processing then 
+                // the exception needs to be captured and the raising 
+                // delayed until EndProcessRequest.Meanwhile, the 
+                // BeginProcessRequest called is notified immediately of 
+                // completion.
                 //
 
                 _result.Complete(_callback, e);
@@ -198,10 +198,9 @@ namespace Elmah
             }
 
             //
-            // Poll whether the client is still connected so we are not
-            // unnecessarily continue sending data to an abandoned 
-            // connection. This check is only performed at certain
-            // intervals.
+            // Poll whether the client is still connected so data is not
+            // unnecessarily sent to an abandoned connection. This check is 
+            // only performed at certain intervals.
             //
 
             if (DateTime.Now - _lastBeatTime > _beatPollInterval)
