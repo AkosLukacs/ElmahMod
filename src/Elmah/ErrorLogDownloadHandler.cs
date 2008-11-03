@@ -46,14 +46,12 @@ namespace Elmah
     {
         private static readonly TimeSpan _beatPollInterval = TimeSpan.FromSeconds(3);
 
-        private const int _maximumPageSize = 100;
-        private const int _minimumPageSize = 10;
-        private const int _defaultPageSize = _maximumPageSize;
+        private const int _pageSize = 100;
 
-        private int _pageIndex;
-        private int _pageSize;
         private Format _format;
-        private bool _onePageOnly;
+        private int _pageIndex;
+        private int _downloadCount;
+        private int _maxDownloadCount = -1;
 
         private AsyncResult _result;
         private ErrorLog _log;
@@ -81,30 +79,13 @@ namespace Elmah
                 throw new InvalidOperationException("An asynchronous operation is already pending.");
 
             HttpRequest request = context.Request;
-
-            //
-            // Get the page index and size parameters within their bounds.
-            //
-
             NameValueCollection query = request.QueryString;
-            string queryPageSize = Mask.NullString(query["size"]);
-            string queryPageNumber = Mask.NullString(query["page"]);
 
-            if (queryPageSize.Length > 0)
-            {
-                _pageSize = Convert.ToInt32(queryPageSize, CultureInfo.InvariantCulture);
-                _pageSize = Math.Min(_maximumPageSize, Math.Max(0, _pageSize));
-            }
+            //
+            // Limit the download by some maximum # of records?
+            //
 
-            if (_pageSize == 0)
-                _pageSize = _defaultPageSize;
-            else if (_pageSize < _minimumPageSize)
-                _pageSize = _minimumPageSize;
-
-            if (queryPageNumber.Length > 0)
-                _pageIndex = Math.Max(1, Convert.ToInt32(queryPageNumber, CultureInfo.InvariantCulture)) - 1;
-
-            _onePageOnly = queryPageSize.Length > 0 || queryPageNumber.Length > 0;
+            _maxDownloadCount = Math.Max(0, Convert.ToInt32(query["limit"], CultureInfo.InvariantCulture));
 
             //
             // Determine the desired output format.
@@ -132,6 +113,7 @@ namespace Elmah
 
             AsyncResult result = _result = new AsyncResult(extraData);
             _log = ErrorLog.GetDefault(context);
+            _pageIndex = 0;
             _lastBeatTime = DateTime.Now;
             _context = context;
             _callback = cb;
@@ -187,20 +169,30 @@ namespace Elmah
             Debug.Assert(result != null);
 
             int total = _log.EndGetErrors(result);
-            _format.Entries(_errorEntryList, total);
+            int count = _errorEntryList.Count;
+
+            if (_maxDownloadCount >= 0)
+            {
+                int remaining = _maxDownloadCount - (_downloadCount + count);
+                if (remaining < 0)
+                    count += remaining;
+            }
+
+            _format.Entries(_errorEntryList, 0, count, total);
+            _downloadCount += count;
 
             HttpResponse response = _context.Response;
             response.Flush();
 
             //
-            // Done if we're at the end of the list (no more errors found)
-            // or only a single page was requested.
+            // Done if either the end of the list (no more errors found) or
+            // the requested limit has been reached.
             //
 
-            if (_errorEntryList.Count == 0 || _onePageOnly)
+            if (count == 0 || _downloadCount == _maxDownloadCount)
             {
-                if (_onePageOnly && _errorEntryList.Count > 0)
-                    _format.Entries(new ErrorLogEntry[0], total);
+                if (count > 0)
+                    _format.Entries(new ErrorLogEntry[0], total); // Terminator
                 _result.Complete(false, _callback);
                 return;
             }
@@ -246,7 +238,13 @@ namespace Elmah
             protected HttpContext Context { get { return _context; } }
 
             public virtual void Header() {}
-            public abstract void Entries(IList entries, int total);
+
+            public void Entries(IList entries, int total)
+            {
+                Entries(entries, 0, entries.Count, total);
+            }
+
+            public abstract void Entries(IList entries, int index, int count, int total);
         }
 
         private sealed class CsvFormat : Format
@@ -262,11 +260,13 @@ namespace Elmah
                 response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
             }
 
-            public override void Entries(IList entries, int total)
+            public override void Entries(IList entries, int index, int count, int total)
             {
                 Debug.Assert(entries != null);
+                Debug.Assert(index >= 0);
+                Debug.Assert(index + count <= entries.Count);
 
-                if (entries.Count == 0)
+                if (count == 0)
                     return;
 
                 //
@@ -284,23 +284,24 @@ namespace Elmah
                 // For each error, emit a CSV record.
                 //
 
-                foreach (ErrorLogEntry entry in entries)
+                for (int i = index; i < count; i++)
                 {
+                    ErrorLogEntry entry = (ErrorLogEntry) entries[i];
                     Error error = entry.Error;
                     DateTime time = error.Time.ToUniversalTime();
                     Uri url = new Uri(Context.Request.Url, "detail?id=" + HttpUtility.UrlEncode(entry.Id));
 
                     csv.Field(error.ApplicationName)
-                       .Field(error.HostName)
-                       .Field(time.ToString("yyyy-MM-dd HH:mm:ss", culture))
-                       .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
-                       .Field(error.Type)
-                       .Field(error.Source)
-                       .Field(error.User)
-                       .Field(error.StatusCode.ToString(culture))
-                       .Field(error.Message)
-                       .Field(url.ToString())
-                       .Record();
+                        .Field(error.HostName)
+                        .Field(time.ToString("yyyy-MM-dd HH:mm:ss", culture))
+                        .Field(time.Subtract(epoch).TotalSeconds.ToString("0.0000", culture))
+                        .Field(error.Type)
+                        .Field(error.Source)
+                        .Field(error.User)
+                        .Field(error.StatusCode.ToString(culture))
+                        .Field(error.Message)
+                        .Field(url.ToString())
+                        .Record();
                 }
 
                 Context.Response.Output.Write(writer.ToString());
@@ -365,9 +366,11 @@ namespace Elmah
                 }
             }
 
-            public override void Entries(IList entries, int total)
+            public override void Entries(IList entries, int index, int count, int total)
             {
                 Debug.Assert(entries != null);
+                Debug.Assert(index >= 0);
+                Debug.Assert(index + count <= entries.Count);
 
                 StringWriter writer = new StringWriter();
                 writer.NewLine = "\n";
@@ -386,13 +389,13 @@ namespace Elmah
                     .Member("total").Number(total)
                     .Member("errors").Array();
 
-                int count = 0;
                 Uri requestUrl = Context.Request.Url;
 
-                foreach (ErrorLogEntry entry in entries)
+                for (int i = index; i < count; i++)
                 {
+                    ErrorLogEntry entry = (ErrorLogEntry) entries[i];
                     writer.WriteLine();
-                    if (count++ == 0) writer.Write(' ');
+                    if (i == 0) writer.Write(' ');
                     writer.Write("  ");
 
                     string urlTemplate = new Uri(requestUrl, "{0}?id=" + HttpUtility.UrlEncode(entry.Id)).ToString();
@@ -417,7 +420,9 @@ namespace Elmah
                 json.Pop();
                 json.Pop();
 
-                if (count > 0) writer.WriteLine();
+                if (count > 0) 
+                    writer.WriteLine();
+
                 writer.WriteLine(");");
 
                 if (_wrapped)
@@ -425,7 +430,7 @@ namespace Elmah
                     writer.WriteLine("//]]>");
                     writer.WriteLine("</script>");
 
-                    if (entries.Count == 0)
+                    if (count == 0)
                         writer.WriteLine(@"</body></html>");
                 }
 
