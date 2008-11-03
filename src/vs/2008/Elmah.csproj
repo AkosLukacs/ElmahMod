@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{C92DC151-A0BA-4A5E-A20E-620EC9C06AFF}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -311,6 +311,9 @@
     </Compile>
     <Compile Include="..\..\Elmah\InvariantStringArray.cs">
       <Link>InvariantStringArray.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Elmah\JetBrains.Annotations.cs">
+      <Link>JetBrains.Annotations.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\JsonTextWriter.cs">
       <Link>JsonTextWriter.cs</Link>

@@ -365,6 +365,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "JetBrains.Annotations.cs"
+                    Link = "..\..\Elmah\JetBrains.Annotations.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />                
+                <File
                     RelPath = "JsonTextWriter.cs"
                     Link = "..\..\Elmah\JsonTextWriter.cs"
                     SubType = "Code"

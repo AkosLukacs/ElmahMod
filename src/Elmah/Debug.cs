@@ -33,6 +33,7 @@ namespace Elmah
 
     using System.Diagnostics;
     using SysDebug = System.Diagnostics.Debug;
+    using JetBrains.Annotations;
 
     #endregion
 
@@ -44,7 +45,8 @@ namespace Elmah
     internal sealed class Debug
     {
         [ Conditional("DEBUG") ]
-        public static void Assert(bool condition)
+        [ AssertionMethod ]
+        public static void Assert([AssertionCondition(AssertionConditionType.IS_TRUE)] bool condition)
         {
             SysDebug.Assert(condition);
         }

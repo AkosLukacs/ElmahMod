@@ -311,6 +311,9 @@
     <Compile Include="..\..\Elmah\InvariantStringArray.cs">
       <Link>InvariantStringArray.cs</Link>
     </Compile>
+    <Compile Include="..\..\Elmah\JetBrains.Annotations.cs">
+      <Link>JetBrains.Annotations.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\JsonTextWriter.cs">
       <Link>JsonTextWriter.cs</Link>
     </Compile>
