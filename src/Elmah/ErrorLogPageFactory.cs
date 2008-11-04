@@ -82,7 +82,7 @@ namespace Elmah
                 response.End();
 
                 //
-                // HttpResponse.End docs say that is throws 
+                // HttpResponse.End docs say that it throws 
                 // ThreadAbortException and so should never end up here but
                 // that's not been the observation in the debugger. So as a
                 // precautionary measure, bail out anyway.
