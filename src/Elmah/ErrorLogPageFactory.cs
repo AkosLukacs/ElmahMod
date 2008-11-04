@@ -31,6 +31,7 @@ namespace Elmah
 {
     #region Imports
 
+    using System.Collections;
     using System.Web;
 
     using CultureInfo = System.Globalization.CultureInfo;
@@ -45,6 +46,9 @@ namespace Elmah
 
     public class ErrorLogPageFactory : IHttpHandlerFactory
     {
+        private static readonly object _authorizationHandlersKey = new object();
+        private static readonly IRequestAuthorizationHandler[] _zeroAuthorizationHandlers = new IRequestAuthorizationHandler[0];
+
         /// <summary>
         /// Returns an object that implements the <see cref="IHttpHandler"/> 
         /// interface and which is responsible for serving the request.
@@ -69,12 +73,21 @@ namespace Elmah
                 throw new HttpException(404, "Resource not found.");
 
             //
-            // Check if this is a remote request and if so whether to grant
-            // remote access based on security settings.
+            // Check if the request is authorized.
             //
 
-            if (!HttpRequestSecurity.IsLocal(context.Request) &&
-                !SecurityConfiguration.Default.AllowRemoteAccess)
+            int authorized = /* uninitialized */ -1;
+            IEnumerator authorizationHandlers = GetAuthorizationHandlers(context).GetEnumerator();
+            while (authorized != 0 && authorizationHandlers.MoveNext())
+            {
+                IRequestAuthorizationHandler authorizationHandler = (IRequestAuthorizationHandler) authorizationHandlers.Current;
+                authorized = authorizationHandler.Authorize(context) ? 1 : 0;
+            }
+
+            if (authorized == 0
+                || (authorized < 0 // Compatibility case...
+                    && !HttpRequestSecurity.IsLocal(context.Request) 
+                    && !SecurityConfiguration.Default.AllowRemoteAccess))
             {
                 (new ManifestResourceHandler("RemoteAccessError.htm", "text/html")).ProcessRequest(context);
                 HttpResponse response = context.Response;
@@ -143,5 +156,48 @@ namespace Elmah
         public virtual void ReleaseHandler(IHttpHandler handler)
         {
         }
+
+        private static IList GetAuthorizationHandlers(HttpContext context)
+        {
+            Debug.Assert(context != null);
+
+            object key = _authorizationHandlersKey;
+            IList handlers = (IList)context.Items[key];
+
+            if (handlers == null)
+            {
+                const int capacity = 4;
+                ArrayList list = null;
+
+                HttpApplication application = context.ApplicationInstance;
+                if (application is IRequestAuthorizationHandler)
+                {
+                    list = new ArrayList(capacity);
+                    list.Add(application);
+                }
+
+                foreach (IHttpModule module in HttpModuleRegistry.GetModules(application))
+                {
+                    if (module is IRequestAuthorizationHandler)
+                    {
+                        if (list == null)
+                            list = new ArrayList(capacity);
+                        list.Add(module);
+                    }
+                }
+
+                context.Items[key] = handlers = ArrayList.ReadOnly(
+                    list != null
+                    ? list.ToArray(typeof(IRequestAuthorizationHandler))
+                    : _zeroAuthorizationHandlers);
+            }
+
+            return handlers;
+        }
+    }
+
+    public interface IRequestAuthorizationHandler
+    {
+        bool Authorize(HttpContext context);
     }
 }
