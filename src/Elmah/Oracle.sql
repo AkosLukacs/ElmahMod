@@ -68,9 +68,80 @@ END trg_elmah$error_bi;
 CREATE INDEX idx_elmah$error_app_time_seq ON elmah$error(application, timeutc DESC, sequencenumber DESC)
 /
 
--- package containing the procedures we need for Elmah to work
-CREATE OR REPLACE PACKAGE pkg_elmah$error
+-- package containing the procedure we need for Elmah to log errors
+CREATE OR REPLACE PACKAGE pkg_elmah$log_error
 IS
+    PROCEDURE LogError
+    (
+        v_ErrorId IN elmah$error.errorid%TYPE,
+        v_Application IN elmah$error.application%TYPE,
+        v_Host IN elmah$error.host%TYPE,
+        v_Type IN elmah$error.type%TYPE,
+        v_Source IN elmah$error.source%TYPE,
+        v_Message IN elmah$error.message%TYPE,
+        v_User IN elmah$error.username%TYPE,
+        v_AllXml IN elmah$error.allxml%TYPE,
+        v_StatusCode IN elmah$error.statuscode%TYPE,
+        v_TimeUtc IN elmah$error.timeutc%TYPE
+    );
+
+END pkg_elmah$log_error;
+/
+
+CREATE OR REPLACE PACKAGE BODY pkg_elmah$log_error
+IS
+    PROCEDURE LogError
+    (
+        v_ErrorId IN elmah$error.errorid%TYPE,
+        v_Application IN elmah$error.application%TYPE,
+        v_Host IN elmah$error.host%TYPE,
+        v_Type IN elmah$error.type%TYPE,
+        v_Source IN elmah$error.source%TYPE,
+        v_Message IN elmah$error.message%TYPE,
+        v_User IN elmah$error.username%TYPE,
+        v_AllXml IN elmah$error.allxml%TYPE,
+        v_StatusCode IN elmah$error.statuscode%TYPE,
+        v_TimeUtc IN elmah$error.timeutc%TYPE
+    )
+    IS
+    BEGIN
+        INSERT INTO elmah$error
+            (
+                errorid,
+                application,
+                host,
+                type,
+                source,
+                message,
+                username,
+                allxml,
+                statuscode,
+                timeutc
+            )
+        VALUES
+            (
+                UPPER(v_ErrorId),
+                v_Application,
+                v_Host,
+                v_Type,
+                v_Source,
+                v_Message,
+                v_User,
+                v_AllXml,
+                v_StatusCode,
+                v_TimeUtc
+            );
+
+    END LogError;   
+
+END pkg_elmah$log_error;
+/
+
+
+-- package containing the procedure we need for Elmah to retrieve errors
+CREATE OR REPLACE PACKAGE pkg_elmah$get_error
+IS
+	-- NB this is for backwards compatibility with Oracle 8i
     TYPE t_cursor IS REF CURSOR;
     
     PROCEDURE GetErrorXml
@@ -89,24 +160,10 @@ IS
         v_Results OUT t_cursor
     );
     
-    PROCEDURE LogError
-    (
-        v_ErrorId IN elmah$error.errorid%TYPE,
-        v_Application IN elmah$error.application%TYPE,
-        v_Host IN elmah$error.host%TYPE,
-        v_Type IN elmah$error.type%TYPE,
-        v_Source IN elmah$error.source%TYPE,
-        v_Message IN elmah$error.message%TYPE,
-        v_User IN elmah$error.username%TYPE,
-        v_AllXml IN elmah$error.allxml%TYPE,
-        v_StatusCode IN elmah$error.statuscode%TYPE,
-        v_TimeUtc IN elmah$error.timeutc%TYPE
-    );
-
-END pkg_elmah$error;
+END pkg_elmah$get_error;
 /
 
-CREATE OR REPLACE PACKAGE BODY pkg_elmah$error
+CREATE OR REPLACE PACKAGE BODY pkg_elmah$get_error
 IS
     PROCEDURE GetErrorXml
     (
@@ -178,67 +235,31 @@ IS
             
     END GetErrorsXml;
 
-    PROCEDURE LogError
-    (
-        v_ErrorId IN elmah$error.errorid%TYPE,
-        v_Application IN elmah$error.application%TYPE,
-        v_Host IN elmah$error.host%TYPE,
-        v_Type IN elmah$error.type%TYPE,
-        v_Source IN elmah$error.source%TYPE,
-        v_Message IN elmah$error.message%TYPE,
-        v_User IN elmah$error.username%TYPE,
-        v_AllXml IN elmah$error.allxml%TYPE,
-        v_StatusCode IN elmah$error.statuscode%TYPE,
-        v_TimeUtc IN elmah$error.timeutc%TYPE
-    )
-    IS
-    BEGIN
-        INSERT INTO elmah$error
-            (
-                errorid,
-                application,
-                host,
-                type,
-                source,
-                message,
-                username,
-                allxml,
-                statuscode,
-                timeutc
-            )
-        VALUES
-            (
-                UPPER(v_ErrorId),
-                v_Application,
-                v_Host,
-                v_Type,
-                v_Source,
-                v_Message,
-                v_User,
-                v_AllXml,
-                v_StatusCode,
-                v_TimeUtc
-            );
-
-    END LogError;   
-
-END pkg_elmah$error;
+END pkg_elmah$get_error;
 /
 
-
 /* 
--- If you are securing the package above, you will need to grant execute
--- privileges on its so that it can be called by the user connecting to the database.
+-- If you are securing the packages above, you will need to grant execute
+-- privileges on them so that they can be called by the user connecting to the database.
 -- NB As long as you use the schema owner for the connection string, this is not necessary.
 
 -- Option 1) Allow any user to execute the package (not recommended)
 -- replace OWNER for the schema owner in the following statement
-GRANT EXECUTE ON OWNER.pkg_elmah$error TO PUBLIC;
+GRANT EXECUTE ON OWNER.pkg_elmah$log_error TO PUBLIC;
+GRANT EXECUTE ON OWNER.pkg_elmah$get_error TO PUBLIC;
 
--- Option 2) Allow a single user to execute the package (preferred)
--- Alternatively make available to a single Oracle user.
+-- Option 2) Allow a single user to execute the package (better)
 -- replace OWNER for the schema owner in the following statement
-GRANT EXECUTE ON OWNER.pkg_elmah$error TO USER_NAME;
+GRANT EXECUTE ON OWNER.pkg_elmah$log_error TO USER_NAME;
+GRANT EXECUTE ON OWNER.pkg_elmah$get_error TO USER_NAME;
+
+-- Option 3) Lock things down so that one user can only log errors, while another user can read and log errors (most secure)
+-- replace OWNER for the schema owner in the following statement
+-- LOGGING_USER_NAME will be used to connect to the database in all sites which log errors to the database
+GRANT EXECUTE ON OWNER.pkg_elmah$log_error TO LOGGING_USER_NAME;
+-- ADMIN_USER_NAME will be used to connect to the database in an admin portal which allows users to read errors
+GRANT EXECUTE ON OWNER.pkg_elmah$log_error TO ADMIN_USER_NAME;
+GRANT EXECUTE ON OWNER.pkg_elmah$get_error TO ADMIN_USER_NAME;
 
 -- NB if you do take this approach, be sure to set the schemaOwner parameter in your web.config
 */

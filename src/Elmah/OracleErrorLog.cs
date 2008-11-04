@@ -190,7 +190,7 @@ namespace Elmah
                     xmlLob.Write(tempbuff,0,tempbuff.Length);
                     xmlLob.EndBatch();
 
-                    command.CommandText = _schemaOwner + "pkg_elmah$error.LogError";
+                    command.CommandText = _schemaOwner + "pkg_elmah$log_error.LogError";
                     command.CommandType = CommandType.StoredProcedure;
 
                     parameters.Clear();
@@ -228,7 +228,7 @@ namespace Elmah
             using (OracleConnection connection = new OracleConnection(this.ConnectionString))
             using (OracleCommand command = connection.CreateCommand())
             {
-                command.CommandText = _schemaOwner + "pkg_elmah$error.GetErrorsXml";
+                command.CommandText = _schemaOwner + "pkg_elmah$get_error.GetErrorsXml";
                 command.CommandType = CommandType.StoredProcedure;
 
                 OracleParameterCollection parameters = command.Parameters;
@@ -302,7 +302,7 @@ namespace Elmah
             using (OracleConnection connection = new OracleConnection(this.ConnectionString))
             using (OracleCommand command = connection.CreateCommand())
             {
-                command.CommandText = _schemaOwner + "pkg_elmah$error.GetErrorXml";
+                command.CommandText = _schemaOwner + "pkg_elmah$get_error.GetErrorXml";
                 command.CommandType = CommandType.StoredProcedure;
 
                 OracleParameterCollection parameters = command.Parameters;
