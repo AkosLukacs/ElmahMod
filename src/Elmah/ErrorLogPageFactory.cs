@@ -73,17 +73,10 @@ namespace Elmah
                 throw new HttpException(404, "Resource not found.");
 
             //
-            // Check if the request is authorized.
+            // Check if authorized then grant or deny request.
             //
 
-            int authorized = /* uninitialized */ -1;
-            IEnumerator authorizationHandlers = GetAuthorizationHandlers(context).GetEnumerator();
-            while (authorized != 0 && authorizationHandlers.MoveNext())
-            {
-                IRequestAuthorizationHandler authorizationHandler = (IRequestAuthorizationHandler) authorizationHandlers.Current;
-                authorized = authorizationHandler.Authorize(context) ? 1 : 0;
-            }
-
+            int authorized = IsAuthorized(context);
             if (authorized == 0
                 || (authorized < 0 // Compatibility case...
                     && !HttpRequestSecurity.IsLocal(context.Request) 
@@ -155,6 +148,30 @@ namespace Elmah
 
         public virtual void ReleaseHandler(IHttpHandler handler)
         {
+        }
+
+        /// <summary>
+        /// Determines if the request is authorized by objects implementing
+        /// <see cref="IRequestAuthorizationHandler" />.
+        /// </summary>
+        /// <returns>
+        /// Returns zero if unauthorized, a value greater than zero if 
+        /// authorized otherwise a value less than zero if no handlers
+        /// were available to answer.
+        /// </returns>
+
+        private static int IsAuthorized(HttpContext context)
+        {
+            Debug.Assert(context != null);
+
+            int authorized = /* uninitialized */ -1;
+            IEnumerator authorizationHandlers = GetAuthorizationHandlers(context).GetEnumerator();
+            while (authorized != 0 && authorizationHandlers.MoveNext())
+            {
+                IRequestAuthorizationHandler authorizationHandler = (IRequestAuthorizationHandler)authorizationHandlers.Current;
+                authorized = authorizationHandler.Authorize(context) ? 1 : 0;
+            }
+            return authorized;
         }
 
         private static IList GetAuthorizationHandlers(HttpContext context)
