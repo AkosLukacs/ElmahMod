@@ -29,51 +29,23 @@
 
 namespace Elmah.Assertions
 {
-    #region Imports
-
-    using System;
-    using System.Globalization;
-    using System.Text.RegularExpressions;
-
-    #endregion
-
-    /// <summary>
-    /// An assertion implementation whose test is based on whether
-    /// the result of an input expression evaluated against a context
-    /// matches a regular expression pattern or not.
-    /// </summary>
-
-    public class RegexMatchAssertion : DataBoundAssertion
+    public sealed class WebDataBindingExpression : IContextExpression
     {
-        private readonly Regex _regex;
-        
-        public RegexMatchAssertion(IContextExpression source, Regex regex) : 
-            base(source)
-        {
-            if (regex == null) 
-                throw new ArgumentNullException("regex");
+        private readonly string _expression;
 
-            _regex = regex;
+        public WebDataBindingExpression(string expression)
+        {
+            _expression = expression;
         }
 
-        public IContextExpression Source
+        public string Expression
         {
-            get { return Expression; }
+            get { return Mask.NullString(_expression); }
         }
 
-        public Regex RegexObject
+        public object Evaluate(object context)
         {
-            get { return _regex; }
-        }
-
-        protected override bool TestResult(object result)
-        {
-            return TestResultMatch(Convert.ToString(result, CultureInfo.InvariantCulture));
-        }
-
-        protected virtual bool TestResultMatch(string result)
-        {
-            return RegexObject.Match(result).Success;
+            return DataBinder.Eval(context, Expression);
         }
     }
 }

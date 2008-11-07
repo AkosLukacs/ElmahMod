@@ -33,8 +33,6 @@ namespace Elmah.Assertions
 
     using System;
     using System.Collections;
-    using System.Configuration;
-    using System.Xml;
 
     #endregion
 
@@ -47,37 +45,18 @@ namespace Elmah.Assertions
     {
         protected CompositeAssertion() {}
 
-        protected CompositeAssertion(XmlElement config)
+        protected CompositeAssertion(IAssertion[] assertions)
         {
-            if (config == null)
-                throw new ArgumentNullException("config");
-   
-            foreach (XmlNode child in config.ChildNodes)
+            if (assertions == null) 
+                throw new ArgumentNullException("assertions");
+
+            foreach (IAssertion assertion in assertions)
             {
-                XmlNodeType nodeType = child.NodeType;
-
-                //
-                // Allow elements only as children, but skip comments and 
-                // whitespaces.
-                //
-
-                if (nodeType == XmlNodeType.Comment || nodeType == XmlNodeType.Whitespace)
-                    continue;
-
-                if (nodeType != XmlNodeType.Element)
-                {
-                    throw new ConfigurationException(
-                        string.Format("Unexpected type of node ({0}) in configuration.", nodeType.ToString()), 
-                        child);
-                }
-                
-                //
-                // Create and configure the assertion given the configuration 
-                // element and then add it to this collection.
-                //
-
-                InnerList.Add(AssertionFactory.Create((XmlElement) child));
+                if (assertion == null)
+                    throw new ArgumentException(null, "assertions");
             }
+
+            InnerList.AddRange(assertions);
         }
 
         protected CompositeAssertion(ICollection assertions)

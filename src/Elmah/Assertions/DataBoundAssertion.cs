@@ -32,25 +32,24 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
-    using System.Xml;
 
     #endregion
 
     public abstract class DataBoundAssertion : IAssertion
     {
-        private readonly string _expression;
+        private readonly IContextExpression _expression;
 
-        protected DataBoundAssertion(XmlElement config)
+        protected DataBoundAssertion(IContextExpression expression)
         {
-            if (config == null)
-                throw new ArgumentNullException("config");
+            if (expression == null) 
+                throw new ArgumentNullException("expression");
 
-            _expression = ConfigurationSectionHelper.GetValueAsString(config.Attributes["binding"]).Trim();
+            _expression = expression;
         }
 
-        public virtual string DataBindingExpression
+        protected IContextExpression Expression
         {
-            get { return Mask.NullString(_expression); }
+            get { return _expression; }
         }
 
         public virtual bool Test(object context)
@@ -58,22 +57,9 @@ namespace Elmah.Assertions
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            return TestResult(GetBoundData(context));
+            return TestResult(Expression.Evaluate(context));
         }
 
         protected abstract bool TestResult(object result);
-
-        protected virtual object GetBoundData(object context)
-        {
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            return Eval(context, DataBindingExpression);
-        }
-
-        protected virtual object Eval(object context, string expression) 
-        {
-            return DataBinder.Eval(context, expression);
-        }
     }
 }

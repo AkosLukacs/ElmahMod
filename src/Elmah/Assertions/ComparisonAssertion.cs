@@ -32,9 +32,7 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
-    using System.Configuration;
     using System.Globalization;
-    using System.Xml;
 
     #endregion
 
@@ -49,48 +47,37 @@ namespace Elmah.Assertions
         private readonly object _expectedValue;
         private readonly ComparisonResultPredicate _predicate;
 
-        public ComparisonAssertion(XmlElement config, ComparisonResultPredicate predicate) :
-            base(config)
+        public ComparisonAssertion(ComparisonResultPredicate predicate, IContextExpression source, TypeCode type, string value) :
+            base(source)
         {
-            if (predicate == null)
+            if (predicate == null) 
                 throw new ArgumentNullException("predicate");
-            
+
             _predicate = predicate;
 
-            //
-            // Get the expected value and its type.
-            //
-            
-            XmlAttributeCollection attributes = config.Attributes;
-            
-            string valueString = ConfigurationSectionHelper.GetValueAsString(attributes["value"]);
-            
-            TypeCode type = TypeCode.String;
-            string typeName = ConfigurationSectionHelper.GetValueAsString(attributes["type"]);
-            
-            if (typeName.Length > 0)
+            if (type == TypeCode.DBNull 
+                || type == TypeCode.Empty 
+                || type == TypeCode.Object)
             {
-                type = (TypeCode) Enum.Parse(typeof(TypeCode), typeName);
-                
-                if (type == TypeCode.DBNull ||
-                    type == TypeCode.Empty ||
-                    type == TypeCode.Object)
-                {
-                    throw new ConfigurationException(string.Format(
-                        "The {0} value type is invalid for a comparison assertion.", 
-                        type.ToString()));
-                }
+                string message = string.Format(
+                    "The {0} value type is invalid for a comparison.", type.ToString());
+                throw new ArgumentException(message, "type");
             }
-            
+
             //
             // Convert the expected value to the comparison type and 
             // save it as a field.
             //
 
-            _expectedValue = Convert.ChangeType(valueString, type);
+            _expectedValue = Convert.ChangeType(value, type/*, FIXME CultureInfo.InvariantCulture */);
         }
 
-        public virtual object ExpectedValue
+        public IContextExpression Source
+        {
+            get { return Expression; }
+        }
+
+        public object ExpectedValue
         {
             get { return _expectedValue; }
         }
@@ -100,34 +87,10 @@ namespace Elmah.Assertions
             if (context == null)
                 throw new ArgumentNullException("context");
 
-            if (_expectedValue == null)
+            if (ExpectedValue == null)
                 return false;
-            
+
             return base.Test(context);
-        }
-
-        protected override object GetBoundData(object context)
-        {
-            if (DataBindingExpression.Length > 0)
-                return base.GetBoundData(context);
-            
-            //
-            // If no data expression is supplied then then assume the 
-            // reasonable default that the user wants the exception from the 
-            // context.
-            //
-
-            ExceptionFilterEventArgs args = context as ExceptionFilterEventArgs;
-            
-            if (args != null)
-                return args.Exception;
-            
-            //
-            // Hmm...the context is not the expected type so resort to
-            // late-binding.
-            //
-
-            return DataBinder.Eval(context, "Exception");
         }
 
         protected override bool TestResult(object result)

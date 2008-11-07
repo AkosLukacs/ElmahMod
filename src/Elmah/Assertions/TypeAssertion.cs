@@ -32,7 +32,6 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
-    using System.Xml;
 
     #endregion
 
@@ -47,33 +46,29 @@ namespace Elmah.Assertions
         private readonly Type _expectedType;
         private readonly bool _byCompatibility;
 
-        public TypeAssertion(XmlElement config, bool byCompatibility) : 
-            base(config)
+        public TypeAssertion(IContextExpression source, Type expectedType, bool byCompatibility) : 
+            base(MaskNullExpression(source))
         {
-            _byCompatibility = byCompatibility;
+            if (expectedType == null)
+                throw new ArgumentNullException("expectedType");
 
-            //
-            // Get the expected type.
-            //
-
-            string typeName = ConfigurationSectionHelper.GetValueAsString(config.Attributes["type"]);
-
-            if (typeName.Length > 0)
+            if (expectedType.IsInterface || (expectedType.IsClass && expectedType.IsAbstract))
             {
-                Type type = Type.GetType(typeName, /* throwOnError */ true);
-            
-                if (type.IsInterface || (type.IsClass && type.IsAbstract))
-                {
-                    //
-                    // Interfaces and abstract classes will always have an 
-                    // ancestral relationship.
-                    //
-                    
-                    _byCompatibility = true;
-                }
+                //
+                // Interfaces and abstract classes will always have an 
+                // ancestral relationship.
+                //
                 
-                _expectedType = type;
+                byCompatibility = true;
             }
+
+            _expectedType = expectedType;
+            _byCompatibility = byCompatibility;
+        }
+
+        public IContextExpression Source
+        {
+            get { return Expression; }
         }
 
         public Type ExpectedType
@@ -97,30 +92,6 @@ namespace Elmah.Assertions
             return base.Test(context);
         }
 
-        protected override object GetBoundData(object context)
-        {
-            if (DataBindingExpression.Length > 0)
-                return base.GetBoundData(context);
-            
-            //
-            // If no data expression is supplied then then assume the 
-            // reasonable default that the user wants the exception from the 
-            // context.
-            //
-
-            ExceptionFilterEventArgs args = context as ExceptionFilterEventArgs;
-            
-            if (args != null)
-                return args.Exception;
-            
-            //
-            // Hmm...the context is not the expected type so resort to
-            // late-binding.
-            //
-
-            return Eval(context, "Exception");
-        }
-
         protected override bool TestResult(object result)
         {
             if (result == null)
@@ -134,6 +105,25 @@ namespace Elmah.Assertions
             return ByCompatibility ? 
                 expectedType.IsAssignableFrom(resultType) : 
                 expectedType.Equals(resultType);
+        }
+
+        private static IContextExpression MaskNullExpression(IContextExpression expression)
+        {
+            return expression != null
+                 ? expression
+                 : new DelegatedContextExpression(new ContextExpressionEvaluationHandler(EvaluateToException));
+        }
+
+        private static object EvaluateToException(object context)
+        {
+            //
+            // Assume the reasonable default that the user wants the 
+            // exception from the context. If the context is not the 
+            // expected type so resort to late-binding.
+            //
+
+            ExceptionFilterEventArgs args = context as ExceptionFilterEventArgs;
+            return args != null ? args.Exception : DataBinder.Eval(context, "Exception");
         }
     }
 }

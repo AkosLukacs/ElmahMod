@@ -32,7 +32,6 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
-    using System.Xml;
 
     #endregion
 
@@ -41,23 +40,23 @@ namespace Elmah.Assertions
         private readonly bool _not;
         private readonly bool _all;
 
-        public static LogicalAssertion LogicalAnd(XmlElement config)
+        public static LogicalAssertion LogicalAnd(IAssertion[] operands)
         {
-            return new LogicalAssertion(config, false, true);
+            return new LogicalAssertion(operands, false, true);
         }
 
-        public static LogicalAssertion LogicalOr(XmlElement config)
+        public static LogicalAssertion LogicalOr(IAssertion[] operands)
         {
-            return new LogicalAssertion(config, false, false);
+            return new LogicalAssertion(operands, false, false);
         }
 
-        public static LogicalAssertion LogicalNot(XmlElement config)
+        public static LogicalAssertion LogicalNot(IAssertion[] operands)
         {
-            return new LogicalAssertion(config, true, true);
+            return new LogicalAssertion(operands, true, true);
         }
 
-        private LogicalAssertion(XmlElement config, bool not, bool all) : 
-            base(config)
+        private LogicalAssertion(IAssertion[] assertions, bool not, bool all) : 
+            base(assertions)
         {
             _not = not;
             _all = all;

@@ -544,8 +544,20 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Assertions\DelegatedContextExpression.cs"
+                    Link = "..\..\Elmah\Assertions\DelegatedContextExpression.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Assertions\IAssertion.cs"
                     Link = "..\..\Elmah\Assertions\IAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\IContextExpression.cs"
+                    Link = "..\..\Elmah\Assertions\IContextExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -582,6 +594,12 @@
                 <File
                     RelPath = "Assertions\UnaryNotAssertion.cs"
                     Link = "..\..\Elmah\Assertions\UnaryNotAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Assertions\WebDataBindingExpression.cs"
+                    Link = "..\..\Elmah\Assertions\WebDataBindingExpression.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

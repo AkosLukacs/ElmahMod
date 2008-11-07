@@ -141,9 +141,15 @@
       <Link>Assertions\DataBoundAssertion.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\Assertions\DelegatedContextExpression.cs">
+      <Link>Assertions\DelegatedContextExpression.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\Assertions\IAssertion.cs">
       <Link>Assertions\IAssertion.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\Assertions\IContextExpression.cs">
+      <Link>Assertions\IContextExpression.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\Assertions\JScriptAssertion.cs">
       <Link>Assertions\JScriptAssertion.cs</Link>
@@ -167,6 +173,9 @@
     <Compile Include="..\..\Elmah\Assertions\UnaryNotAssertion.cs">
       <Link>Assertions\UnaryNotAssertion.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\Assertions\WebDataBindingExpression.cs">
+      <Link>Assertions\WebDataBindingExpression.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\Build.cs">
       <Link>Build.cs</Link>

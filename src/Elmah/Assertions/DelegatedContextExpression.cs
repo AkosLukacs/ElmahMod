@@ -29,51 +29,35 @@
 
 namespace Elmah.Assertions
 {
-    #region Imports
-
     using System;
-    using System.Globalization;
-    using System.Text.RegularExpressions;
 
-    #endregion
+    internal delegate object ContextExpressionEvaluationHandler(object context);
 
-    /// <summary>
-    /// An assertion implementation whose test is based on whether
-    /// the result of an input expression evaluated against a context
-    /// matches a regular expression pattern or not.
-    /// </summary>
-
-    public class RegexMatchAssertion : DataBoundAssertion
+    internal sealed class DelegatedContextExpression : IContextExpression
     {
-        private readonly Regex _regex;
-        
-        public RegexMatchAssertion(IContextExpression source, Regex regex) : 
-            base(source)
-        {
-            if (regex == null) 
-                throw new ArgumentNullException("regex");
+        private readonly ContextExpressionEvaluationHandler _handler;
 
-            _regex = regex;
+        public DelegatedContextExpression(ContextExpressionEvaluationHandler handler)
+        {
+            if (handler == null) 
+                throw new ArgumentNullException("handler");
+            
+            _handler = handler;
         }
 
-        public IContextExpression Source
+        public ContextExpressionEvaluationHandler Handler
         {
-            get { return Expression; }
+            get { return _handler; }
         }
 
-        public Regex RegexObject
+        public object Evaluate(object context)
         {
-            get { return _regex; }
+            return _handler(context);
         }
 
-        protected override bool TestResult(object result)
+        public override string ToString()
         {
-            return TestResultMatch(Convert.ToString(result, CultureInfo.InvariantCulture));
-        }
-
-        protected virtual bool TestResultMatch(string result)
-        {
-            return RegexObject.Match(result).Success;
+            return Handler.ToString();
         }
     }
 }
