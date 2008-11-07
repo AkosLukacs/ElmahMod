@@ -39,14 +39,25 @@ li {
     <p>
         The Oracle error log is new in BETA 3, but if you have been compiling ELMAH
         from sources between BETA 2 and 3 and using Oracle for your error log then you should re-create
-        the  <code>ELMAH$Error</code>  table,  its  indicies and related package using  the
+        the  <code>ELMAH$Error</code>  table,  its  indicies and related packages using  the
         supplied SQL script (see <code>Oracle.sql</code> in your distribution). The  script
         does  not contain  any <code>DROP</code>  statements so  you  will have to drop the 
         table and package  manually before applying  the  script.  If you wish
         to preserve the logged error data, you should consider archiving it in
         a backup. Please  read the comments in this script file carefully  for
-        hints on users and synonyms.
-    </p>
+        hints on users and synonyms. NB The original package has now been split in two to aid in
+        securing the database in enterprise scenarios.</p>
+    <p>
+        The VistaDB error log is new in BETA 3, but if you have been compiling
+        ELMAH from  sources  between  BETA  2 and 3 and using VistaDB for your
+        error log  then  you  should  delete the <code>.vdb3</code> file and allow it to be
+        re-created.</p>
+    <p>
+        The Access error log is new in BETA 3, but if you have been  compiling
+        ELMAH  from  sources  between  BETA  2 and 3 and using Access for your
+        error  log  then  you  should  delete the <code>.mdb</code> file and allow it to be
+        re-created.</p>
+   
     <h2>
         Version 1.0 BETA 2(a) Notes</h2>
     <h3>
