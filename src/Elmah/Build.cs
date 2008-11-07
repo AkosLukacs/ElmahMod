@@ -90,6 +90,6 @@ namespace Elmah
         /// M1, M2, ..., Mn, BETA1, BETA2, RC1, RC2, RTM.
         /// </summary>
 
-        public const string Status = "BETA2";
+        public const string Status = "BETA3";
     }
 }

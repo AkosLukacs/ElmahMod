@@ -16,18 +16,29 @@ li {
 <body>
     <h1>
         ELMAH README</h1>
+    <p>
+        Please read this document carefully before using this release of ELMAH
+        as it contains important information.</p>
+    <p>
+        For peer help and support, vists the <a href="http://groups.google.com/group/elmah">ELMAH Discussion Group</a>.
+        Report bugs and issues to the <a href="http://code.google.com/p/elmah/issues/list">issue
+        tracker</a> on the <a href="http://elmah.googlecode.com/">project site</a>.
+        Avoid using the issue tracker to seek help with problems you are experiencing in
+        installing or running ELMAH. That is what the discussion group is for.</p>
     <h2>
-        Upgrading</h2>
+        Version 1.0 BETA 3 Notes</h2>
+    <h3>
+        Upgrading from ELMAH 1.0 BETA 2(a)</h3>
     <p>
         If you are using the Microsoft SQL Server for your error log then you should re-create 
-        the <code>ELMAH_Error</code> table, its indicies and related stored procedures
-        using the supplied SQL script (see  <code>Database.sql</code> in your distribution).
-        The script does not contain DDL <code>DROP</code> statements so you will have to drop
-        the table and stored procedures manually before applying the script. If you wish to
-        preserve the logged error data, you should consider archiving it in a backup.
-    </p>
+        the stored procedures found in the supplied SQL script (see <code>SQLServer.sql</code>).
+        The script does not contain DDL <code>DROP</code> or <code>ALTER </code> statements so 
+        you will have to drop the stored procedures manually before applying the 
+        <code>CREATE PROCEDURE</code> parts of the script. Other than that, there have been no 
+        changes to the schema since BETA 2a so existing data in your logs can be left as it is.</p>
     <p>
-        If  you are using Oracle for your error log then you should  re-create
+        The Oracle error log is new in BETA 3, but if you have been compiling ELMAH
+        from sources between BETA 2 and 3 and using Oracle for your error log then you should re-create
         the  <code>ELMAH$Error</code>  table,  its  indicies and related package using  the
         supplied SQL script (see <code>Oracle.sql</code> in your distribution). The  script
         does  not contain  any <code>DROP</code>  statements so  you  will have to drop the 
@@ -35,6 +46,23 @@ li {
         to preserve the logged error data, you should consider archiving it in
         a backup. Please  read the comments in this script file carefully  for
         hints on users and synonyms.
+    </p>
+    <h2>
+        Version 1.0 BETA 2(a) Notes</h2>
+    <h3>
+        Upgrading from GDN-ELMAH or ELMAH 1.0 BETA 1</h3>
+    <p>
+        The configuration sections and entries have changed slightly if you are
+        using GDN-ELMAH, which is the original that was released on GotDotNet. 
+        Consult the <code>samples/web.config</code> file to see examples of 
+        how the configuration looks like now.</p>
+    <p>
+        If you are using the Microsoft SQL Server for your error log then you should re-create 
+        the <code>ELMAH_Error</code> table, its indicies and related stored procedures
+        using the supplied SQL script (see  <code>Database.sql</code> in your distribution).
+        The script does not contain DDL <code>DROP</code> statements so you will have to drop
+        the table and stored procedures manually before applying the script. If you wish to
+        preserve the logged error data, you should consider archiving it in a backup.
     </p>
 </body>
 </html>
