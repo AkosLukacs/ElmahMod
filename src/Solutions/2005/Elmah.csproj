@@ -406,8 +406,8 @@
       <Link>XmlFileErrorLog.cs</Link>
       <SubType>Code</SubType>
     </Compile>
-    <Content Include="..\..\Elmah\SqlServer.sql">
-      <Link>SqlServer.sql</Link>
+    <Content Include="..\..\Elmah\SQLServer.sql">
+      <Link>SQLServer.sql</Link>
     </Content>
     <EmbeddedResource Include="..\..\Elmah\mkmdb.vbs">
       <Link>mkmdb.vbs</Link>
