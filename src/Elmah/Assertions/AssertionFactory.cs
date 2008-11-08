@@ -38,7 +38,6 @@ namespace Elmah.Assertions
     using System.Globalization;
     using System.Reflection;
     using System.Text.RegularExpressions;
-    using System.Threading;
     using System.Web;
     using System.Xml;
     
