@@ -380,11 +380,11 @@ namespace Elmah
                 Trace.WriteLine(e);
             }
 #else
-#endif
             catch (SmtpException e)
             {
                 Trace.TraceError(e.ToString());
             }
+#endif
         }
 
         /// <summary>
