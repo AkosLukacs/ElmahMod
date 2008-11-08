@@ -74,7 +74,7 @@ namespace Elmah.Assertions
 
         public static IAssertion assert_not_equal(IContextExpression binding, TypeCode type, string value)
         {
-            return new UnaryNotAssertion(new ComparisonAssertion(ComparisonResults.Equal, binding, type, value));
+            return new UnaryNotAssertion(assert_equal(binding, type, value));
         }
 
         public static IAssertion assert_lesser(IContextExpression binding, TypeCode type, string value)
