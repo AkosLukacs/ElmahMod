@@ -58,6 +58,16 @@ namespace Elmah.Assertions
 
     public sealed class AssertionFactory
     {
+        public static IAssertion assert_is_null(IContextExpression binding)
+        {
+            return new IsNullAssertion(binding);
+        }
+
+        public static IAssertion assert_is_not_null(IContextExpression binding)
+        {
+            return new UnaryNotAssertion(assert_is_null(binding));
+        }
+
         public static IAssertion assert_equal(IContextExpression binding, TypeCode type, string value)
         {
             return new ComparisonAssertion(ComparisonResults.Equal, binding, type, value);

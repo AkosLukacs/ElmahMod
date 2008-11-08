@@ -151,6 +151,9 @@
     <Compile Include="..\..\Elmah\Assertions\IContextExpression.cs">
       <Link>Assertions\IContextExpression.cs</Link>
     </Compile>
+    <Compile Include="..\..\Elmah\Assertions\IsNullAssertion.cs">
+      <Link>Assertions\IsNullAssertion.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\Assertions\JScriptAssertion.cs">
       <Link>Assertions\JScriptAssertion.cs</Link>
     </Compile>

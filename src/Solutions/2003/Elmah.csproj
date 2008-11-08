@@ -562,6 +562,12 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Assertions\IsNullAssertion.cs"
+                    Link = "..\..\Elmah\Assertions\IsNullAssertion.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Assertions\JScriptAssertion.cs"
                     Link = "..\..\Elmah\Assertions\JScriptAssertion.cs"
                     SubType = "Code"
