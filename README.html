@@ -29,13 +29,17 @@ li {
         Version 1.0 BETA 3 Notes</h2>
     <h3>
         Upgrading from ELMAH 1.0 BETA 2(a)</h3>
+    <h4>
+        Microsoft SQL Server Error Log</h4>
     <p>
-        If you are using the Microsoft SQL Server for your error log then you should re-create 
+        If you are using the Microsoft SQL Server (2000 or later) for your error log then you should re-create 
         the stored procedures found in the supplied SQL script (see <code>SQLServer.sql</code>).
         The script does not contain DDL <code>DROP</code> or <code>ALTER </code> statements so 
         you will have to drop the stored procedures manually before applying the 
         <code>CREATE PROCEDURE</code> parts of the script. Other than that, there have been no 
         changes to the schema since BETA 2a so existing data in your logs can be left as it is.</p>
+    <h4>
+        Oracle Error Log</h4>
     <p>
         The Oracle error log is new in BETA 3, but if you have been compiling ELMAH
         from sources between BETA 2 and 3 and using Oracle for your error log then you should re-create
@@ -47,11 +51,15 @@ li {
         a backup. Please  read the comments in this script file carefully  for
         hints on users and synonyms. NB The original package has now been split in two to aid in
         securing the database in enterprise scenarios.</p>
+    <h4>
+        VistaDB Error Log</h4>
     <p>
         The VistaDB error log is new in BETA 3, but if you have been compiling
         ELMAH from  sources  between  BETA  2 and 3 and using VistaDB for your
         error log  then  you  should  delete the <code>.vdb3</code> file and allow it to be
         re-created.</p>
+    <h4>
+        Microsoft Access Error Log</h4>
     <p>
         The Access error log is new in BETA 3, but if you have been  compiling
         ELMAH  from  sources  between  BETA  2 and 3 and using Access for your
