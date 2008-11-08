@@ -32,6 +32,7 @@ namespace Elmah
     #region Imports
     
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Web;
     using System.IO;
@@ -356,7 +357,34 @@ namespace Elmah
 
         private void ReportError(object state)
         {
-            ReportError((Error) state);
+            try
+            {
+                ReportError((Error) state);
+            }
+
+            //
+            // Catch and trace COM/SmtpException here because this
+            // method will be called on a thread pool thread and
+            // can either fail silently in 1.x or with a big band in
+            // 2.0. For latter, see the following MS KB article for
+            // details:
+            //
+            //     Unhandled exceptions cause ASP.NET-based applications 
+            //     to unexpectedly quit in the .NET Framework 2.0
+            //     http://support.microsoft.com/kb/911816
+            //
+
+#if NET_1_0 || NET_1_1
+            catch (System.Runtime.InteropServices.COMException e)
+            {
+                Trace.WriteLine(e);
+            }
+#else
+#endif
+            catch (SmtpException e)
+            {
+                Trace.TraceError(e.ToString());
+            }
         }
 
         /// <summary>
