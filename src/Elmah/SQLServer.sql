@@ -132,14 +132,14 @@ BEGIN
     SET ROWCOUNT @StartRowIndex
 
     SELECT  
-        @FirstTimeUTC = TimeUTC,
+        @FirstTimeUTC = TimeUtc,
         @FirstSequence = Sequence
     FROM 
         ELMAH_Error
     WHERE   
         Application = @Application
     ORDER BY 
-        TimeUTC DESC, 
+        TimeUtc DESC, 
         Sequence DESC
 
 END
@@ -156,25 +156,25 @@ END
 SET ROWCOUNT @PageSize
 
 SELECT 
-    errorId, 
-    application,
-    host, 
-    type,
-    source,
-    message,
-    [user],
-    statusCode, 
+    ErrorId errorId, 
+    Application application,
+    Host host, 
+    Type type,
+    Source source,
+    Message message,
+    [User] [user],
+    StatusCode statusCode, 
     CONVERT(VARCHAR(50), TimeUtc, 126) + 'Z' time
 FROM 
     ELMAH_Error error
 WHERE
     Application = @Application
 AND
-    TimeUTC <= @FirstTimeUTC
+    TimeUtc <= @FirstTimeUTC
 AND 
     Sequence <= @FirstSequence
 ORDER BY
-    TimeUTC DESC, 
+    TimeUtc DESC, 
     Sequence DESC
 FOR
     XML AUTO
