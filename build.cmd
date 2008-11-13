@@ -37,6 +37,7 @@ if "%1"=="1.0" call :net-1-0
 if "%1"=="1.1" call :net-1-1
 if "%1"=="2.0" call :net-2-0
 if "%1"=="3.5" call :net-3-5
+if "%1"=="solutions" call :solutions
 popd
 goto :EOF
 
@@ -69,6 +70,10 @@ echo.
 echo Copying dependencies to output directories...
 for %%i in (Debug Release) do if exist bin\net-3.5\%%i copy lib\System.Data.SQLite.dll bin\net-3.5\%%i
 for %%i in (Debug Release) do if exist bin\net-3.5\%%i copy lib\VistaDB.NET20.dll bin\net-3.5\%%i
+goto :EOF
+
+:solutions
+call src\Solutions\build
 goto :EOF
 
 :compile
