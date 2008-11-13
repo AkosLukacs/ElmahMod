@@ -79,34 +79,34 @@ BEGIN
 END
 GO
 
-CREATE TABLE dbo.ELMAH_Error
+CREATE TABLE [dbo].[ELMAH_Error]
 (
-    ErrorId     UNIQUEIDENTIFIER NOT NULL,
-    Application NVARCHAR(60) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Host        NVARCHAR(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Type        NVARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Source      NVARCHAR(60) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    Message     NVARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    [User]      NVARCHAR(50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
-    StatusCode  INT NOT NULL,
-    TimeUtc     DATETIME NOT NULL,
-    Sequence    INT IDENTITY (1, 1) NOT NULL,
-    AllXml      NTEXT COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+    [ErrorId]     UNIQUEIDENTIFIER NOT NULL,
+    [Application] NVARCHAR(60)  COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [Host]        NVARCHAR(50)  COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [Type]        NVARCHAR(100) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [Source]      NVARCHAR(60)  COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [Message]     NVARCHAR(500) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [User]        NVARCHAR(50)  COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
+    [StatusCode]  INT NOT NULL,
+    [TimeUtc]     DATETIME NOT NULL,
+    [Sequence]    INT IDENTITY (1, 1) NOT NULL,
+    [AllXml]      NTEXT COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
-ALTER TABLE dbo.ELMAH_Error WITH NOCHECK ADD 
-    CONSTRAINT PK_ELMAH_Error PRIMARY KEY NONCLUSTERED
+ALTER TABLE [dbo].[ELMAH_Error] WITH NOCHECK ADD 
+    CONSTRAINT [PK_ELMAH_Error] PRIMARY KEY NONCLUSTERED
     (
-        ErrorId
+        [ErrorId]
     )  ON [PRIMARY] 
 GO
 
-ALTER TABLE dbo.ELMAH_Error ADD 
-    CONSTRAINT DF_ELMAH_Error_ErrorId DEFAULT (newid()) FOR [ErrorId]
+ALTER TABLE [dbo].[ELMAH_Error] ADD 
+    CONSTRAINT [DF_ELMAH_Error_ErrorId] DEFAULT (newid()) FOR [ErrorId]
 GO
 
-CREATE NONCLUSTERED INDEX IX_ELMAH_Error_App_Time_Seq ON dbo.ELMAH_Error
+CREATE NONCLUSTERED INDEX [IX_ELMAH_Error_App_Time_Seq] ON [dbo].[ELMAH_Error]
 (
     [Application] ASC,
     [TimeUtc] DESC,
@@ -119,7 +119,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE dbo.ELMAH_GetErrorXml
+CREATE PROCEDURE [dbo].[ELMAH_GetErrorXml]
 (
     @Application NVARCHAR(60),
     @ErrorId UNIQUEIDENTIFIER
@@ -129,15 +129,13 @@ AS
 SET NOCOUNT ON
 
 SELECT 
-    AllXml
+    [AllXml]
 FROM 
-    ELMAH_Error
+    [ELMAH_Error]
 WHERE
-    ErrorId = @ErrorId
+    [ErrorId] = @ErrorId
 AND
-    Application = @Application
-
-
+    [Application] = @Application
 
 GO
 SET QUOTED_IDENTIFIER OFF 
@@ -150,7 +148,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE dbo.ELMAH_GetErrorsXml
+CREATE PROCEDURE [dbo].[ELMAH_GetErrorsXml]
 (
     @Application NVARCHAR(60),
     @PageIndex INT = 0,
@@ -169,9 +167,9 @@ DECLARE @StartRowIndex int
 SELECT 
     @TotalCount = COUNT(1) 
 FROM 
-    ELMAH_Error
+    [ELMAH_Error]
 WHERE 
-    Application = @Application
+    [Application] = @Application
 
 -- Get the ID of the first error for the requested page
 
@@ -183,15 +181,15 @@ BEGIN
     SET ROWCOUNT @StartRowIndex
 
     SELECT  
-        @FirstTimeUTC = TimeUtc,
-        @FirstSequence = Sequence
+        @FirstTimeUTC = [TimeUtc],
+        @FirstSequence = [Sequence]
     FROM 
-        ELMAH_Error
+        [ELMAH_Error]
     WHERE   
-        Application = @Application
+        [Application] = @Application
     ORDER BY 
-        TimeUtc DESC, 
-        Sequence DESC
+        [TimeUtc] DESC, 
+        [Sequence] DESC
 
 END
 ELSE
@@ -207,26 +205,26 @@ END
 SET ROWCOUNT @PageSize
 
 SELECT 
-    ErrorId errorId, 
-    Application application,
-    Host host, 
-    Type type,
-    Source source,
-    Message message,
-    [User] [user],
-    StatusCode statusCode, 
-    CONVERT(VARCHAR(50), TimeUtc, 126) + 'Z' time
+    errorId     = [ErrorId], 
+    application = [Application],
+    host        = [Host], 
+    type        = [Type],
+    source      = [Source],
+    message     = [Message],
+    [user]      = [User],
+    statusCode  = [StatusCode], 
+    time        = CONVERT(VARCHAR(50), [TimeUtc], 126) + 'Z'
 FROM 
-    ELMAH_Error error
+    [ELMAH_Error] error
 WHERE
-    Application = @Application
+    [Application] = @Application
 AND
-    TimeUtc <= @FirstTimeUTC
+    [TimeUtc] <= @FirstTimeUTC
 AND 
-    Sequence <= @FirstSequence
+    [Sequence] <= @FirstSequence
 ORDER BY
-    TimeUtc DESC, 
-    Sequence DESC
+    [TimeUtc] DESC, 
+    [Sequence] DESC
 FOR
     XML AUTO
 
@@ -241,7 +239,7 @@ GO
 SET ANSI_NULLS ON 
 GO
 
-CREATE PROCEDURE dbo.ELMAH_LogError
+CREATE PROCEDURE [dbo].[ELMAH_LogError]
 (
     @ErrorId UNIQUEIDENTIFIER,
     @Application NVARCHAR(60),
@@ -260,18 +258,18 @@ SET NOCOUNT ON
 
 INSERT
 INTO
-    ELMAH_Error
+    [ELMAH_Error]
     (
-        ErrorId,
-        Application,
-        Host,
-        Type,
-        Source,
-        Message,
+        [ErrorId],
+        [Application],
+        [Host],
+        [Type],
+        [Source],
+        [Message],
         [User],
-        AllXml,
-        StatusCode,
-        TimeUtc
+        [AllXml],
+        [StatusCode],
+        [TimeUtc]
     )
 VALUES
     (
