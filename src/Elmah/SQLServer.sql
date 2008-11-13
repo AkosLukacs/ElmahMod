@@ -28,6 +28,57 @@
 
 -- ELMAH DDL script for Microsoft SQL Server 2000 or later.
 
+DECLARE @DBCompatibilityLevel INT
+DECLARE @DBCompatibilityLevelMajor INT
+DECLARE @DBCompatibilityLevelMinor INT
+
+SELECT 
+    @DBCompatibilityLevel = compatibility_level 
+FROM 
+    sys.databases 
+WHERE 
+    name = DB_NAME()
+
+IF @DBCompatibilityLevel <> 80
+BEGIN
+
+    SELECT @DBCompatibilityLevelMajor = @DBCompatibilityLevel / 10, 
+           @DBCompatibilityLevelMinor = @DBCompatibilityLevel % 10
+           
+    PRINT N'
+    ===========================================================================
+    WARNING! 
+    ---------------------------------------------------------------------------
+    
+    This script is designed for Microsoft SQL Server 2000 (8.0) but your 
+    database is set up for compatibility with version ' 
+    + CAST(@DBCompatibilityLevelMajor AS NVARCHAR(80)) 
+    + N'.' 
+    + CAST(@DBCompatibilityLevelMinor AS NVARCHAR(80)) 
+    + N'. Although 
+    the script should work with later versions of Microsoft SQL Server, 
+    you can ensure compatibility by executing the following statement:
+    
+    ALTER DATABASE [' 
+    + DB_NAME() 
+    + N'] 
+    SET COMPATIBILITY_LEVEL = 80
+
+    If you are hosting ELMAH in the same database as your application 
+    database and do not wish to change the compatibility option then you 
+    should create a separate database to host ELMAH where you can set the 
+    compatibility level more freely.
+    
+    If you continue with the current setup, please report any compatibility 
+    issues you encounter over at:
+    
+    http://code.google.com/p/elmah/issues/list
+
+    ===========================================================================
+'
+END
+GO
+
 CREATE TABLE dbo.ELMAH_Error
 (
     ErrorId     UNIQUEIDENTIFIER NOT NULL,
