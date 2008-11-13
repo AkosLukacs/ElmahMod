@@ -22,7 +22,7 @@
         catch (Exception ex)
         {
             ErrorSignal.FromContext(Context).Raise(ex);
-            SignalMessage.InnerText = "Error trapped and signalled at " 
+            SignalMessage.InnerText = "Error trapped and signaled at " 
                 + DateTime.Now.ToLongTimeString();
         }
 
@@ -72,7 +72,7 @@
         ELMAH will log the error and <em>send</em> an e-mail. Bear in
         mind that the exception will generate what has come to be known as 
         the <em><a href="http://en.wikipedia.org/wiki/Yellow_Screen_of_Death#ASP.NET">yellow screen of death</a></em>
-        that ASP.NET developer often dread. You will need to hit the 
+        that ASP.NET developers often dread. You will need to hit the 
         &ldquo;back&rdquo; button on your browser to return here.</p>
     <p>
         <asp:Button ID="ErrorButton" runat="server" Text="Throw Exception" OnClick="ErrorButton_Click" />
@@ -126,7 +126,7 @@
         <li><a href="#Wiki">How do I find out more about getting started?</a></li>
         <li><a href="#Language">I see the code is written in C#. Do I have to use that too?</a></li>
         <li><a href="#NoSource">What if I don't have the source code for an application?</a></li>
-        <li><a href="#Signalling">What exactly <em>is</em> signalling?</a></li>
+        <li><a href="#Signaling">What exactly <em>is</em> signaling?</a></li>
         <li><del><a href="#WinForms">Can I use ELMAH in my WinForms/WPF application?</a></del></li>
         <li><a href="#CustomErrors">What happens if I turn on custom error handling?</a></li>
     </ul>
@@ -191,11 +191,11 @@
         application's <code>bin</code> and make some configuration changes to <code>web.config</code> and you'll
         be up and running.</p>
         <p><a href="#Questions">Back to top</a></p></dd>
-        <dt><a name="Signalling" />What exactly <em>is</em> signalling?</dt>
+        <dt><a name="Signaling" />What exactly <em>is</em> signaling?</dt>
         <dd><p>Out of the box, ELMAH will intercept any <em>unhandled</em> exception.
         However, what happens when your application code handles the exception, yet
         want it logged as well?</p>
-        <p>That's where signalling comes in. Inside your own error handling code, you can
+        <p>That's where signaling comes in. Inside your own error handling code, you can
         call ELMAH and ask it to log the error for you. This is done with code similar to this in C#:</p>
         <pre>    try
     {
@@ -208,7 +208,7 @@
 </pre>
         <p>or this if you are working in VB.NET:</p>
         <pre>    Try
-        Throw New Exception("Oops! I did it again.");
+        Throw New Exception("Oops! I did it again.")
     Catch ex As Exception
         ErrorSignal.FromCurrentContext().Raise(ex)
     End Try
@@ -218,7 +218,7 @@
         <dd><p><del>You certainly can, although it requires a little more effort. In ASP.NET, ELMAH
         makes use of features within the standard architecture to trap unhandled exceptions
         without any changes to your existing code. Unfortunately, that is not possible in WinForms
-        or WPF. However, a few small code tweaks coupled with <a href="#Signalling">error signalling</a>
+        or WPF. However, a few small code tweaks coupled with <a href="#Signaling">error signaling</a>
         will allow you to achieve what you want.</del></p>
         <p><a href="#Questions">Back to top</a></p></dd>
         <dt><a name="CustomErrors"/>What happens if I turn on custom error handling?</dt>
