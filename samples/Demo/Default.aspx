@@ -43,12 +43,48 @@
 <head runat="server">
     <title>ELMAH Demo</title>
     <style type="text/css">
-        body, td, th, input, select { font-family: Arial; font-size: medium; }
-        code, pre { font-family: Courier New, Courier, Monospace; }
-        li { margin-bottom: 0.5em; }
-        dd { margin-bottom: 2em }
-        dt { font-weight: bold; }
-        #SignalMessage { color: #F00; }
+        body
+        {
+            background-color: white;
+        }
+        body, td, th, input, select
+        {
+            font-family: Arial, Sans-Serif;
+            font-size: small;
+        }
+        code, pre
+        {
+            font-family: Courier New, Courier, Monospace;
+            font-size: small;
+        }
+        li
+        {
+            margin-bottom: 0.5em;
+        }
+        dd
+        {
+            margin-bottom: 2em;
+        }
+        dt
+        {
+            font-weight: bold;
+        }
+        #SignalMessage
+        {
+            color: #F00;
+        }
+        h1
+        {
+            font-size: large;
+        }
+        h2
+        {
+            font-size: medium;
+        }
+        h3
+        {
+            font-size: small;
+        }
     </style>
 </head>
 <body>
