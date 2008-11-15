@@ -1,4 +1,4 @@
-<%@ Page Language="C#" Title="ELMAH Demo Application" EnableViewState="false" EnableSessionState="True" %>
+<%@ Page Language="C#" Title="ELMAH Demo Application" EnableViewState="false" %>
 <%@ Import Namespace="Elmah" %>
 <%@ Import Namespace="System.IO"%>
 <%@ Import Namespace="System.Net.Configuration"%>
