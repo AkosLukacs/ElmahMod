@@ -165,6 +165,13 @@
         There you should find files with the <code>eml</code> extension and which 
         you can open and inspect using any text editor.
     </p>
+    <p>
+        See also the following samples:        
+    </p>
+    <ul>
+        <li><a href="ErrorsGridView.aspx">Error Log Sample Using ObjectDataSource and GridView</a></li>
+        <li><a href="ErrorsRssView.aspx">Error Log Sample Using XmlDataSource</a></li>
+    </ul>
     <h2 id="Questions">Questions?</h2>
     <ul>
         <li><a href="#Cassini">How does the sample run?</a></li>
