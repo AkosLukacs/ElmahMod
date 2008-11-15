@@ -7,6 +7,21 @@
 <script runat="server">
     protected SccStamp Stamp = new SccStamp("$Id$");
     protected const string RevisionDetailUrlFormat = "http://code.google.com/p/elmah/source/detail?r={0}";
+    protected string MailPath;
+    protected string SampleWebConfigPath;
+    
+    protected override void OnLoad(EventArgs e)
+    {
+        SmtpSection smtpSection = (SmtpSection) WebConfigurationManager.GetSection("system.net/mailSettings/smtp");
+
+        MailPath = (smtpSection != null && smtpSection.SpecifiedPickupDirectory != null 
+                    ? smtpSection.SpecifiedPickupDirectory.PickupDirectoryLocation 
+                    : null) ?? string.Empty;
+
+        SampleWebConfigPath = Path.Combine(Path.GetDirectoryName(Server.MapPath(".")), "web.config");
+
+        base.OnLoad(e);
+    }
 
     protected void ErrorButton_Click(object sender, EventArgs e)
     {
@@ -34,10 +49,6 @@
         throw new System.ApplicationException();
     }
 
-    private string GetSampleWebConfigPath()
-    {
-        return Path.Combine(Path.GetDirectoryName(Server.MapPath(".")), "web.config");
-    }
 </script>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
@@ -150,7 +161,7 @@
     </p>
     <p>
         To see the notification mails, go to the <a href="Mails/"
-        title='<%= Server.HtmlEncode(((SmtpSection) WebConfigurationManager.GetSection("system.net/mailSettings/smtp")).SpecifiedPickupDirectory.PickupDirectoryLocation) %>'>pick-up directory</a>.
+        title='<%= Server.HtmlEncode(MailPath) %>'>pick-up directory</a>.
         There you should find files with the <code>eml</code> extension and which 
         you can open and inspect using any text editor.
     </p>
@@ -182,7 +193,7 @@
         <dd><p>This sample uses <code>SQLiteErrorLog</code> to log errors to a <a href="http://www.sqlite.org/">SQLite</a> database.
         This database is created on the fly by ELMAH making it perfect for the sample. 
         If you are curious and would like to look at it, you can find it at:</p>
-        <pre><% =Server.HtmlEncode(Server.MapPath("~/App_Data/errors.s3db")) %></pre>
+        <pre><%= Server.HtmlEncode(Server.MapPath("~/App_Data/errors.s3db")) %></pre>
         <p>There are several clients available for querying and administrating a
         SQLite database. If you don't have one handy, check out <a href="http://sqliteadmin.orbmu2k.de/">SQLite Administrator</a> (freeware).</p>
         <p>The sample could have just as easily used Access or VistaDB as its database, 
@@ -193,7 +204,7 @@
         <dd><p>You may be wondering how the sample sends e-mail when it requires
         no SMTP server or setup on your part. That's because it doesn't actually <em>send</em> any e-mail.
         Instead, it drops files with the raw e-mail message into a <a href="Mails/"
-        title='<%= Server.HtmlEncode(((SmtpSection) WebConfigurationManager.GetSection("system.net/mailSettings/smtp")).SpecifiedPickupDirectory.PickupDirectoryLocation) %>'>pick-up directory</a>
+        title='<%= Server.HtmlEncode(MailPath) %>'>pick-up directory</a>
         where you can view them.
         </p>
         <p><del>In reality you are much more likely to set up ELMAH so that it sends e-mail to a monitored e-mail address.
@@ -211,7 +222,7 @@
             some of the more involved features.</li>
             <li>You should also look at the sample <code>web.config</code> file that ships with
             ELMAH. You should be able to find it in the following location: 
-            <code><% =Server.HtmlEncode(GetSampleWebConfigPath()) %></code>.
+            <code><% =Server.HtmlEncode(SampleWebConfigPath)%></code>.
             This file contains lots of comments regarding how you can configure ELMAH for your
             environment.</li>
         </ul>
