@@ -176,6 +176,7 @@
         <li><a href="#Signaling">What exactly <em>is</em> signaling?</a></li>
         <li><del><a href="#WinForms">Can I use ELMAH in my WinForms/WPF application?</a></del></li>
         <li><a href="#CustomErrors">What happens if I turn on custom error handling?</a></li>
+        <li><a href="#MediumTrustSupport">Can I use ELMAH in a medium trust application?</a></li>
     </ul>
     <dl>
         <dt><a name="Cassini" />How does the sample run?</dt>
@@ -273,6 +274,10 @@
         and logs it for you. Custom error handling will then kick in and show a user-friendly
         error page instead of the <em><a href="http://en.wikipedia.org/wiki/Yellow_Screen_of_Death#ASP.NET">yellow screen of death</a></em>.</p>
         <p><a href="#Questions">Back to top</a></p></dd>
+        <dt><a name="MediumTrustSupport"></a>Can I use ELMAH in a medium trust application?</dt>
+        <dd><p>Yes, medium trust is fully supported by ELMAH as long as you use 
+        <code>SqlErrorLog</code> (Microsoft SQL Server) or <code>VistaDBErrorLog</code> (<a href="http://www.vistadb.net/">VistaDB</a>)
+        as the log implementations.</p></dd>
     </dl>   
     </form>
     <hr />
