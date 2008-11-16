@@ -84,6 +84,10 @@
         <HeaderStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
         <EditRowStyle BackColor="#7C6F57" />
         <AlternatingRowStyle BackColor="White" />
+        <EmptyDataRowStyle BackColor="#1C5E55" Font-Bold="True" ForeColor="White" />
+        <EmptyDataTemplate>
+            No exceptions have been logged in ELMAH.
+        </EmptyDataTemplate>
     </asp:GridView>
     <asp:ObjectDataSource ID="ErrorLogDataSource" runat="server" EnablePaging="True"
         TypeName="Elmah.ErrorLogDataSourceAdapter" 
