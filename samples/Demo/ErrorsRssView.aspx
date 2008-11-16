@@ -63,9 +63,11 @@
             <dd><%# Server.HtmlEncode(XPath("description").ToString()) %></dd>
             <dd class="time"><span class="time"><%# Server.HtmlEncode(DateTime.ParseExact(XPath("pubDate").ToString(), "r", null, DateTimeStyles.AssumeUniversal).ToString("f")) %></span></dd>
         </ItemTemplate>
-        <FooterTemplate></dl></FooterTemplate>
+        <FooterTemplate></dl>
+        <asp:Literal runat="server" Visible='<%# ErrorRepeater.Items.Count == 0 ? true : false %>' Text="No exceptions have been logged in ELMAH." />
+        </FooterTemplate>
     </asp:Repeater>
-    <asp:XmlDataSource ID="ErrorLogRssDataSource" runat="server" 
+    <asp:XmlDataSource ID="ErrorLogRssDataSource" runat="server" EnableCaching="false"
         DataFile='<%# Request.Url.GetLeftPart(UriPartial.Authority) + VirtualPathUtility.ToAbsolute(ErrorLogRssUrl) %>'
         XPath="rss/channel/item" />
     <!-- $Id$ -->
