@@ -151,8 +151,8 @@
         This can come quite handy when you drop ELMAH into a running application and want to be sure that
         it is configured correctly to log and mail or what have you. To do this, you simply
         append <em>slash-test</em> to where you configured ELMAH&rsquo;s handler. For example, for this
-        demo application, vists <a href="elmah.axd/test">elmah.axd/test</a> to generate the test error.
-        Again, this will generate what is the <em><a href="http://en.wikipedia.org/wiki/Yellow_Screen_of_Death#ASP.NET">yellow screen of death</a></em>
+        demo application, visit <a href="elmah.axd/test">elmah.axd/test</a> to generate the test error.
+        Again, this will generate what is known as the <em><a href="http://en.wikipedia.org/wiki/Yellow_Screen_of_Death#ASP.NET">yellow screen of death</a></em>
         and you will need to hit the &ldquo;back&rdquo; button in your browser to return here.
     </p>
     <h2>Viewing Errors</h2>
@@ -193,7 +193,7 @@
         dependencies because it ships with a version of <a href="http://www.asp.net/Downloads/archived/cassini/">Cassini</a> 
         Personal Web Server. Cassini is light-weight and self-contained ASP.NET hosting Web server 
         that allows this ELMAH sample to run with as little as possible.</p>
-        <p>You will probably have noticed that when the sample starts, an icon is appears
+        <p>You will probably have noticed that when the sample starts, an icon appears
         for Cassini in your task bar. If you shut this down, the sample with cease to work
         until it is restarted.</p>
         <p><a href="#Questions">Back to top</a></p></dd>
