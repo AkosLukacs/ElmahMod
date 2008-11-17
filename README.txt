@@ -9,6 +9,11 @@
    experiencing  in  installing  or  running  ELMAH.  That  is  what  the
    discussion group is for.
 
+   The  best  way  to  get started with ELMAH is to take it for a spin by
+   launching the supplied demo Web site. Simply go the root of your ELMAH
+   distribution  and  execute  the  demo.cmd  script.  The  demo Web site
+   requires [4]Microsoft .NET Framework 2.0.
+
 Version 1.0 BETA 3 Notes
 
   Upgrading from ELMAH 1.0 BETA 2(a)
@@ -73,3 +78,4 @@ References
    1. http://groups.google.com/group/elmah
    2. http://code.google.com/p/elmah/issues/list
    3. http://elmah.googlecode.com/
+   4. http://msdn.microsoft.com/en-us/netframework/aa731542.aspx
