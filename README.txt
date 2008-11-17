@@ -74,7 +74,7 @@ Version 1.0 BETA 2(a) Notes
    you should consider archiving it in a backup.
      _________________________________________________________________
 
-   Revision: $Revision$
+   $Revision$
 
 References
 
