@@ -5,17 +5,11 @@
             <section name="security" requirePermission="false" type="Elmah.SecuritySectionHandler, Elmah"/>
             <section name="errorLog" requirePermission="false" type="Elmah.ErrorLogSectionHandler, Elmah"/>
             <section name="errorMail" requirePermission="false" type="Elmah.ErrorMailSectionHandler, Elmah"/>
-            <section name="errorFilter" requirePermission="false" type="Elmah.ErrorFilterSectionHandler, Elmah"/>
         </sectionGroup>
     </configSections>
     <elmah>
         <errorLog type="Elmah.SQLiteErrorLog, Elmah" connectionStringName="ELMAH.SQLite" />
         <errorMail from="noreply@example.com" to="elmah@example.com" />
-        <errorFilter>
-            <test>
-                <equal binding="HttpStatusCode" value="404" type="Int32" />
-            </test>
-        </errorFilter>
     </elmah>
     <connectionStrings>
         <add name="ELMAH.SQLite" connectionString="Data Source=|DataDirectory|errors.s3db"/>
