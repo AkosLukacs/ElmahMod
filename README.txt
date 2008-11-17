@@ -72,6 +72,9 @@ Version 1.0 BETA 2(a) Notes
    you  will have to drop the table and stored procedures manually before
    applying  the  script.  If you wish to preserve the logged error data,
    you should consider archiving it in a backup.
+     _________________________________________________________________
+
+   $Id$
 
 References
 
