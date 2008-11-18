@@ -67,7 +67,6 @@ for /f "tokens=* delims=" %%i in (%DEMO_PATH%\Web.config.template) do (
     echo !LINE:{pickupDirectoryLocation}=%cd%\%MAIL_PATH%! >> "%DEMO_PATH%\Web.config"
 )
 
-start /min %TOOLS_PATH%\Cassini\Cassini "%cd%\%DEMO_PATH%" %DEMO_PORT%
-start http://localhost:%DEMO_PORT%/
+start /min %TOOLS_PATH%\Cassini\Cassini "%cd%\%DEMO_PATH%" %DEMO_PORT% --launch
 
 popd
