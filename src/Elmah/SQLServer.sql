@@ -33,9 +33,9 @@ DECLARE @DBCompatibilityLevelMajor INT
 DECLARE @DBCompatibilityLevelMinor INT
 
 SELECT 
-    @DBCompatibilityLevel = compatibility_level 
+    @DBCompatibilityLevel = cmptlevel 
 FROM 
-    sys.databases 
+    master.dbo.sysdatabases 
 WHERE 
     name = DB_NAME()
 
