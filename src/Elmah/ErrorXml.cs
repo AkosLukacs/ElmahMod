@@ -257,7 +257,7 @@ namespace Elmah
             WriteXmlAttribute(writer, "detail", error.Detail);
             WriteXmlAttribute(writer, "user", error.User);
             if (error.Time != DateTime.MinValue)
-                WriteXmlAttribute(writer, "time", XmlConvert.ToString(error.Time));
+                WriteXmlAttribute(writer, "time", XmlConvert.ToString(error.Time.ToUniversalTime(), @"yyyy-MM-dd\THH:mm:ss.fffffff\Z"));
             if (error.StatusCode != 0)
                 WriteXmlAttribute(writer, "statusCode", XmlConvert.ToString(error.StatusCode));
             WriteXmlAttribute(writer, "webHostHtmlMessage", error.WebHostHtmlMessage);
