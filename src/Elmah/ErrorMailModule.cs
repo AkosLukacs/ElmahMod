@@ -98,6 +98,7 @@ namespace Elmah
         private int _smtpPort;
         private string _authUserName;
         private string _authPassword;
+        private bool _enableSsl;
 
         public event ExceptionFilterEventHandler Filtering;
         public event ErrorMailEventHandler Mailing;
@@ -137,6 +138,7 @@ namespace Elmah
             int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
             string authUserName = GetSetting(config, "userName", string.Empty);
             string authPassword = GetSetting(config, "password", string.Empty);
+            bool enableSsl = Convert.ToBoolean(GetSetting(config, "enableSsl", bool.FalseString));
 
             //
             // Hook into the Error event of the application.
@@ -159,6 +161,7 @@ namespace Elmah
             _smtpPort = smtpPort;
             _authUserName = authUserName;
             _authPassword = authPassword;
+            _enableSsl = enableSsl;
         }
         
         /// <summary>
@@ -264,6 +267,16 @@ namespace Elmah
         protected string AuthPassword
         {
             get { return _authPassword; }
+        }
+
+        /// <summary>
+        /// Determines if SSL will be used to encrypt communication with the 
+        /// mail server.
+        /// </summary>
+
+        protected bool EnableSsl
+        {
+            get { return _enableSsl; }
         }
 
         /// <summary>
@@ -635,6 +648,8 @@ namespace Elmah
 
             if (userName.Length > 0 && password.Length > 0)
                 client.Credentials = new NetworkCredential(userName, password);
+
+            client.EnableSsl = EnableSsl;
 
             client.Send(mail);
 #endif
