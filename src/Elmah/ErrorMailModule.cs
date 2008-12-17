@@ -98,7 +98,9 @@ namespace Elmah
         private int _smtpPort;
         private string _authUserName;
         private string _authPassword;
-        private bool _enableSsl;
+#if !NET_1_0 && !NET_1_1
+        private bool _useSsl;
+#endif
 
         public event ExceptionFilterEventHandler Filtering;
         public event ErrorMailEventHandler Mailing;
@@ -138,8 +140,9 @@ namespace Elmah
             int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
             string authUserName = GetSetting(config, "userName", string.Empty);
             string authPassword = GetSetting(config, "password", string.Empty);
-            bool enableSsl = Convert.ToBoolean(GetSetting(config, "enableSsl", bool.FalseString));
-
+#if !NET_1_0 && !NET_1_1
+            bool useSsl = Convert.ToBoolean(GetSetting(config, "useSsl", bool.FalseString));
+#endif
             //
             // Hook into the Error event of the application.
             //
@@ -161,7 +164,9 @@ namespace Elmah
             _smtpPort = smtpPort;
             _authUserName = authUserName;
             _authPassword = authPassword;
-            _enableSsl = enableSsl;
+#if !NET_1_0 && !NET_1_1
+            _useSsl = useSsl;
+#endif
         }
         
         /// <summary>
@@ -269,15 +274,17 @@ namespace Elmah
             get { return _authPassword; }
         }
 
+#if !NET_1_0 && !NET_1_1
         /// <summary>
         /// Determines if SSL will be used to encrypt communication with the 
         /// mail server.
         /// </summary>
 
-        protected bool EnableSsl
+        protected bool UseSsl
         {
-            get { return _enableSsl; }
+            get { return _useSsl; }
         }
+#endif
 
         /// <summary>
         /// The handler called when an unhandled exception bubbles up to 
@@ -649,7 +656,7 @@ namespace Elmah
             if (userName.Length > 0 && password.Length > 0)
                 client.Credentials = new NetworkCredential(userName, password);
 
-            client.EnableSsl = EnableSsl;
+            client.EnableSsl = UseSsl;
 
             client.Send(mail);
 #endif
