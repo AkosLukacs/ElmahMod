@@ -241,7 +241,8 @@ END pkg_elmah$get_error;
 /* 
 -- If you are securing the packages above, you will need to grant execute
 -- privileges on them so that they can be called by the user connecting to the database.
--- NB As long as you use the schema owner for the connection string, this is not necessary.
+-- NB As long as you use the schema owner for the connection string, this is not necessary,
+-- although this is generally discouraged by Best Practices.
 
 -- Option 1) Allow any user to execute the package (not recommended)
 -- replace OWNER for the schema owner in the following statement
