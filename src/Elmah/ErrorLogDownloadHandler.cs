@@ -171,7 +171,7 @@ namespace Elmah
             int total = _log.EndGetErrors(result);
             int count = _errorEntryList.Count;
 
-            if (_maxDownloadCount >= 0)
+            if (_maxDownloadCount > 0)
             {
                 int remaining = _maxDownloadCount - (_downloadCount + count);
                 if (remaining < 0)
