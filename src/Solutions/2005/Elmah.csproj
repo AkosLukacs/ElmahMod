@@ -291,6 +291,12 @@
       <Link>ErrorTextFormatter.cs</Link>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="..\..\Elmah\ErrorTweetModule.cs">
+      <Link>ErrorTweetModule.cs</Link>
+    </Compile>
+    <Compile Include="..\..\Elmah\ErrorTweetSectionHandler.cs">
+      <Link>ErrorTweetSectionHandler.cs</Link>
+    </Compile>
     <Compile Include="..\..\Elmah\ErrorXml.cs">
       <Link>ErrorXml.cs</Link>
     </Compile>
@@ -388,6 +394,9 @@
     <Compile Include="..\..\Elmah\SqlErrorLog.cs">
       <Link>SqlErrorLog.cs</Link>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\..\Elmah\StringFormatter.cs">
+      <Link>StringFormatter.cs</Link>
     </Compile>
     <Compile Include="..\..\Elmah\StringTranslation.cs">
       <Link>StringTranslation.cs</Link>
