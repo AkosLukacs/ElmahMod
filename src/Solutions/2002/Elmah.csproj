@@ -311,6 +311,18 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "ErrorTweetModule.cs"
+                    Link = "..\..\Elmah\ErrorTweetModule.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "ErrorTweetSectionHandler.cs"
+                    Link = "..\..\Elmah\ErrorTweetSectionHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "ErrorXml.cs"
                     Link = "..\..\Elmah\ErrorXml.cs"
                     SubType = "Code"
@@ -467,6 +479,12 @@
                 <File
                     RelPath = "SqlErrorLog.cs"
                     Link = "..\..\Elmah\SqlErrorLog.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "StringFormatter.cs"
+                    Link = "..\..\Elmah\StringFormatter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
