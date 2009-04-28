@@ -98,6 +98,7 @@ namespace Elmah
         private int _smtpPort;
         private string _authUserName;
         private string _authPassword;
+        private bool _noYsod;
 #if !NET_1_0 && !NET_1_1
         private bool _useSsl;
 #endif
@@ -140,6 +141,7 @@ namespace Elmah
             int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
             string authUserName = GetSetting(config, "userName", string.Empty);
             string authPassword = GetSetting(config, "password", string.Empty);
+            bool sendYsod = Convert.ToBoolean(GetSetting(config, "noYsod", bool.FalseString));
 #if !NET_1_0 && !NET_1_1
             bool useSsl = Convert.ToBoolean(GetSetting(config, "useSsl", bool.FalseString));
 #endif
@@ -164,6 +166,7 @@ namespace Elmah
             _smtpPort = smtpPort;
             _authUserName = authUserName;
             _authPassword = authPassword;
+            _noYsod = sendYsod;
 #if !NET_1_0 && !NET_1_1
             _useSsl = useSsl;
 #endif
@@ -272,6 +275,17 @@ namespace Elmah
         protected string AuthPassword
         {
             get { return _authPassword; }
+        }
+
+        /// <summary>
+        /// Indicates whether <a href="http://en.wikipedia.org/wiki/Screens_of_death#ASP.NET">YSOD</a> 
+        /// is attached to the e-mail or not. If <c>true</c>, the YSOD is 
+        /// not attached.
+        /// </summary>
+        
+        protected bool NoYsod
+        {
+            get { return _noYsod; }
         }
 
 #if !NET_1_0 && !NET_1_1
@@ -528,10 +542,10 @@ namespace Elmah
             {
                 //
                 // If an HTML message was supplied by the web host then attach 
-                // it to the mail.
+                // it to the mail if not explicitly told not to do so.
                 //
 
-                if (error.WebHostHtmlMessage.Length != 0)
+                if (!NoYsod && error.WebHostHtmlMessage.Length > 0)
                 {
                     ysodAttachment = CreateHtmlAttachment("YSOD", error.WebHostHtmlMessage);
 
