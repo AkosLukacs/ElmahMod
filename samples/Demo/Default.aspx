@@ -182,7 +182,6 @@
         <li><a href="#Language">I see the code is written in C#. Do I have to use that too?</a></li>
         <li><a href="#NoSource">What if I don't have the source code for an application?</a></li>
         <li><a href="#Signaling">What exactly <em>is</em> signaling?</a></li>
-        <li><del><a href="#WinForms">Can I use ELMAH in my WinForms/WPF application?</a></del></li>
         <li><a href="#CustomErrors">What happens if I turn on custom error handling?</a></li>
         <li><a href="#MediumTrustSupport">Can I use ELMAH in a medium trust application?</a></li>
     </ul>
@@ -216,9 +215,6 @@
         title='<%= Server.HtmlEncode(MailPath) %>'>pick-up directory</a>
         where you can view them.
         </p>
-        <p><del>In reality you are much more likely to set up ELMAH so that it sends e-mail to a monitored e-mail address.
-        This obviously requires details of both your SMTP server and the intended recipient. As the sample doesn't
-        know either of these pieces of information, it does the next best thing to demonstrate the concept.</del></p>
         <p><a href="#Questions">Back to top</a></p></dd>
         <dt><a name="Wiki" />How do I find out more about getting started?</dt>
         <dd><p>There are a few key places to go if you need more help getting started:</p>
@@ -269,13 +265,6 @@
         ErrorSignal.FromCurrentContext().Raise(ex)
     End Try
 </pre>
-        <p><a href="#Questions">Back to top</a></p></dd>
-        <dt><a name="WinForms" /><del>Can I use ELMAH in my WinForms/WPF application?</del></dt>
-        <dd><p><del>You certainly can, although it requires a little more effort. In ASP.NET, ELMAH
-        makes use of features within the standard architecture to trap unhandled exceptions
-        without any changes to your existing code. Unfortunately, that is not possible in WinForms
-        or WPF. However, a few small code tweaks coupled with <a href="#Signaling">error signaling</a>
-        will allow you to achieve what you want.</del></p>
         <p><a href="#Questions">Back to top</a></p></dd>
         <dt><a name="CustomErrors"/>What happens if I turn on custom error handling?</dt>
         <dd><p>It makes no difference to ELMAH! ELMAH still catches the unhandled exception
