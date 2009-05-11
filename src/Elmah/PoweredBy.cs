@@ -59,13 +59,14 @@ namespace Elmah
                 throw new ArgumentNullException("writer");
 
             //
-            // Write out the assembly title, version number and copyright.
+            // Write out the assembly title, version number, copyright and
+            // license.
             //
 
             AboutSet about = this.About;
 
             writer.Write("Powered by ");
-            writer.AddAttribute("href", "http://elmah.googlecode.com/");
+            writer.AddAttribute(HtmlTextWriterAttribute.Href, "http://elmah.googlecode.com/");
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             HttpUtility.HtmlEncode(Mask.EmptyString(about.Product, "(product)"), writer);
             writer.RenderEndTag();
@@ -91,6 +92,13 @@ namespace Elmah
                 HttpUtility.HtmlEncode(copyright, writer);
                 writer.Write(' ');
             }
+
+            writer.Write("Licensed under ");
+            writer.AddAttribute(HtmlTextWriterAttribute.Href, "http://www.apache.org/licenses/LICENSE-2.0");
+            writer.RenderBeginTag(HtmlTextWriterTag.A);
+            writer.Write("Apache License, Version 2.0");
+            writer.RenderEndTag();
+            writer.Write(". ");
         }
 
         private AboutSet About
