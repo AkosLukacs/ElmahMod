@@ -92,6 +92,17 @@ namespace Elmah
         protected virtual void RenderHead(HtmlTextWriter writer)
         {
             //
+            // In IE 8 or later, mimic IE 7
+            // http://msdn.microsoft.com/en-us/library/cc288325.aspx#DCModes
+            //
+
+            writer.AddAttribute("http-equiv", "X-UA-Compatible");
+            writer.AddAttribute("content", "IE=EmulateIE7");
+            writer.RenderBeginTag(HtmlTextWriterTag.Meta);
+            writer.RenderEndTag();
+            writer.WriteLine();
+
+            //
             // Write the document title.
             //
 
