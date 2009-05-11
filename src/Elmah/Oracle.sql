@@ -21,7 +21,7 @@
   
 */
 
--- NB This script assumes you have logged on in the schema where you want to create the elmah objects
+-- NB This script assumes you have logged on in the schema where you want to create the ELMAH objects
 
 -- create a sequence for the errors (user to simulate an identity in SQL Server)
 CREATE SEQUENCE elmah$error_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE NOCYCLE NOCACHE NOORDER;
@@ -64,7 +64,7 @@ END trg_elmah$error_bi;
 CREATE INDEX idx_elmah$error_app_time_seq ON elmah$error(application, timeutc DESC, sequencenumber DESC)
 /
 
--- package containing the procedure we need for Elmah to log errors
+-- package containing the procedure we need for ELMAH to log errors
 CREATE OR REPLACE PACKAGE pkg_elmah$log_error
 IS
     PROCEDURE LogError
@@ -134,7 +134,7 @@ END pkg_elmah$log_error;
 /
 
 
--- package containing the procedure we need for Elmah to retrieve errors
+-- package containing the procedure we need for ELMAH to retrieve errors
 CREATE OR REPLACE PACKAGE pkg_elmah$get_error
 IS
 	-- NB this is for backwards compatibility with Oracle 8i
