@@ -10,7 +10,7 @@
 </script>
 <html xmlns="http://www.w3.org/1999/xhtml" >
 <head runat="server">
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" >
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <style type="text/css">
         body
         {
