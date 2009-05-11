@@ -21,6 +21,8 @@
   
 */
 
+-- $Id$
+
 -- NB This script assumes you have logged on in the schema where you want to create the ELMAH objects
 
 -- create a sequence for the errors (user to simulate an identity in SQL Server)

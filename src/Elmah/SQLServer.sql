@@ -24,6 +24,8 @@
 
 -- ELMAH DDL script for Microsoft SQL Server 2000 or later.
 
+-- $Id$
+
 DECLARE @DBCompatibilityLevel INT
 DECLARE @DBCompatibilityLevelMajor INT
 DECLARE @DBCompatibilityLevelMinor INT

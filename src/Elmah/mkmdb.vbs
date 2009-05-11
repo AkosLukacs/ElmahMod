@@ -23,6 +23,8 @@
 ' OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 '
 
+' $Id$
+
 ' enum KeyTypeEnum
 
 Const adKeyPrimary = 1
