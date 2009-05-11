@@ -34,11 +34,11 @@ using ComVisible = System.Runtime.InteropServices.ComVisibleAttribute;
 [assembly: AssemblyDescription("Error Logging Modules and Handlers (ELMAH) for ASP.NET")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ELMAH")]
-[assembly: AssemblyCopyright("Copyright (c) 2007, Atif Aziz. All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright (c) 2004-9, Atif Aziz. All rights reserved.")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("1.0.10617.0")]
-[assembly: AssemblyFileVersion("1.0.11128.1658")]
+[assembly: AssemblyVersion("1.0.11211.0")]
+[assembly: AssemblyFileVersion("1.0.11211.0")]
 [assembly: AssemblyConfiguration(Elmah.Build.Configuration)]
 
 [assembly: CLSCompliant(true)] 
