@@ -1,30 +1,7 @@
 @echo off
 
-REM ELMAH - Error Logging Modules and Handlers for ASP.NET
-REM Copyright (c) 2007 Atif Aziz. All rights reserved.
-REM
-REM  Author(s):
-REM
-REM      Atif Aziz, http://www.raboof.com
-REM
-REM This library is free software; you can redistribute it and/or modify it 
-REM under the terms of the New BSD License, a copy of which should have 
-REM been delivered along with this distribution.
-REM
-REM THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-REM "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-REM LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A 
-REM PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-REM OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-REM SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-REM LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
-REM DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
-REM THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-REM (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-REM OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-REM
-REM -------------------------------------------------------------------------
-REM
+echo ELMAH - Error Logging Modules and Handlers for ASP.NET
+echo Copyright (c) 2004-9 Atif Aziz. All rights reserved.
 
 setlocal
 pushd "%~dp0"
@@ -42,6 +19,7 @@ popd
 goto :EOF
 
 :all
+call :lic
 call :net-1-0
 call :net-1-1
 call :net-2-0
@@ -100,6 +78,7 @@ echo.
 goto :EOF
 
 :help
+echo.
 echo Usage: %~n0 TARGET
 echo.
 echo TARGET
@@ -113,3 +92,21 @@ echo.
 echo The following versions appear to be installed on this system:
 echo.
 for %%i in (v1.0.3705 v1.1.4322 v2.0.50727 v3.5) do if exist "%NETFX_BASE_PATH%\%%i\csc.exe" echo - %%i
+call :lic
+goto :EOF
+
+
+:lic
+echo.
+echo Licensed under the Apache License, Version 2.0 (the "License");
+echo you may not use this file except in compliance with the License.
+echo You may obtain a copy of the License at
+echo.
+echo    http://www.apache.org/licenses/LICENSE-2.0
+echo.
+echo Unless required by applicable law or agreed to in writing, software
+echo distributed under the License is distributed on an "AS IS" BASIS,
+echo WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+echo See the License for the specific language governing permissions and
+echo limitations under the License.
+goto :EOF
