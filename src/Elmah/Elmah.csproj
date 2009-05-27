@@ -161,9 +161,6 @@
     </Compile>
     <Compile Include="Build.cs">
     </Compile>
-    <Compile Include="CdoConfigurationFields.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Configuration.cs">
     </Compile>
     <Compile Include="ConfigurationSectionHelper.cs">
