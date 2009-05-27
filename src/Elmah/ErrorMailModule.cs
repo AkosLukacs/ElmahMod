@@ -136,7 +136,7 @@ namespace Elmah
             MailPriority mailPriority = (MailPriority) Enum.Parse(typeof(MailPriority), GetSetting(config, "priority", MailPriority.Normal.ToString()), true);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
             string smtpServer = GetSetting(config, "smtpServer", string.Empty);
-            int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
+            int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "0"), CultureInfo.InvariantCulture);
             string authUserName = GetSetting(config, "userName", string.Empty);
             string authPassword = GetSetting(config, "password", string.Empty);
             bool sendYsod = Convert.ToBoolean(GetSetting(config, "noYsod", bool.FalseString));
@@ -524,7 +524,8 @@ namespace Elmah
 
                 fields.Add(CdoConfigurationFields.SendUsing, /* cdoSendUsingPort */ 2);
                 fields.Add(CdoConfigurationFields.SmtpServer, smtpServer);
-                fields.Add(CdoConfigurationFields.SmtpServerPort, this.SmtpPort);
+                int smtpPort = this.SmtpPort;
+                fields.Add(CdoConfigurationFields.SmtpServerPort, smtpPort <= 0 ? 25 : smtpPort);
 
                 //
                 // If the SMTP server requires authentication (indicated by 
