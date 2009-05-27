@@ -29,6 +29,7 @@ namespace Elmah
 
     using System;
     using System.Diagnostics;
+    using System.Reflection;
     using System.Web;
     using Elmah.Assertions;
 
@@ -91,7 +92,7 @@ namespace Elmah
 
             try
             {
-                if (Assertion.Test(new AssertionHelperContext(args.Exception, args.Context)))
+                if (Assertion.Test(new AssertionHelperContext(sender, args.Exception, args.Context)))
                     args.Dismiss();
             }
             catch (Exception e)
@@ -103,18 +104,38 @@ namespace Elmah
 
         public sealed class AssertionHelperContext
         {
+            private readonly object _source;
             private readonly Exception _exception;
             private readonly object _context;
             private Exception _baseException;
             private int _httpStatusCode;
             private bool _statusCodeInitialized;
 
-            public AssertionHelperContext(Exception e, object context)
+            public AssertionHelperContext(Exception e, object context) :
+                this(null, e, context) {}
+
+            public AssertionHelperContext(object source, Exception e, object context)
             {
                 Debug.Assert(e != null);
-                
+
+                _source = source == null ? this : source;
                 _exception = e;
                 _context = context;
+            }
+
+            public object FilterSource
+            {
+                get { return _source; }
+            }
+
+            public Type FilterSourceType
+            {
+                get { return _source.GetType(); }
+            }
+
+            public AssemblyName FilterSourceAssemblyName
+            {
+                get { return FilterSourceType.Assembly.GetName(); }
             }
 
             public Exception Exception
