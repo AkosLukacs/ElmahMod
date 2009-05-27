@@ -89,6 +89,7 @@ namespace Elmah
         private string _mailRecipient;
         private string _mailCopyRecipient;
         private string _mailSubjectFormat;
+        private MailPriority _mailPriority;
         private bool _reportAsynchronously;
         private string _smtpServer;
         private int _smtpPort;
@@ -132,6 +133,7 @@ namespace Elmah
             string mailSender = GetSetting(config, "from", mailRecipient);
             string mailCopyRecipient = GetSetting(config, "cc", string.Empty);
             string mailSubjectFormat = GetSetting(config, "subject", string.Empty);
+            MailPriority mailPriority = (MailPriority) Enum.Parse(typeof(MailPriority), GetSetting(config, "priority", MailPriority.Normal.ToString()), true);
             bool reportAsynchronously = Convert.ToBoolean(GetSetting(config, "async", bool.TrueString));
             string smtpServer = GetSetting(config, "smtpServer", string.Empty);
             int smtpPort = Convert.ToUInt16(GetSetting(config, "smtpPort", "25"), CultureInfo.InvariantCulture);
@@ -157,6 +159,7 @@ namespace Elmah
             _mailSender = mailSender;
             _mailCopyRecipient = mailCopyRecipient;
             _mailSubjectFormat = mailSubjectFormat;
+            _mailPriority = mailPriority;
             _reportAsynchronously = reportAsynchronously;
             _smtpServer = smtpServer;
             _smtpPort = smtpPort;
@@ -235,7 +238,16 @@ namespace Elmah
         {
             get { return _mailSubjectFormat; }
         }
+
+        /// <summary>
+        /// Gets the priority of the e-mail. 
+        /// </summary>
         
+        protected virtual MailPriority MailPriority
+        {
+            get { return _mailPriority; }
+        }
+
         /// <summary>
         /// Gets the SMTP server host name used when sending the mail.
         /// </summary>
@@ -443,10 +455,11 @@ namespace Elmah
                 return;
 
             //
-            // Create the mail, setting up the sender and recipient.
+            // Create the mail, setting up the sender and recipient and priority.
             //
 
             MailMessage mail = new MailMessage();
+            mail.Priority = this.MailPriority;
 
 #if NET_1_0 || NET_1_1
             mail.From = sender;
