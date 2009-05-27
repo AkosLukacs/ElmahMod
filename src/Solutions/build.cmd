@@ -22,30 +22,12 @@ REM limitations under the License.
 REM
 REM -------------------------------------------------------------------------
 REM
-REM This is a batch file that can used to build ELMAH for Microsoft .NET 
-REM Framework 1.x and 2.0. The build is created for only those versions
-REM that are found to be installed in the expected locations (see below).
-REM
-REM To compile for Microsoft .NET Framework 1.0, you must have Microsoft
-REM Visual Studio .NET 2002 installed in the standard path proposed by
-REM by its installer.
-REM
-REM To compile for Microsoft .NET Framework 1.1, you must have Microsoft
-REM Visual Studio .NET 2003 installed in the standard path proposed by
-REM by its installer.
-REM
 REM To compile for Microsoft .NET Framework 2.0, 3.0 and 3.5, you only
 REM need MSBUILD.EXE and which is expected to be located in the standard
 REM installation directory.
 
 setlocal
 pushd "%~dp0"
-set DEVENV70EXE=%ProgramFiles%\Microsoft Visual Studio .NET\Common7\IDE\devenv.com
-set DEVENV71EXE=%ProgramFiles%\Microsoft Visual Studio .NET 2003\Common7\IDE\devenv.com
-set MSBUILD20EXE=%windir%\Microsoft.NET\Framework\v2.0.50727\msbuild.exe
 set MSBUILD35EXE=%windir%\Microsoft.NET\Framework\v3.5\msbuild.exe
-for %%i in (debug release) do if exist "%DEVENV70EXE%"  "%DEVENV70EXE%"  2002\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%DEVENV71EXE%"  "%DEVENV71EXE%"  2003\Elmah.sln /build %%i
-for %%i in (debug release) do if exist "%MSBUILD20EXE%" "%MSBUILD20EXE%" 2005\Elmah.sln /p:Configuration=%%i
 for %%i in (debug release) do if exist "%MSBUILD35EXE%" "%MSBUILD35EXE%" 2008\Elmah.sln /p:Configuration=%%i
 popd

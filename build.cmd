@@ -10,8 +10,6 @@ set NETFX_BASE_PATH=%SystemRoot%\Microsoft.NET\Framework
 
 if "%1"=="" call :help
 if "%1"=="all" call :all
-if "%1"=="1.0" call :net-1-0
-if "%1"=="1.1" call :net-1-1
 if "%1"=="2.0" call :net-2-0
 if "%1"=="3.5" call :net-3-5
 if "%1"=="solutions" call :solutions
@@ -20,18 +18,8 @@ goto :EOF
 
 :all
 call :lic
-call :net-1-0
-call :net-1-1
 call :net-2-0
 call :net-3-5
-goto :EOF
-
-:net-1-0
-call :compile v1.0.3705 net-1.0 /d:NET_1_0
-goto :EOF
-
-:net-1-1
-call :compile v1.1.4322 net-1.1 /d:NET_1_1 /r:System.Data.OracleClient.dll
 goto :EOF
 
 :net-2-0
@@ -82,16 +70,16 @@ echo.
 echo Usage: %~n0 TARGET
 echo.
 echo TARGET
-echo     is the target to build (all, 1.0, 1.1, 2.0 or 3.5)
+echo     is the target to build (all, 2.0 or 3.5)
 echo.
 echo This is a batch script that can used to build ELMAH binaries for 
-echo Microsoft .NET Framework 1.x and 2.0. The binaries are created for 
+echo Microsoft .NET Framework 2.0 and/or 3.x. The binaries are created for 
 echo only those versions that are found to be installed in the expected 
 echo locations on the local machine.
 echo.
 echo The following versions appear to be installed on this system:
 echo.
-for %%i in (v1.0.3705 v1.1.4322 v2.0.50727 v3.5) do if exist "%NETFX_BASE_PATH%\%%i\csc.exe" echo - %%i
+for %%i in (v2.0.50727 v3.5) do if exist "%NETFX_BASE_PATH%\%%i\csc.exe" echo - %%i
 call :lic
 goto :EOF
 
