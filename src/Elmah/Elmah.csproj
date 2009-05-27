@@ -260,8 +260,6 @@
     <Compile Include="HttpModuleRegistry.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HttpRequestSecurity.cs">
-    </Compile>
     <Compile Include="HttpStatus.cs">
     </Compile>
     <Compile Include="InvariantStringArray.cs">

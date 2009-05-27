@@ -75,7 +75,7 @@ namespace Elmah
             int authorized = IsAuthorized(context);
             if (authorized == 0
                 || (authorized < 0 // Compatibility case...
-                    && !HttpRequestSecurity.IsLocal(context.Request) 
+                    && !context.Request.IsLocal 
                     && !SecurityConfiguration.Default.AllowRemoteAccess))
             {
                 (new ManifestResourceHandler("RemoteAccessError.htm", "text/html")).ProcessRequest(context);
