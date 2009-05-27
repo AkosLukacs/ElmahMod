@@ -256,8 +256,6 @@
     </Compile>
     <Compile Include="HttpStatus.cs">
     </Compile>
-    <Compile Include="InvariantStringArray.cs">
-    </Compile>
     <Compile Include="JetBrains.Annotations.cs">
     </Compile>
     <Compile Include="JsonTextWriter.cs">

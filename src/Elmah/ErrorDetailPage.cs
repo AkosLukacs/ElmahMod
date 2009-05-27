@@ -323,7 +323,7 @@ namespace Elmah
             //
 
             string[] keys = collection.AllKeys;
-            InvariantStringArray.Sort(keys);
+            Array.Sort(keys, StringComparer.InvariantCulture);
 
             for (int keyIndex = 0; keyIndex < keys.Length; keyIndex++)
             {

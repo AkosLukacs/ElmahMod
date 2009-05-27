@@ -180,7 +180,7 @@ namespace Elmah
                     files[count++] = Path.Combine(logPath, info.Name);
             }
 
-            InvariantStringArray.Sort(files, 0, count);
+            Array.Sort(files, 0, count, StringComparer.InvariantCulture);
             Array.Reverse(files, 0, count);
 
             if (errorEntryList != null)
