@@ -163,9 +163,6 @@
     </Compile>
     <Compile Include="Configuration.cs">
     </Compile>
-    <Compile Include="ConfigurationSectionHelper.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="ConnectionStringHelper.cs">
     </Compile>
     <Compile Include="Debug.cs">
