@@ -49,7 +49,7 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-    public sealed class ErrorJson
+    public static class ErrorJson
     {
         /// <summary>
         /// Encodes the default JSON representation of an <see cref="Error"/> 
@@ -232,11 +232,6 @@ namespace Elmah
 
             if (writer.Depth > depth)
                 writer.Pop();
-        }
-
-        private ErrorJson()
-        {
-            throw new NotSupportedException();
         }
     }
 }

@@ -38,7 +38,7 @@ namespace Elmah
     /// applicable during development.
     /// </summary>
     
-    internal sealed class Debug
+    internal static class Debug
     {
         [ Conditional("DEBUG") ]
         [ AssertionMethod ]
@@ -53,7 +53,5 @@ namespace Elmah
             Assert(s != null);
             Assert(s.Length != 0);
         }
-        
-        private Debug() {}
     }
 }

@@ -35,7 +35,7 @@ namespace Elmah
     /// Collection of utility methods for masking values.
     /// </summary>
     
-    internal sealed class Mask
+    internal static class Mask
     {
         public static string NullString(string s)
         {
@@ -46,7 +46,5 @@ namespace Elmah
         {
             return Mask.NullString(s).Length == 0 ? filler : s;
         }
-        
-        private Mask() {}
     }
 }

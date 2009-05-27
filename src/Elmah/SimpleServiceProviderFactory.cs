@@ -38,7 +38,7 @@ namespace Elmah
     /// section of the configuration file.
     /// </summary>
     
-    internal sealed class SimpleServiceProviderFactory
+    internal static class SimpleServiceProviderFactory
     {
         public static object CreateFromConfigSection(string sectionName)
         {
@@ -78,7 +78,5 @@ namespace Elmah
             Type type = Type.GetType(typeSpec, true);
             return Activator.CreateInstance(type, new object[] { config });
         }
-
-        private SimpleServiceProviderFactory() {}
     }
 }

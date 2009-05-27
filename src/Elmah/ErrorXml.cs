@@ -48,10 +48,8 @@ namespace Elmah
     /// </summary>
 
     [ Serializable ]
-    public sealed class ErrorXml
+    public static class ErrorXml
     {
-        private ErrorXml() { throw new NotSupportedException(); }
-
         /// <summary>
         /// Decodes an <see cref="Error"/> object from its default XML 
         /// representation.

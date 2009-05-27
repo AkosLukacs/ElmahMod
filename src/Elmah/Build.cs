@@ -25,10 +25,8 @@
 
 namespace Elmah
 {
-    internal sealed class Build
+    internal static class Build
     {
-        private Build() { }
-
 #if DEBUG
         public const bool IsDebug = true;
         public const bool IsRelease = !IsDebug;

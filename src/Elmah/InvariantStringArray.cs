@@ -38,7 +38,7 @@ namespace Elmah
     /// The main reason for this helper is to help with po
     /// </summary>
  
-    internal sealed class InvariantStringArray
+    internal static class InvariantStringArray
     {
         public static void Sort(string[] keys)
         {
@@ -61,7 +61,5 @@ namespace Elmah
         {
             get { return Comparer.DefaultInvariant; }
         }
-        
-        private InvariantStringArray() {}
     }
 }

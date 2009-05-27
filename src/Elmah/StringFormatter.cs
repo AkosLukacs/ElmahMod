@@ -40,7 +40,7 @@ namespace Elmah
     /// Helper class for formatting templated strings with supplied replacements.
     /// </summary>
 
-    public sealed class StringFormatter
+    public static class StringFormatter
     {
         public static readonly StringFormatTokenBindingHandler DefaultTokenBinder = new StringFormatTokenBindingHandler(BindFormatToken);
 
@@ -192,7 +192,5 @@ namespace Elmah
             return int.TryParse(str, NumberStyles.None, CultureInfo.InvariantCulture, out result) 
                  ? result : -1;
         }
-
-        private StringFormatter() { }
     }
 }

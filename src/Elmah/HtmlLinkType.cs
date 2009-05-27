@@ -35,7 +35,7 @@ namespace Elmah
     /// for more information.
     /// </remarks>
     
-    internal sealed class HtmlLinkType
+    internal static class HtmlLinkType
     {
         // Designates  substitute  versions  for the document in which the
         // link occurs. When used together with the lang attribute, it
@@ -120,7 +120,5 @@ namespace Elmah
         // bookmarks may be defined in each document.
 
         public const string Bookmark = "bookmark";
-
-        private HtmlLinkType() {}
     }
 }

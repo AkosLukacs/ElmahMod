@@ -31,7 +31,7 @@ namespace Elmah
 
     #endregion
 
-    internal sealed class Configuration
+    internal static class Configuration
     {
         internal const string GroupName = "elmah";
         internal const string GroupSlash = GroupName + "/";
@@ -45,7 +45,5 @@ namespace Elmah
         {
             return ConfigurationManager.GetSection(name);
         }
-
-        private Configuration() { }
     }
 }

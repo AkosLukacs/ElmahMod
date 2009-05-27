@@ -34,7 +34,7 @@ namespace Elmah
 
     #endregion
 
-    internal sealed class HttpModuleRegistry
+    internal static class HttpModuleRegistry
     {
         private static Hashtable _moduleListByApp;
         private static readonly object _lock = new object();
@@ -197,11 +197,6 @@ namespace Elmah
             {
                 return false;
             }
-        }
-
-        private HttpModuleRegistry()
-        {
-            throw new NotSupportedException();
         }
 
         internal sealed class Housekeeper

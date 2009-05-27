@@ -35,7 +35,7 @@ namespace Elmah
     /// Provides miscellaneous formatting methods for 
     /// </summary>
 
-    public sealed class ErrorDisplay
+    public static class ErrorDisplay
     {
         /// <summary>
         /// Formats the type of an error, typically supplied as the 
@@ -96,7 +96,5 @@ namespace Elmah
 
             return HumaneExceptionErrorType(error.Type);
         }
-
-        private ErrorDisplay() { }
     }
 }
