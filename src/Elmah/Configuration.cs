@@ -27,24 +27,14 @@ namespace Elmah
 {
     #region Imports
 
-    using System.Collections.Specialized;
     using System.Configuration;
 
     #endregion
-
-    // TODO Review if this class still makes sense.
-    // It used to exist to primarily resolve differences between
-    // .NET Framework 1.x and later versions.
 
     internal sealed class Configuration
     {
         internal const string GroupName = "elmah";
         internal const string GroupSlash = GroupName + "/";
-
-        public static NameValueCollection AppSettings
-        {
-            get { return ConfigurationManager.AppSettings; }
-        }
 
         public static object GetSubsection(string name)
         {

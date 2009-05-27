@@ -92,7 +92,7 @@ namespace Elmah
             if (connectionStringAppKey.Length == 0)
                 return string.Empty;
 
-            return Configuration.AppSettings[connectionStringAppKey];
+            return ConfigurationManager.AppSettings[connectionStringAppKey];
         }
 
         /// <summary>
