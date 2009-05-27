@@ -21,10 +21,6 @@
 //
 #endregion
 
-// All code in this file requires .NET Framework 2.0 or later.
-
-#if !NET_1_1 && !NET_1_0
-
 [assembly: Elmah.Scc("$Id$")]
 
 namespace Elmah
@@ -339,5 +335,3 @@ namespace Elmah
         }
     }
 }
-
-#endif //!NET_1_1 && !NET_1_0

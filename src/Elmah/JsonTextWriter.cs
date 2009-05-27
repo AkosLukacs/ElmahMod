@@ -182,12 +182,7 @@ namespace Elmah
             return Write(value ? "true" : "false");
         }
 
-        private static readonly DateTime _epoch =  /* ... */
-#if NET_1_0 || NET_1_1
-            /* ... */ new DateTime(1970, 1, 1, 0, 0, 0);
-#else
-            /* ... */ new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-#endif
+        private static readonly DateTime _epoch =  new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public JsonTextWriter Number(DateTime time)
         {
@@ -197,13 +192,7 @@ namespace Elmah
 
         public JsonTextWriter String(DateTime time)
         {
-            string xmlTime;
-#if NET_1_0 || NET_1_1
-            xmlTime = XmlConvert.ToString(time);
-#else
-            xmlTime = XmlConvert.ToString(time, XmlDateTimeSerializationMode.Utc);
-#endif
-            return String(xmlTime);
+            return String(XmlConvert.ToString(time, XmlDateTimeSerializationMode.Utc));
         }
 
         private JsonTextWriter StartStructured(string start, string end)

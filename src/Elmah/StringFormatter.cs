@@ -188,15 +188,9 @@ namespace Elmah
 
         public static int TryParseUnsignedInteger(string str)
         {
-#if !NET_1_1 && !NET_1_0
             int result;
             return int.TryParse(str, NumberStyles.None, CultureInfo.InvariantCulture, out result) 
                  ? result : -1;
-#else
-            return System.Text.RegularExpressions.Regex.IsMatch(str, "^[0-9]+$")
-                 ? int.Parse(str, NumberStyles.None, CultureInfo.InvariantCulture)
-                 : -1;
-#endif
         }
 
         private StringFormatter() { }

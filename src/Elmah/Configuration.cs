@@ -32,6 +32,10 @@ namespace Elmah
 
     #endregion
 
+    // TODO Review if this class still makes sense.
+    // It used to exist to primarily resolve differences between
+    // .NET Framework 1.x and later versions.
+
     internal sealed class Configuration
     {
         internal const string GroupName = "elmah";
@@ -39,14 +43,7 @@ namespace Elmah
 
         public static NameValueCollection AppSettings
         {
-            get
-            {
-#if NET_1_0 || NET_1_1
-                return ConfigurationSettings.AppSettings;
-#else
-                return ConfigurationManager.AppSettings;
-#endif
-            }
+            get { return ConfigurationManager.AppSettings; }
         }
 
         public static object GetSubsection(string name)
@@ -56,11 +53,7 @@ namespace Elmah
 
         public static object GetSection(string name)
         {
-#if NET_1_0 || NET_1_1
-            return ConfigurationSettings.GetConfig(name);
-#else
             return ConfigurationManager.GetSection(name);
-#endif
         }
 
         private Configuration() { }

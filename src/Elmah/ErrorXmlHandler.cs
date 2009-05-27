@@ -71,16 +71,11 @@ namespace Elmah
             // Stream out the error as formatted XML.
             //
 
-#if !NET_1_0 && !NET_1_1
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
             settings.CheckCharacters = false;
             XmlWriter writer = XmlWriter.Create(response.Output, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(response.Output);
-            writer.Formatting = Formatting.Indented;
-#endif
 
             writer.WriteStartDocument();
             writer.WriteStartElement("error");

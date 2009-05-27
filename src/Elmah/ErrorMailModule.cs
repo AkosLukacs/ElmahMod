@@ -32,13 +32,8 @@ namespace Elmah
     using System.Globalization;
     using System.Web;
     using System.IO;
-
-#if NET_1_0 || NET_1_1
-    using System.Web.Mail;
-#else
     using System.Net.Mail;
     using MailAttachment = System.Net.Mail.Attachment;
-#endif
 
     using IDictionary = System.Collections.IDictionary;
     using ThreadPool = System.Threading.ThreadPool;
@@ -96,9 +91,7 @@ namespace Elmah
         private string _authUserName;
         private string _authPassword;
         private bool _noYsod;
-#if !NET_1_0 && !NET_1_1
         private bool _useSsl;
-#endif
 
         public event ExceptionFilterEventHandler Filtering;
         public event ErrorMailEventHandler Mailing;
@@ -140,9 +133,7 @@ namespace Elmah
             string authUserName = GetSetting(config, "userName", string.Empty);
             string authPassword = GetSetting(config, "password", string.Empty);
             bool sendYsod = Convert.ToBoolean(GetSetting(config, "noYsod", bool.FalseString));
-#if !NET_1_0 && !NET_1_1
             bool useSsl = Convert.ToBoolean(GetSetting(config, "useSsl", bool.FalseString));
-#endif
             //
             // Hook into the Error event of the application.
             //
@@ -166,9 +157,7 @@ namespace Elmah
             _authUserName = authUserName;
             _authPassword = authPassword;
             _noYsod = sendYsod;
-#if !NET_1_0 && !NET_1_1
             _useSsl = useSsl;
-#endif
         }
         
         /// <summary>
@@ -296,7 +285,6 @@ namespace Elmah
             get { return _noYsod; }
         }
 
-#if !NET_1_0 && !NET_1_1
         /// <summary>
         /// Determines if SSL will be used to encrypt communication with the 
         /// mail server.
@@ -306,7 +294,6 @@ namespace Elmah
         {
             get { return _useSsl; }
         }
-#endif
 
         /// <summary>
         /// The handler called when an unhandled exception bubbles up to 
@@ -416,17 +403,10 @@ namespace Elmah
             //     http://support.microsoft.com/kb/911816
             //
 
-#if NET_1_0 || NET_1_1
-            catch (System.Runtime.InteropServices.COMException e)
-            {
-                Trace.WriteLine(e);
-            }
-#else
             catch (SmtpException e)
             {
                 Trace.TraceError(e.ToString());
             }
-#endif
         }
 
         /// <summary>
@@ -461,19 +441,12 @@ namespace Elmah
             MailMessage mail = new MailMessage();
             mail.Priority = this.MailPriority;
 
-#if NET_1_0 || NET_1_1
-            mail.From = sender;
-            mail.To = recipient;
-
-            if (copyRecipient.Length > 0)
-                mail.Cc = copyRecipient;
-#else
             mail.From = new MailAddress(sender);
             mail.To.Add(recipient);
             
             if (copyRecipient.Length > 0)
                 mail.CC.Add(copyRecipient);
-#endif
+
             //
             // Format the mail subject.
             // 
@@ -494,13 +467,9 @@ namespace Elmah
 
             switch (formatter.MimeType)
             {
-#if NET_1_0 || NET_1_1
-                case "text/html" : mail.BodyFormat = MailFormat.Html; break;
-                case "text/plain" : mail.BodyFormat = MailFormat.Text; break;
-#else
                 case "text/html": mail.IsBodyHtml = true; break;
                 case "text/plain": mail.IsBodyHtml = false; break;
-#endif
+
                 default :
                 {
                     throw new ApplicationException(string.Format(
@@ -509,42 +478,6 @@ namespace Elmah
                 }
             }
 
-#if NET_1_1
-            //
-            // If the mail needs to be delivered to a particular SMTP server
-            // then set-up the corresponding CDO configuration fields of the 
-            // mail message.
-            //
-            
-            string smtpServer = Mask.NullString(this.SmtpServer);
-
-            if (smtpServer.Length > 0)
-            {
-                IDictionary fields = mail.Fields;
-
-                fields.Add(CdoConfigurationFields.SendUsing, /* cdoSendUsingPort */ 2);
-                fields.Add(CdoConfigurationFields.SmtpServer, smtpServer);
-                int smtpPort = this.SmtpPort;
-                fields.Add(CdoConfigurationFields.SmtpServerPort, smtpPort <= 0 ? 25 : smtpPort);
-
-                //
-                // If the SMTP server requires authentication (indicated by 
-                // non-blank user name and password settings) then set-up 
-                // the corresponding CDO configuration fields of the mail 
-                // message.
-                //
-            
-                string userName = Mask.NullString(this.AuthUserName);
-                string password = Mask.NullString(this.AuthPassword);
-
-                if (userName.Length > 0 && password.Length > 0)
-                {
-                    fields.Add(CdoConfigurationFields.SmtpAuthenticate, 1);
-                    fields.Add(CdoConfigurationFields.SendUserName, userName);
-                    fields.Add(CdoConfigurationFields.SendPassword, password);
-                }
-            }
-#endif
             MailAttachment ysodAttachment = null;
             ErrorMailEventArgs args = new ErrorMailEventArgs(error, mail);
 
@@ -574,22 +507,8 @@ namespace Elmah
             }
             finally
             {
-#if NET_1_0 || NET_1_1
-                //
-                // Delete any attached files, if necessary.
-                //
-                
-                if (ysodAttachment != null)
-                {
-                    File.Delete(ysodAttachment.Filename);
-                    mail.Attachments.Remove(ysodAttachment);
-                }
-#endif
                 OnDisposingMail(args);
-
-#if !NET_1_0 && !NET_1_1
                 mail.Dispose();
-#endif
             }
         }
 
@@ -598,40 +517,8 @@ namespace Elmah
             Debug.AssertStringNotEmpty(name);
             Debug.AssertStringNotEmpty(html);
 
-#if NET_1_0 || NET_1_1
-            //
-            // Create a temporary file to hold the attachment. Note that 
-            // the temporary file is created in the location returned by
-            // System.Web.HttpRuntime.CodegenDir. It is assumed that
-            // this code will have sufficient rights to create the
-            // temporary file in that area.
-            //
-
-            string fileName = name + "-" + Guid.NewGuid().ToString() + ".html";
-            string path = Path.Combine(HttpRuntime.CodegenDir, fileName);
-
-            try
-            {
-                using (StreamWriter attachementWriter = File.CreateText(path))
-                    attachementWriter.Write(html);
-
-                return new MailAttachment(path);
-            }
-            catch (IOException)
-            {
-                //
-                // Ignore I/O errors as non-critical. It's not the
-                // end of the world if the attachment could not be
-                // created (though it would be nice). It is more
-                // important to get to deliver the error message!
-                //
-                
-                return null;
-            }
-#else
             return MailAttachment.CreateAttachmentFromString(html,
                 name + ".html", Encoding.UTF8, "text/html");
-#endif
         }
 
         /// <summary>
@@ -653,9 +540,6 @@ namespace Elmah
             if (mail == null)
                 throw new ArgumentNullException("mail");
 
-#if NET_1_0 || NET_1_1
-            SmtpMail.Send(mail);
-#else
             //
             // Under .NET Framework 2.0, the authentication settings
             // go on the SmtpClient object rather than mail message
@@ -683,7 +567,6 @@ namespace Elmah
             client.EnableSsl = UseSsl;
 
             client.Send(mail);
-#endif
         }
 
         /// <summary>

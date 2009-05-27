@@ -23,13 +23,6 @@
 
 [assembly: Elmah.Scc("$Id$")]
 
-//
-// this module is not currently available for .Net 1.0
-// if someone can get the context.RewritePath line working in 1.0, 
-// then it can be used in 1.0 as well!!
-//
-
-#if !NET_1_0
 namespace Elmah
 {
     #region Imports
@@ -58,7 +51,6 @@ namespace Elmah
         private string _handlerPathWithForwardSlash;
         private int _handlerPathLength;
 
-#if !NET_1_1
         private static string GetHandlerPath()
         {
             System.Web.Configuration.HttpHandlersSection handlersSection = System.Configuration.ConfigurationManager.GetSection("system.web/httpHandlers") as System.Web.Configuration.HttpHandlersSection;
@@ -69,47 +61,7 @@ namespace Elmah
 
             return null;
         }
-#else
-        private const string DefaultHandlerPath = "elmah.axd";
-        private static string GetHandlerPath()
-        {
-            System.Xml.XmlDocument xml = new System.Xml.XmlDocument();
-            try
-            {
-                //
-                // Try and load the web.config file
-                //
 
-                string webConfigFile = HttpContext.Current.Server.MapPath(HttpContext.Current.Request.ApplicationPath + "/web.config");
-                xml.Load(webConfigFile);
-            }
-            catch (Exception)
-            {
-                //
-                // There were issues loading web.config, so let's assume the default 
-                // 
-
-                return DefaultHandlerPath;
-            }
-
-            //
-            // We are looking for the Elmah handler...
-            // So we need to look in...
-            // <configuration>
-            //   <system.web>
-            //     <httpHandlers>
-            //       <add type="*ErrorLogPageFactory*" path="****" />
-            // We use contains for the ErrorLogPageFactory so that we pick up all variations here
-            // And we pull out the path node, as that contains what we want!
-            //
-
-            System.Xml.XmlNode node = xml.SelectSingleNode("/configuration/system.web/httpHandlers/add[contains(@type, 'ErrorLogPageFactory')]/@path");
-            if (node != null)
-                return node.InnerText;
-
-            return null;
-        }
-#endif
         public void Init(HttpApplication context)
         {
             string handlerPath = GetHandlerPath();
@@ -124,13 +76,6 @@ namespace Elmah
                 if (_handlerPathWithForwardSlash[_handlerPathWithForwardSlash.Length - 1] != '/')
                     _handlerPathWithForwardSlash += "/";
 
-#if NET_1_1
-                //
-                // Convert to lower case as we will be comparing against that later
-                //
-
-                _handlerPathWithForwardSlash = _handlerPathWithForwardSlash.ToLower();
-#endif
                 _handlerPathLength = _handlerPathWithForwardSlash.Length -1;
 
                 //
@@ -155,11 +100,8 @@ namespace Elmah
             // and if so, we need to rewrite the path!
             //
 
-#if !NET_1_1
             int handlerPosition = path.IndexOf(_handlerPathWithForwardSlash, StringComparison.OrdinalIgnoreCase);
-#else
-            int handlerPosition = path.ToLower().IndexOf(_handlerPathWithForwardSlash);
-#endif
+
             if (handlerPosition >= 0)
                 context.RewritePath(
                     path.Substring(0, handlerPosition + _handlerPathLength),
@@ -170,4 +112,3 @@ namespace Elmah
         public void Dispose() { /* NOP */ }
     }
 }
-#endif

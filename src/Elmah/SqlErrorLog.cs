@@ -21,10 +21,6 @@
 //
 #endregion
 
-#if !NET_1_0 && !NET_1_1
-#define ASYNC_ADONET
-#endif
-
 [assembly: Elmah.Scc("$Id$")]
 
 namespace Elmah
@@ -53,9 +49,7 @@ namespace Elmah
 
         private const int _maxAppNameLength = 60;
 
-#if ASYNC_ADONET
         private delegate RV Function<RV, A>(A a);
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
@@ -196,8 +190,6 @@ namespace Elmah
             }
         }
 
-#if ASYNC_ADONET
-
         /// <summary>
         /// Begins an asynchronous version of <see cref="GetErrors"/>.
         /// </summary>
@@ -298,8 +290,6 @@ namespace Elmah
             Function<int, IAsyncResult> endHandler = (Function<int, IAsyncResult>) wrapper.InnerResult.AsyncState;
             return endHandler(wrapper.InnerResult);
         }
-
-#endif
 
         private void ErrorsXmlToList(XmlReader reader, IList errorEntryList)
         {

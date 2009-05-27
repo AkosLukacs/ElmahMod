@@ -189,27 +189,17 @@ namespace Elmah
         {
             StringWriter sw = new StringWriter();
 
-#if !NET_1_0 && !NET_1_1
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
             settings.CheckCharacters = false;
-            XmlWriter writer = XmlWriter.Create(sw, settings);
-#else
-            XmlTextWriter writer = new XmlTextWriter(sw);
-            writer.Formatting = Formatting.Indented;
-#endif
-
-            try
+            
+            using (XmlWriter writer = XmlWriter.Create(sw, settings))
             {
                 writer.WriteStartElement("error");
                 Encode(error, writer);
                 writer.WriteEndElement();
                 writer.Flush();
-            }
-            finally
-            {
-                writer.Close();
             }
 
             return sw.ToString();

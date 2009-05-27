@@ -52,7 +52,6 @@ namespace Elmah
         {
             Debug.Assert(config != null);
 
-#if !NET_1_1 && !NET_1_0
             //
             // First look for a connection string name that can be 
             // subsequently indexed into the <connectionStrings> section of 
@@ -70,7 +69,6 @@ namespace Elmah
 
                 return settings.ConnectionString ?? string.Empty;
             }
-#endif
 
             //
             // Connection string name not found so see if a connection 
@@ -97,42 +95,6 @@ namespace Elmah
             return Configuration.AppSettings[connectionStringAppKey];
         }
 
-#if NET_1_1 || NET_1_0
-        /// <summary>
-        /// Extracts the Data Source file path from a connection string
-        /// </summary>
-        /// <param name="connectionString">The connection string</param>
-        /// <returns>File path to the Data Source element of a connection string</returns>
-        public static string GetDataSourceFilePath(string connectionString)
-        {
-            Debug.AssertStringNotEmpty(connectionString);
-
-            string result = string.Empty;
-            string loweredConnectionString = connectionString.ToLower();
-            int dataSourcePosition = loweredConnectionString.IndexOf("data source");
-            if (dataSourcePosition >= 0)
-            {
-                int equalsPosition = loweredConnectionString.IndexOf('=', dataSourcePosition);
-                if (equalsPosition >= 0)
-                {
-                    int semiColonPosition = loweredConnectionString.IndexOf(';', equalsPosition);
-                    if (semiColonPosition < equalsPosition)
-                        result = connectionString.Substring(equalsPosition + 1);
-                    else
-                        result = connectionString.Substring(equalsPosition + 1, semiColonPosition - equalsPosition - 1);
-                    result = result.Trim();
-                    char firstChar = result[0];
-                    char lastChar = result[result.Length - 1];
-                    if (firstChar == lastChar && (firstChar == '\'' || firstChar == '\"') && result.Length > 1)
-                    {
-                        result = result.Substring(1, result.Length - 2);
-                    }
-                }
-            }
-
-            return result;
-        }
-#else
         /// <summary>
         /// Extracts the Data Source file path from a connection string
         /// ~/ gets resolved as does |DataDirectory|
@@ -231,7 +193,6 @@ namespace Elmah
                  + Path.DirectorySeparatorChar
                  + path.Substring(dataDirectoryMacroString.Length).TrimStart(_dirSeparators);
         }
-#endif
 
         private ConnectionStringHelper() {}
     }

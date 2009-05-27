@@ -229,9 +229,6 @@ namespace Elmah
         {
             Debug.Assert(context != null);
 
-#if NET_1_1 || NET_1_0
-            return HttpRuntime.AppDomainAppId;
-#else
             //
             // Setup the application name (ASP.NET 2.0 or later).
             //
@@ -266,7 +263,6 @@ namespace Elmah
             }
 
             return Mask.EmptyString(appName, "/");
-#endif
         }
 
         //

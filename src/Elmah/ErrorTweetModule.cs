@@ -86,11 +86,7 @@ namespace Elmah
             int maxStatusLength = int.Parse(GetSetting(config, "maxStatusLength", "140"), NumberStyles.None, CultureInfo.InvariantCulture);
             string ellipsis = GetSetting(config, "ellipsis", /* ... */ "\x2026");
             string formFormat = GetSetting(config, "formFormat", "status={0}");
-            Uri url = new Uri(GetSetting(config, "url", "http://twitter.com/statuses/update.xml")
-#if !NET_1_1 && !NET_1_0
-                , UriKind.Absolute
-#endif
-            );
+            Uri url = new Uri(GetSetting(config, "url", "http://twitter.com/statuses/update.xml"), UriKind.Absolute);
 
             _credentials = new NetworkCredential(userName, password);
             _statusFormat = statusFormat;

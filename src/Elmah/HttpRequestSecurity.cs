@@ -32,6 +32,9 @@ namespace Elmah
 
     #endregion
 
+    // TODO: Review if this is needed anymore. 
+    // It was just a wrapper to isolate differences between .NET Framework 1.x and 2.0 onwards.
+
     /// <summary>
     /// Security-related helper methods for web requests.
     /// </summary>
@@ -51,16 +54,7 @@ namespace Elmah
             if (request == null)
                 throw new ArgumentNullException("request");
 
-#if NET_1_0 || NET_1_1
-
-            string userHostAddress = Mask.NullString(request.UserHostAddress);
-            
-            return userHostAddress.Equals("127.0.0.1") /* IP v4 */ || 
-                userHostAddress.Equals("::1") /* IP v6 */ ||
-                userHostAddress.Equals(request.ServerVariables["LOCAL_ADDR"]);
-#else
             return request.IsLocal;
-#endif
         }
 
         private HttpRequestSecurity()

@@ -68,16 +68,11 @@ namespace Elmah
                     throw new ApplicationException("Log path is missing for the XML file-based error log.");
             }
 
-#if !NET_1_1 && !NET_1_0
             if (logPath.StartsWith("~/"))
                 logPath = MapPath(logPath);
-#endif
 
             _logPath = logPath;
         }
-
-#if !NET_1_1 && !NET_1_0
-
 
         /// <remarks>
         /// This method is excluded from inlining so that if 
@@ -90,8 +85,6 @@ namespace Elmah
         {
             return System.Web.Hosting.HostingEnvironment.MapPath(path);
         }
-
-#endif
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlFileErrorLog"/> class

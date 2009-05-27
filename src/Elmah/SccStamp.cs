@@ -60,13 +60,7 @@ namespace Elmah
             // TIME  := HH ":" MM ":" SS
             //
 
-            string escapedNonFileNameChars = Regex.Escape(new string(
-            #if NET_1_0 || NET_1_1
-                Path.InvalidPathChars
-            #else
-                Path.GetInvalidFileNameChars() // obsoletes InvalidPathChars .NET 2.0 onwards
-            #endif
-            ));
+            string escapedNonFileNameChars = Regex.Escape(new string(Path.GetInvalidFileNameChars()));
 
             _regex = new Regex(
                 @"\$ id: \s* 
