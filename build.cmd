@@ -39,7 +39,7 @@ for %%i in (Debug Release) do if exist bin\net-3.5\%%i copy lib\VistaDB.NET20.dl
 goto :EOF
 
 :solutions
-call src\Solutions\build
+call src\build
 goto :EOF
 
 :compile

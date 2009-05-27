@@ -29,5 +29,5 @@ REM installation directory.
 setlocal
 pushd "%~dp0"
 set MSBUILD35EXE=%windir%\Microsoft.NET\Framework\v3.5\msbuild.exe
-for %%i in (debug release) do if exist "%MSBUILD35EXE%" "%MSBUILD35EXE%" 2008\Elmah.sln /p:Configuration=%%i
+for %%i in (debug release) do if exist "%MSBUILD35EXE%" "%MSBUILD35EXE%" Elmah.sln /p:Configuration=%%i
 popd
