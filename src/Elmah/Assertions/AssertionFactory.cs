@@ -36,6 +36,7 @@ namespace Elmah.Assertions
     using System.Text.RegularExpressions;
     using System.Web;
     using System.Xml;
+    using System.Collections.Generic;
     
     #endregion
 
@@ -411,7 +412,7 @@ namespace Elmah.Assertions
             Debug.AssertStringNotEmpty(elementName);
             Debug.AssertStringNotEmpty(valueName);
 
-            ArrayList list = new ArrayList(4);
+            List<string> list = new List<string>(4);
 
             string xpath = containerName + "/" + elementName + "/@" + valueName;
             foreach (XmlAttribute attribute in config.SelectNodes(xpath))
@@ -421,7 +422,7 @@ namespace Elmah.Assertions
                     list.Add(attribute.Value);
             }
 
-            return (string[]) list.ToArray(typeof(string));
+            return list.ToArray();
         }
 
         private AssertionFactory()

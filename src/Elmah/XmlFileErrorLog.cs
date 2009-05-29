@@ -34,6 +34,7 @@ namespace Elmah
     using System.Text;
     using System.Xml;
     using System.Collections;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -153,8 +154,8 @@ namespace Elmah
         /// Returns a page of errors from the folder in descending order 
         /// of logged time as defined by the sortable filenames.
         /// </summary>
-        
-        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+
+        public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
             if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);

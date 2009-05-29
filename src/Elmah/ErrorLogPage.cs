@@ -34,6 +34,7 @@ namespace Elmah
 
     using CultureInfo = System.Globalization.CultureInfo;
     using ArrayList = System.Collections.ArrayList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -46,7 +47,7 @@ namespace Elmah
         private int _pageIndex;
         private int _pageSize; 
         private int _totalCount;
-        private ArrayList _errorEntryList;
+        private List<ErrorLogEntry> _errorEntryList;
         
         private const int _defaultPageSize = 15;
         private const int _maximumPageSize = 100;
@@ -72,7 +73,7 @@ namespace Elmah
             // Read the error records.
             //
 
-            _errorEntryList = new ArrayList(_pageSize);
+            _errorEntryList = new List<ErrorLogEntry>(_pageSize);
             _totalCount = this.ErrorLog.GetErrors(_pageIndex, _pageSize, _errorEntryList);
 
             //

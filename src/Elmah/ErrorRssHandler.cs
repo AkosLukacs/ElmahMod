@@ -32,7 +32,7 @@ namespace Elmah
     using ContentSyndication;
 
     using XmlSerializer = System.Xml.Serialization.XmlSerializer;
-    using ArrayList = System.Collections.ArrayList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -52,7 +52,7 @@ namespace Elmah
             //
 
             const int pageSize = 15;
-            ArrayList errorEntryList = new ArrayList(pageSize);
+            List<ErrorLogEntry> errorEntryList = new List<ErrorLogEntry>(pageSize);
             ErrorLog log = ErrorLog.GetDefault(context);
             log.GetErrors(0, pageSize, errorEntryList);
 

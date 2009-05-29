@@ -35,6 +35,7 @@ namespace Elmah
     using System.Net;
     using System.Text;
     using System.Web;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -58,7 +59,7 @@ namespace Elmah
         private int _maxStatusLength;
         private string _ellipsis;
         private string _formFormat;
-        private ArrayList _requests;
+        private List<WebRequest> _requests;
 
         /// <summary>
         /// Initializes the module and prepares it to handle requests.
@@ -94,7 +95,7 @@ namespace Elmah
             _maxStatusLength = maxStatusLength;
             _ellipsis = ellipsis;
             _formFormat = formFormat;
-            _requests = ArrayList.Synchronized(new ArrayList(4));
+            _requests = new List<WebRequest>();
 
             application.Error += new EventHandler(OnError);
             ErrorSignal.Get(application).Raised += new ErrorSignalEventHandler(OnErrorSignaled);

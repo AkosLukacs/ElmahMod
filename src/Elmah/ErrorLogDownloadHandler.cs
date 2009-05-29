@@ -35,6 +35,7 @@ namespace Elmah
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Web;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -52,7 +53,7 @@ namespace Elmah
         private AsyncResult _result;
         private ErrorLog _log;
         private DateTime _lastBeatTime;
-        private ArrayList _errorEntryList;
+        private List<ErrorLogEntry> _errorEntryList;
         private HttpContext _context;
         private AsyncCallback _callback;
 
@@ -113,7 +114,7 @@ namespace Elmah
             _lastBeatTime = DateTime.Now;
             _context = context;
             _callback = cb;
-            _errorEntryList = new ArrayList(_pageSize);
+            _errorEntryList = new List<ErrorLogEntry>(_pageSize);
 
             _log.BeginGetErrors(_pageIndex, _pageSize, _errorEntryList, 
                 new AsyncCallback(GetErrorsCallback), null);

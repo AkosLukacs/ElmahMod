@@ -35,6 +35,7 @@ namespace Elmah
     using IList = System.Collections.IList;
     using IDictionary = System.Collections.IDictionary;
     using CultureInfo = System.Globalization.CultureInfo;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -214,7 +215,7 @@ namespace Elmah
         /// descending order of logged time.
         /// </summary>
 
-        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+        public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
             if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);

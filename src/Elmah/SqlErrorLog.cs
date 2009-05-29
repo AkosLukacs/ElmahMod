@@ -35,6 +35,7 @@ namespace Elmah
 
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -159,7 +160,7 @@ namespace Elmah
         /// of logged time.
         /// </summary>
 
-        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+        public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
             if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
@@ -194,7 +195,7 @@ namespace Elmah
         /// Begins an asynchronous version of <see cref="GetErrors"/>.
         /// </summary>
 
-        public override IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList errorEntryList,
+        public override IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList,
             AsyncCallback asyncCallback, object asyncState)
         {
             if (pageIndex < 0)
@@ -291,7 +292,7 @@ namespace Elmah
             return endHandler(wrapper.InnerResult);
         }
 
-        private void ErrorsXmlToList(XmlReader reader, IList errorEntryList)
+        private void ErrorsXmlToList(XmlReader reader, IList<ErrorLogEntry> errorEntryList)
         {
             Debug.Assert(reader != null);
 

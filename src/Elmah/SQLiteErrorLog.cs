@@ -34,6 +34,7 @@ namespace Elmah
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -211,7 +212,7 @@ namespace Elmah
         /// Returns a page of errors from the databse in descending order 
         /// of logged time.
         /// </summary>
-        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+        public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
             if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);

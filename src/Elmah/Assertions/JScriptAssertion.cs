@@ -38,6 +38,7 @@ namespace Elmah.Assertions
     using Microsoft.JScript;
     using Microsoft.JScript.Vsa;
     using Convert=Microsoft.JScript.Convert;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -120,7 +121,7 @@ namespace Elmah.Assertions
         {
             Debug.Assert(expression != null);
 
-            ArrayList assemblyNameList = null, importList = null;
+            List<string> assemblyNameList = null, importList = null;
 
             using (StringReader reader = new StringReader(expression))
             {
@@ -167,7 +168,7 @@ namespace Elmah.Assertions
             imports = ListOrElseArray(importList, imports);
         }
 
-        private static ArrayList AddDirectiveParameter(string directive, string parameter, ArrayList list, string[] inits)
+        private static List<string> AddDirectiveParameter(string directive, string parameter, List<string> list, string[] inits)
         {
             Debug.AssertStringNotEmpty(directive);
             Debug.Assert(parameter != null);
@@ -177,7 +178,7 @@ namespace Elmah.Assertions
 
             if (list == null)
             {
-                list = new ArrayList(/* capacity */ (inits != null ? inits.Length : 0) + 4);
+                list = new List<string>(/* capacity */ (inits != null ? inits.Length : 0) + 4);
                 if (inits != null) list.AddRange(inits);
             }
 
@@ -185,9 +186,9 @@ namespace Elmah.Assertions
             return list;
         }
 
-        private static string[] ListOrElseArray(ArrayList list, string[] array)
+        private static string[] ListOrElseArray(List<string> list, string[] array)
         {
-            return list != null ? (string[]) list.ToArray(typeof(string)) : array;
+            return list != null ? list.ToArray() : array;
         }
 
         private abstract class EvaluationStrategy

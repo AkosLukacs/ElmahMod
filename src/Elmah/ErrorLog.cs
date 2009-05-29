@@ -30,6 +30,7 @@ namespace Elmah
     using System;
     using System.Web;
     using IList = System.Collections.IList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -106,15 +107,15 @@ namespace Elmah
         /// Retrieves a page of application errors from the log in 
         /// descending order of logged time.
         /// </summary>
-        
-        public abstract int GetErrors(int pageIndex, int pageSize, IList errorEntryList);
+
+        public abstract int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList);
 
         /// <summary>
         /// When overridden in a subclass, begins an asynchronous version 
         /// of <see cref="GetErrors"/>.
         /// </summary>
 
-        public virtual IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList errorEntryList, AsyncCallback asyncCallback, object asyncState)
+        public virtual IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList, AsyncCallback asyncCallback, object asyncState)
         {
             return BeginSyncImpl(asyncCallback, asyncState, new GetErrorsHandler(GetErrors), pageIndex, pageSize, errorEntryList);
         }
@@ -129,7 +130,7 @@ namespace Elmah
             return (int) EndSyncImpl(asyncResult);
         }
 
-        private delegate int GetErrorsHandler(int pageIndex, int pageSize, IList errorEntryList);
+        private delegate int GetErrorsHandler(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList);
 
         /// <summary>
         /// Get the name of this log.

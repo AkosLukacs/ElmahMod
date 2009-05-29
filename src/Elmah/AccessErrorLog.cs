@@ -36,6 +36,7 @@ namespace Elmah
     using System.Text;
     using IDictionary = System.Collections.IDictionary;
     using IList = System.Collections.IList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -191,7 +192,7 @@ namespace Elmah
         /// of logged time.
         /// </summary>
 
-        public override int GetErrors(int pageIndex, int pageSize, IList errorEntryList)
+        public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
             if (pageIndex < 0)
                 throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);

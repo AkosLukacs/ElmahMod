@@ -33,6 +33,7 @@ namespace Elmah
     using System.IO;
     using System.Reflection;
     using System.Text.RegularExpressions;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -190,7 +191,7 @@ namespace Elmah
             if (attributes.Length == 0)
                 return new SccStamp[0];
             
-            ArrayList list = new ArrayList(attributes.Length);
+            List<SccStamp> list = new List<SccStamp>(attributes.Length);
 
             foreach (SccAttribute attribute in attributes)
             {
@@ -200,7 +201,7 @@ namespace Elmah
                     list.Add(new SccStamp(id));
             }
 
-            return (SccStamp[]) list.ToArray(typeof(SccStamp));
+            return list.ToArray();
         }
 
         /// <summary>

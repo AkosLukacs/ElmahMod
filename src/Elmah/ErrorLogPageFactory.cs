@@ -32,6 +32,7 @@ namespace Elmah
 
     using CultureInfo = System.Globalization.CultureInfo;
     using Encoding = System.Text.Encoding;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -170,39 +171,37 @@ namespace Elmah
             return authorized;
         }
 
-        private static IList GetAuthorizationHandlers(HttpContext context)
+        private static IList<IRequestAuthorizationHandler> GetAuthorizationHandlers(HttpContext context)
         {
             Debug.Assert(context != null);
 
             object key = _authorizationHandlersKey;
-            IList handlers = (IList)context.Items[key];
+            IList<IRequestAuthorizationHandler> handlers = (IList<IRequestAuthorizationHandler>)context.Items[key];
 
             if (handlers == null)
             {
                 const int capacity = 4;
-                ArrayList list = null;
+                List<IRequestAuthorizationHandler> list = new List<IRequestAuthorizationHandler>(capacity);
 
                 HttpApplication application = context.ApplicationInstance;
-                if (application is IRequestAuthorizationHandler)
+                IRequestAuthorizationHandler appReqHandler = application as IRequestAuthorizationHandler;
+                if (appReqHandler != null)
                 {
-                    list = new ArrayList(capacity);
-                    list.Add(application);
+                    list.Add(appReqHandler);
                 }
 
                 foreach (IHttpModule module in HttpModuleRegistry.GetModules(application))
                 {
-                    if (module is IRequestAuthorizationHandler)
+                    IRequestAuthorizationHandler modReqHander = module as IRequestAuthorizationHandler;
+                    if (modReqHander != null)
                     {
-                        if (list == null)
-                            list = new ArrayList(capacity);
-                        list.Add(module);
+                        list.Add(modReqHander);
                     }
                 }
+                
+                if (list != null)
 
-                context.Items[key] = handlers = ArrayList.ReadOnly(
-                    list != null
-                    ? list.ToArray(typeof(IRequestAuthorizationHandler))
-                    : _zeroAuthorizationHandlers);
+                context.Items[key] = handlers = list.AsReadOnly();
             }
 
             return handlers;

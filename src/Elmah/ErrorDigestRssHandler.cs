@@ -35,7 +35,7 @@ namespace Elmah
     using ContentSyndication;
 
     using XmlSerializer = System.Xml.Serialization.XmlSerializer;
-    using ArrayList = System.Collections.ArrayList;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -108,8 +108,8 @@ namespace Elmah
 
             const int pageSize = 30;
             const int maxPageLimit = 30;
-            ArrayList itemList = new ArrayList(pageSize);
-            ArrayList errorEntryList = new ArrayList(pageSize);
+            List<Item> itemList = new List<Item>(pageSize);
+            List<ErrorLogEntry> errorEntryList = new List<ErrorLogEntry>(pageSize);
 
             //
             // Start with the first page of errors.
@@ -184,7 +184,7 @@ namespace Elmah
                 itemList.Add(item);
             }
 
-            channel.item = (Item[]) itemList.ToArray(typeof(Item));
+            channel.item = itemList.ToArray();
 
             //
             // Stream out the RSS XML.
