@@ -35,7 +35,6 @@ namespace Elmah
     using System.Text;
 
     using IDictionary = System.Collections.IDictionary;
-    using IList = System.Collections.IList;
     using System.Collections.Generic;
 
     #endregion

@@ -29,12 +29,13 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Data;
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
     using System.Collections.Generic;
+
+    using IDictionary = System.Collections.IDictionary;
 
     #endregion
 

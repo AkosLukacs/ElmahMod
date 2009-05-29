@@ -33,8 +33,9 @@ namespace Elmah
     using System.Runtime.CompilerServices;
     using System.Text;
     using System.Xml;
-    using System.Collections;
     using System.Collections.Generic;
+
+    using IDictionary = System.Collections.IDictionary;
 
     #endregion
 

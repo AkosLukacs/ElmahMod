@@ -32,7 +32,6 @@ namespace Elmah
     using ReaderWriterLock = System.Threading.ReaderWriterLock;
     using Timeout = System.Threading.Timeout;
     using NameObjectCollectionBase = System.Collections.Specialized.NameObjectCollectionBase;
-    using IList = System.Collections.IList;
     using IDictionary = System.Collections.IDictionary;
     using CultureInfo = System.Globalization.CultureInfo;
     using System.Collections.Generic;

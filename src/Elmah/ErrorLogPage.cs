@@ -31,10 +31,9 @@ namespace Elmah
     using System.Web;
     using System.Web.UI;
     using System.Web.UI.WebControls;
+    using System.Collections.Generic;
 
     using CultureInfo = System.Globalization.CultureInfo;
-    using ArrayList = System.Collections.ArrayList;
-    using System.Collections.Generic;
 
     #endregion
 
