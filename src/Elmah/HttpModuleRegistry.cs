@@ -66,7 +66,7 @@ namespace Elmah
                 // then setup a new and empty list.
                 //
 
-                var moduleList = _moduleListByApp[application];
+                var moduleList = _moduleListByApp.Find(application);
                 
                 if (moduleList == null)
                 {
@@ -115,7 +115,7 @@ namespace Elmah
                 if (_moduleListByApp == null)
                     return false;
                 
-                var moduleList = _moduleListByApp[application];
+                var moduleList = _moduleListByApp.Find(application);
                 
                 if (moduleList == null)
                     return false;
@@ -175,7 +175,7 @@ namespace Elmah
                 if (_moduleListByApp == null)
                     return Enumerable.Empty<IHttpModule>();
 
-                var moduleList = _moduleListByApp[application];
+                var moduleList = _moduleListByApp.Find(application);
 
                 if (moduleList == null)
                     return Enumerable.Empty<IHttpModule>();

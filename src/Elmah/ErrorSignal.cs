@@ -89,7 +89,7 @@ namespace Elmah
                 // then setup a new and empty list.
                 //
 
-                ErrorSignal signal = _signalByApp[application];
+                ErrorSignal signal = _signalByApp.Find(application);
 
                 if (signal == null)
                 {
