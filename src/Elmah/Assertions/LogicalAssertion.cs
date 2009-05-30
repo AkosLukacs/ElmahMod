@@ -28,6 +28,7 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
+    using System.Collections.Generic;
 
     #endregion
 
@@ -51,7 +52,7 @@ namespace Elmah.Assertions
             return new LogicalAssertion(operands, true, true);
         }
 
-        private LogicalAssertion(IAssertion[] assertions, bool not, bool all) : 
+        private LogicalAssertion(IEnumerable<IAssertion> assertions, bool not, bool all) : 
             base(assertions)
         {
             _not = not;
@@ -71,14 +72,14 @@ namespace Elmah.Assertions
             // outcome, OR-ing or AND-ing each as needed.
             //
 
-            bool result = false;
+            var result = false;
 
-            foreach (IAssertion assertion in this)
+            foreach (var assertion in this)
             {
                 if (assertion == null)
                     continue;
 
-                bool testResult = assertion.Test(context);
+                var testResult = assertion.Test(context);
                 
                 if (_not) 
                     testResult = !testResult;

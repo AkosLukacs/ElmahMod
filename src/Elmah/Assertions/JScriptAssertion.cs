@@ -69,8 +69,7 @@ namespace Elmah.Assertions
 
         public JScriptAssertion(string expression, string[] assemblyNames, string[] imports)
         {
-            if (expression == null
-                || expression.Length == 0
+            if (string.IsNullOrEmpty(expression)
                 || expression.TrimStart().Length == 0)
             {
                 return;
@@ -78,12 +77,12 @@ namespace Elmah.Assertions
 
             ProcessDirectives(expression, ref assemblyNames, ref imports);
 
-            VsaEngine engine = VsaEngine.CreateEngineAndGetGlobalScope(/* fast */ false, 
-                assemblyNames != null ? assemblyNames : new string[0]).engine;
+            var engine = VsaEngine.CreateEngineAndGetGlobalScope(/* fast */ false, 
+                             assemblyNames ?? new string[0]).engine;
 
             if (imports != null && imports.Length > 0)
             {
-                foreach (string import in imports)
+                foreach (var import in imports)
                     Import.JScriptImport(import, engine);
             }
 
@@ -122,10 +121,10 @@ namespace Elmah.Assertions
 
             List<string> assemblyNameList = null, importList = null;
 
-            using (StringReader reader = new StringReader(expression))
+            using (var reader = new StringReader(expression))
             {
                 string line;
-                int lineNumber = 0;
+                var lineNumber = 0;
 
                 while ((line = reader.ReadLine()) != null)
                 {
@@ -134,13 +133,13 @@ namespace Elmah.Assertions
                     if (line.Trim().Length == 0)
                         continue;
 
-                    Match match = _directiveExpression.Match(line);
+                    var match = _directiveExpression.Match(line);
                     
                     if (!match.Success) // Exit processing on first non-match
                         break;
 
-                    string directive = match.Groups[1].Value;
-                    string tail = line.Substring(match.Index + match.Length).Trim();
+                    var directive = match.Groups[1].Value;
+                    var tail = line.Substring(match.Index + match.Length).Trim();
 
                     try
                     {
@@ -230,7 +229,7 @@ namespace Elmah.Assertions
 
             public override bool Eval(object context)
             {
-                VsaEngine engine = Engine;
+                var engine = Engine;
 
                 //
                 // Following is equivalent to calling eval in JScript,
@@ -299,10 +298,10 @@ namespace Elmah.Assertions
                 // See http://msdn.microsoft.com/en-us/library/84ht5z59.aspx.
                 //
 
-                object result = LateBinding.CallValue(
-                    DefaultThisObject(Engine), 
-                    _function, /* args */ new object[] { context }, 
-                    /* construct */ false, /* brackets */ false, Engine);
+                var result = LateBinding.CallValue(
+                                 DefaultThisObject(Engine), 
+                                 _function, /* args */ new[] { context }, 
+                                 /* construct */ false, /* brackets */ false, Engine);
                 
                 return Convert.ToBoolean(result);
             }

@@ -30,7 +30,6 @@ namespace Elmah.Assertions
     using System;
     using System.ComponentModel;
     using System.Configuration;
-    using System.Globalization;
     using System.Reflection;
     using System.Text.RegularExpressions;
     using System.Web;
@@ -131,7 +130,7 @@ namespace Elmah.Assertions
             // invariant culture settings.
             //
 
-            RegexOptions options = RegexOptions.CultureInvariant;
+            var options = RegexOptions.CultureInvariant;
 
             if (!caseSensitive)
                 options |= RegexOptions.IgnoreCase;
@@ -159,7 +158,7 @@ namespace Elmah.Assertions
 
             string expression = null;
 
-            XmlElement expressionElement = config["expression"];
+            var expressionElement = config["expression"];
             if (expressionElement != null)
                 expression = expressionElement.InnerText;
 
@@ -201,11 +200,11 @@ namespace Elmah.Assertions
             // allocate the array at its correct and final size.
             //
 
-            int elementCount = 0;
+            var elementCount = 0;
 
             foreach (XmlNode child in nodes)
             {
-                XmlNodeType nodeType = child.NodeType;
+                var nodeType = child.NodeType;
 
                 //
                 // Skip comments and whitespaces.
@@ -233,7 +232,7 @@ namespace Elmah.Assertions
             // from each element.
             //
 
-            IAssertion[] assertions = new IAssertion[elementCount];
+            var assertions = new IAssertion[elementCount];
             elementCount = 0;
 
             foreach (XmlNode node in nodes)
@@ -249,26 +248,27 @@ namespace Elmah.Assertions
         {
             Debug.Assert(config != null);
 
-            string name = "assert_" + config.LocalName;
+            var name = "assert_" + config.LocalName;
             
             if (name.IndexOf('-') > 0)
                 name = name.Replace("-", "_");
             
             Type factoryType;
 
-            string xmlns = Mask.NullString(config.NamespaceURI);
+            var xmlns = Mask.NullString(config.NamespaceURI);
 
             if (xmlns.Length > 0)
             {
                 string assemblyName, ns;
 
-                if (!DecodeClrTypeNamespaceFromXmlNamespace(xmlns, out ns, out assemblyName) ||
-                    ns.Length == 0 || assemblyName.Length == 0)
+                if (!DecodeClrTypeNamespaceFromXmlNamespace(xmlns, out ns, out assemblyName) 
+                    || ns.Length == 0 || assemblyName.Length == 0)
                 {
-                    throw new ConfigurationException(string.Format("Error decoding CLR type namespace and assembly from the XML namespace '{0}'.", xmlns));
+                    throw new ConfigurationException(string.Format(
+                        "Error decoding CLR type namespace and assembly from the XML namespace '{0}'.", xmlns));
                 }
                 
-                Assembly assembly = Assembly.Load(assemblyName);
+                var assembly = Assembly.Load(assemblyName);
                 factoryType = assembly.GetType(ns + ".AssertionFactory", /* throwOnError */ true);
             }
             else
@@ -276,7 +276,7 @@ namespace Elmah.Assertions
                 factoryType = typeof(AssertionFactory);
             }
 
-            MethodInfo method = factoryType.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
+            var method = factoryType.GetMethod(name, BindingFlags.Public | BindingFlags.Static);
             if (method == null)
             {
                 throw new MissingMemberException(string.Format(
@@ -285,14 +285,14 @@ namespace Elmah.Assertions
                     factoryType, name));
             }
 
-            ParameterInfo[] parameters = method.GetParameters();
+            var parameters = method.GetParameters();
 
             if (parameters.Length == 1 
                 && parameters[0].ParameterType == typeof(XmlElement)
                 && method.ReturnType == typeof(IAssertion))
             {
-                AssertionFactoryHandler handler = (AssertionFactoryHandler) Delegate.CreateDelegate(typeof(AssertionFactoryHandler), factoryType, name);
-                return handler(config);
+                var handler = (AssertionFactoryHandler) Delegate.CreateDelegate(typeof(AssertionFactoryHandler), factoryType, name);
+                return handler(config); // TODO Check if Delegate.CreateDelegate could return null
             }
 
             return (IAssertion) method.Invoke(null, ParseArguments(method, config));
@@ -303,34 +303,34 @@ namespace Elmah.Assertions
             Debug.Assert(method != null);
             Debug.Assert(config != null);
 
-            ParameterInfo[] parameters = method.GetParameters();
-            object[] args = new object[parameters.Length];
+            var parameters = method.GetParameters();
+            var args = new object[parameters.Length];
             
-            foreach (ParameterInfo parameter in parameters)
+            foreach (var parameter in parameters)
                 args[parameter.Position] = ParseArgument(parameter, config);
 
             return args;
         }
 
-        private static readonly string[] _truths = new string[] { "true", "yes", "on", "1" }; // TODO Remove duplication with SecurityConfiguration
+        private static readonly string[] _truths = new[] { "true", "yes", "on", "1" }; // TODO Remove duplication with SecurityConfiguration
         
         private static object ParseArgument(ParameterInfo parameter, XmlElement config) 
         {
             Debug.Assert(parameter != null);
             Debug.Assert(config != null);
 
-            string name = parameter.Name;
-            Type type = parameter.ParameterType;
+            var name = parameter.Name;
+            var type = parameter.ParameterType;
             string text;
 
-            XmlAttribute attribute = config.GetAttributeNode(name);
+            var attribute = config.GetAttributeNode(name);
             if (attribute != null)
             {
                 text = attribute.Value;
             }
             else
             {
-                XmlElement element = config[name];
+                var element = config[name];
                 if (element == null)
                     return null;
 
@@ -345,11 +345,11 @@ namespace Elmah.Assertions
 
             if (type == typeof(bool))
             {
-                text = text.Trim().ToLower(CultureInfo.InvariantCulture);
+                text = text.Trim().ToLowerInvariant();
                 return Boolean.TrueString.Equals(StringTranslation.Translate(Boolean.TrueString, text, _truths));
             }
 
-            TypeConverter converter = TypeDescriptor.GetConverter(type);
+            var converter = TypeDescriptor.GetConverter(type);
             return converter.ConvertFromInvariantString(text);
         }
 
@@ -375,23 +375,22 @@ namespace Elmah.Assertions
                 assemblyName = HttpUtility.UrlDecode(xmlns.Substring(assemblyNS.Length));
                 return assemblyName.Length > 0;
             }
-            else if (OrdinalStringStartsWith(xmlns, namespaceNS))
+            
+            if (OrdinalStringStartsWith(xmlns, namespaceNS))
             {
                 typeNamespace = xmlns.Substring(namespaceNS.Length);
                 return typeNamespace.Length > 0;
             }
-            else if (OrdinalStringStartsWith(xmlns, fullNS))
+            
+            if (OrdinalStringStartsWith(xmlns, fullNS))
             {
-                int index = xmlns.IndexOf("/", fullNS.Length);
+                var index = xmlns.IndexOf("/", fullNS.Length);
                 typeNamespace = xmlns.Substring(fullNS.Length, index - fullNS.Length);
                 assemblyName = HttpUtility.UrlDecode(xmlns.Substring(index + 1));
-
                 return assemblyName.Length > 0 && typeNamespace.Length > 0;
             }
-            else
-            {
-                return false;
-            }
+
+            return false;
         }
         
         private static bool OrdinalStringStartsWith(string s, string prefix)
@@ -411,12 +410,12 @@ namespace Elmah.Assertions
             Debug.AssertStringNotEmpty(elementName);
             Debug.AssertStringNotEmpty(valueName);
 
-            List<string> list = new List<string>(4);
+            var list = new List<string>(4);
 
-            string xpath = containerName + "/" + elementName + "/@" + valueName;
+            var xpath = containerName + "/" + elementName + "/@" + valueName;
             foreach (XmlAttribute attribute in config.SelectNodes(xpath))
             {
-                string value = Mask.NullString(attribute.Value);
+                var value = Mask.NullString(attribute.Value);
                 if (value.Length > 0)
                     list.Add(attribute.Value);
             }

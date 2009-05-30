@@ -27,13 +27,11 @@ namespace Elmah.Assertions
 {
     using System;
 
-    internal delegate object ContextExpressionEvaluationHandler(object context);
-
     internal sealed class DelegatedContextExpression : IContextExpression
     {
-        private readonly ContextExpressionEvaluationHandler _handler;
+        private readonly Func<object, object> _handler;
 
-        public DelegatedContextExpression(ContextExpressionEvaluationHandler handler)
+        public DelegatedContextExpression(Func<object, object> handler)
         {
             if (handler == null) 
                 throw new ArgumentNullException("handler");
@@ -41,7 +39,7 @@ namespace Elmah.Assertions
             _handler = handler;
         }
 
-        public ContextExpressionEvaluationHandler Handler
+        public Func<object, object> Handler
         {
             get { return _handler; }
         }

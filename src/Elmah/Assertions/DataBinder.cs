@@ -36,7 +36,7 @@ namespace Elmah
     /// <see cref="System.Web.UI.DataBinder"/> in ASP.NET.
     /// </summary>
 
-    public sealed class DataBinder
+    public static class DataBinder
     {
         public static object Eval(object container, string expression)
         {
@@ -48,11 +48,6 @@ namespace Elmah
             // expression. Rather than making it an unnecessary exception, we
             // turn a nil-expression to mean, "evaluate to container."
             //
-
-            if (Mask.NullString(expression).Length == 0)
-                return container;
-
-            //
             // CAUTION! DataBinder.Eval performs late-bound evaluation, using
             // reflection, at runtime, therefore it can cause performance less
             // than optimal. If needed, this point can be used to either
@@ -61,12 +56,9 @@ namespace Elmah
             // partially at runtime using delegates.
             //
 
-            return System.Web.UI.DataBinder.Eval(container, expression);
-        }
-
-        private DataBinder()
-        {
-            throw new NotSupportedException();
+            return (expression ?? string.Empty).Length == 0
+                 ? container
+                 : System.Web.UI.DataBinder.Eval(container, expression);
         }
     }
 }

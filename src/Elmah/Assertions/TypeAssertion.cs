@@ -79,13 +79,8 @@ namespace Elmah.Assertions
 
         public override bool Test(object context)
         {
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            if (ExpectedType == null)
-                return false;
-            
-            return base.Test(context);
+            if (context == null) throw new ArgumentNullException("context");
+            return ExpectedType != null && base.Test(context);
         }
 
         protected override bool TestResult(object result)
@@ -93,8 +88,8 @@ namespace Elmah.Assertions
             if (result == null)
                 return false;
 
-            Type resultType = result.GetType();
-            Type expectedType = ExpectedType;
+            var resultType = result.GetType();
+            var expectedType = ExpectedType;
             
             Debug.Assert(expectedType != null);
             
@@ -105,9 +100,7 @@ namespace Elmah.Assertions
 
         private static IContextExpression MaskNullExpression(IContextExpression expression)
         {
-            return expression != null
-                 ? expression
-                 : new DelegatedContextExpression(new ContextExpressionEvaluationHandler(EvaluateToException));
+            return expression ?? new DelegatedContextExpression(EvaluateToException);
         }
 
         private static object EvaluateToException(object context)
@@ -118,7 +111,7 @@ namespace Elmah.Assertions
             // expected type so resort to late-binding.
             //
 
-            ExceptionFilterEventArgs args = context as ExceptionFilterEventArgs;
+            var args = context as ExceptionFilterEventArgs;
             return args != null ? args.Exception : DataBinder.Eval(context, "Exception");
         }
     }
