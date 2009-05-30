@@ -29,7 +29,6 @@ namespace Elmah
     
     using System;
     using System.Web;
-    using IList = System.Collections.IList;
     using System.Collections.Generic;
 
     #endregion
