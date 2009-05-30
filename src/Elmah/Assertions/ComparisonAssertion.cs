@@ -41,9 +41,9 @@ namespace Elmah.Assertions
     public class ComparisonAssertion : DataBoundAssertion
     {
         private readonly object _expectedValue;
-        private readonly ComparisonResultPredicate _predicate;
+        private readonly Predicate<int> _predicate;
 
-        public ComparisonAssertion(ComparisonResultPredicate predicate, IContextExpression source, TypeCode type, string value) :
+        public ComparisonAssertion(Predicate<int> predicate, IContextExpression source, TypeCode type, string value) :
             base(source)
         {
             if (predicate == null) 
@@ -80,13 +80,8 @@ namespace Elmah.Assertions
 
         public override bool Test(object context)
         {
-            if (context == null)
-                throw new ArgumentNullException("context");
-
-            if (ExpectedValue == null)
-                return false;
-
-            return base.Test(context);
+            if (context == null) throw new ArgumentNullException("context");
+            return ExpectedValue != null && base.Test(context);
         }
 
         protected override bool TestResult(object result)
@@ -94,24 +89,19 @@ namespace Elmah.Assertions
             if (result == null)
                 return false;
 
-            IComparable right = ExpectedValue as IComparable;
+            var right = ExpectedValue as IComparable;
             
             if (right == null)
                 return false;
 
-            IComparable left = Convert.ChangeType(result, right.GetType(), CultureInfo.InvariantCulture) as IComparable;
+            var left = Convert.ChangeType(result, right.GetType(), CultureInfo.InvariantCulture) as IComparable;
             
-            if (left == null)
-                return false;
- 
-            return TestComparison(left, right);
+            return left != null && TestComparison(left, right);
         }
 
         protected bool TestComparison(IComparable left, IComparable right)
         {
-            if (left == null)
-                throw new ArgumentNullException("left");
-            
+            if (left == null) throw new ArgumentNullException("left");            
             return _predicate(left.CompareTo(right));
         }
     }

@@ -25,20 +25,18 @@
 
 namespace Elmah.Assertions
 {
-    public delegate bool ComparisonResultPredicate(int result);
-    
+    #region Imports
+
+    using System;
+
+    #endregion
+
     public static class ComparisonResults
     {
-        public readonly static ComparisonResultPredicate Equal = new ComparisonResultPredicate(MeansEqual);
-        public readonly static ComparisonResultPredicate Lesser = new ComparisonResultPredicate(MeansLesser);
-        public readonly static ComparisonResultPredicate LesserOrEqual = new ComparisonResultPredicate(MeansLessOrEqual);
-        public readonly static ComparisonResultPredicate Greater = new ComparisonResultPredicate(MeansGreater);
-        public readonly static ComparisonResultPredicate GreaterOrEqual = new ComparisonResultPredicate(MeansGreaterOrEqual);
-        
-        private static bool MeansEqual(int result) { return result == 0; }
-        private static bool MeansLesser(int result) { return result < 0; }
-        private static bool MeansLessOrEqual(int result) { return result <= 0; }
-        private static bool MeansGreater(int result) { return result > 0; }
-        private static bool MeansGreaterOrEqual(int result) { return result >= 0; }
+        public readonly static Predicate<int> Equal = result => result == 0;
+        public readonly static Predicate<int> Lesser = result => result < 0;
+        public readonly static Predicate<int> LesserOrEqual = result => result <= 0;
+        public readonly static Predicate<int> Greater = result => result > 0;
+        public readonly static Predicate<int> GreaterOrEqual = result => result >= 0;
     }
 }
