@@ -164,18 +164,6 @@ namespace Elmah
         /// none is configured.
         /// </summary>
 
-        [ Obsolete("Use ErrorLog.GetDefault(context) instead.") ]
-        public static ErrorLog Default
-        {
-            get { return GetDefault(HttpContext.Current); }
-        }
-
-        /// <summary>
-        /// Gets the default error log implementation specified in the 
-        /// configuration file, or the in-memory log implemention if
-        /// none is configured.
-        /// </summary>
-
         public static ErrorLog GetDefault(HttpContext context)
         {
             ErrorLog log;

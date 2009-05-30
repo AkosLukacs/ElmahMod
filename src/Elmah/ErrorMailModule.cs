@@ -624,17 +624,6 @@ namespace Elmah
             return Configuration.GetSubsection("errorMail");
         }
 
-        /// <summary>
-        /// Builds an <see cref="Error"/> object from the last context
-        /// exception generated.
-        /// </summary>
-
-        [ Obsolete ]
-        protected virtual Error GetLastError(HttpContext context)
-        {
-            throw new NotSupportedException();
-        }
-
         private static string GetSetting(IDictionary config, string name)
         {
             return GetSetting(config, name, null);
