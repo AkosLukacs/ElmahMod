@@ -28,7 +28,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Collections.Specialized;
     using System.Globalization;
     using System.IO;
@@ -235,12 +234,12 @@ namespace Elmah
 
             public virtual void Header() {}
 
-            public void Entries(IList entries, int total)
+            public void Entries(IList<ErrorLogEntry> entries, int total)
             {
                 Entries(entries, 0, entries.Count, total);
             }
 
-            public abstract void Entries(IList entries, int index, int count, int total);
+            public abstract void Entries(IList<ErrorLogEntry> entries, int index, int count, int total);
         }
 
         private sealed class CsvFormat : Format
@@ -256,7 +255,7 @@ namespace Elmah
                 response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
             }
 
-            public override void Entries(IList entries, int index, int count, int total)
+            public override void Entries(IList<ErrorLogEntry> entries, int index, int count, int total)
             {
                 Debug.Assert(entries != null);
                 Debug.Assert(index >= 0);
@@ -282,7 +281,7 @@ namespace Elmah
 
                 for (int i = index; i < count; i++)
                 {
-                    ErrorLogEntry entry = (ErrorLogEntry) entries[i];
+                    ErrorLogEntry entry = entries[i];
                     Error error = entry.Error;
                     DateTime time = error.Time.ToUniversalTime();
                     Uri url = new Uri(Context.Request.Url, "detail?id=" + HttpUtility.UrlEncode(entry.Id));
@@ -362,7 +361,7 @@ namespace Elmah
                 }
             }
 
-            public override void Entries(IList entries, int index, int count, int total)
+            public override void Entries(IList<ErrorLogEntry> entries, int index, int count, int total)
             {
                 Debug.Assert(entries != null);
                 Debug.Assert(index >= 0);
@@ -389,7 +388,7 @@ namespace Elmah
 
                 for (int i = index; i < count; i++)
                 {
-                    ErrorLogEntry entry = (ErrorLogEntry) entries[i];
+                    ErrorLogEntry entry = entries[i];
                     writer.WriteLine();
                     if (i == 0) writer.Write(' ');
                     writer.Write("  ");

@@ -28,7 +28,8 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
     using System.Security;
     using System.Web;
 
@@ -36,7 +37,7 @@ namespace Elmah
 
     internal static class HttpModuleRegistry
     {
-        private static Hashtable _moduleListByApp;
+        private static Dictionary<HttpApplication, IList<IHttpModule>> _moduleListByApp;
         private static readonly object _lock = new object();
 
         public static bool RegisterInPartialTrust(HttpApplication application, IHttpModule module)
@@ -57,7 +58,7 @@ namespace Elmah
                 //
 
                 if (_moduleListByApp == null)
-                    _moduleListByApp = new Hashtable();
+                    _moduleListByApp = new Dictionary<HttpApplication, IList<IHttpModule>>();
 
                 //
                 // Get the list of modules for the application. If this is
@@ -65,11 +66,11 @@ namespace Elmah
                 // then setup a new and empty list.
                 //
 
-                IList moduleList = (IList) _moduleListByApp[application];
+                var moduleList = _moduleListByApp[application];
                 
                 if (moduleList == null)
                 {
-                    moduleList = new ArrayList(4);
+                    moduleList = new List<IHttpModule>();
                     _moduleListByApp.Add(application, moduleList);
                 }
                 else if (moduleList.Contains(module))
@@ -114,7 +115,7 @@ namespace Elmah
                 if (_moduleListByApp == null)
                     return false;
                 
-                IList moduleList = (IList) _moduleListByApp[application];
+                var moduleList = _moduleListByApp[application];
                 
                 if (moduleList == null)
                     return false;
@@ -148,7 +149,7 @@ namespace Elmah
             return true;
         }
 
-        public static ICollection GetModules(HttpApplication application)
+        public static IEnumerable<IHttpModule> GetModules(HttpApplication application)
         {
             if (application == null)
                 throw new ArgumentNullException("application");
@@ -172,12 +173,12 @@ namespace Elmah
             lock (_lock)
             {
                 if (_moduleListByApp == null)
-                    return new IHttpModule[0];
+                    return Enumerable.Empty<IHttpModule>();
 
-                IList moduleList = (IList) _moduleListByApp[application];
+                var moduleList = _moduleListByApp[application];
 
                 if (moduleList == null)
-                    return new IHttpModule[0];
+                    return Enumerable.Empty<IHttpModule>();
                 
                 IHttpModule[] modules = new IHttpModule[moduleList.Count];
                 moduleList.CopyTo(modules, 0);

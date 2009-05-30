@@ -28,8 +28,9 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Globalization;
+
+    using IDictionary = System.Collections.IDictionary;
 
     #endregion
 

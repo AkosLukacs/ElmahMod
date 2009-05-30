@@ -28,7 +28,9 @@ namespace Elmah.Assertions
     #region Imports
 
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using System.Linq;
 
     #endregion
 
@@ -37,45 +39,30 @@ namespace Elmah.Assertions
     /// </summary>
 
     [ Serializable ]
-    public abstract class CompositeAssertion : ReadOnlyCollectionBase, IAssertion
+    public abstract class CompositeAssertion : ReadOnlyCollection<IAssertion>, IAssertion
     {
-        protected CompositeAssertion() {}
+        protected CompositeAssertion() : 
+            this(Enumerable.Empty<IAssertion>()) {}
 
-        protected CompositeAssertion(IAssertion[] assertions)
+        protected CompositeAssertion(IEnumerable<IAssertion> assertions) : 
+            base(Validate(assertions).ToArray()) {}
+
+        private static IEnumerable<IAssertion> Validate(IEnumerable<IAssertion> assertions)
         {
-            if (assertions == null) 
-                throw new ArgumentNullException("assertions");
+            if (assertions == null) throw new ArgumentNullException("assertions");
+            return ValidateImpl(assertions);
+        }
 
-            foreach (IAssertion assertion in assertions)
+        private static IEnumerable<IAssertion> ValidateImpl(IEnumerable<IAssertion> assertions)
+        {
+            foreach (var assertion in assertions)
             {
                 if (assertion == null)
                     throw new ArgumentException(null, "assertions");
+                yield return assertion;
             }
-
-            InnerList.AddRange(assertions);
         }
 
-        protected CompositeAssertion(ICollection assertions)
-        {
-            if (assertions != null)
-                InnerList.AddRange(assertions);
-        }
-
-        public virtual IAssertion this[int index]
-        {
-            get { return (IAssertion) InnerList[index]; }
-        }
-
-        public virtual bool Contains(IAssertion assertion)
-        {
-            return InnerList.Contains(assertion);
-        }
-
-        public virtual int IndexOf(IAssertion assertion)
-        {
-            return InnerList.IndexOf(assertion);
-        }
-        
         public abstract bool Test(object context);
     }
 }

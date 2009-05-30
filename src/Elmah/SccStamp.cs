@@ -28,7 +28,6 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
     using System.Globalization;
     using System.IO;
     using System.Reflection;
@@ -250,40 +249,11 @@ namespace Elmah
 
         public static void SortByRevision(SccStamp[] stamps, bool descending)
         {
-            IComparer comparer = new RevisionComparer();
-            
-            if (descending)
-                comparer = new ReverseComparer(comparer);
-            
-            Array.Sort(stamps, comparer);
-        }
+            Comparison<SccStamp> comparer = (lhs, rhs) => lhs.Revision.CompareTo(rhs.Revision);
 
-        private sealed class RevisionComparer : IComparer
-        {
-            public int Compare(object x, object y)
-            {
-                if (x == null && y == null)
-                    return 0;
-                
-                if (x == null)
-                    return -1;
-                
-                if (y == null)
-                    return 1;
-
-                if (x.GetType() != y.GetType())
-                    throw new ArgumentException("Objects cannot be compared because their types do not match.");
-                
-                return Compare((SccStamp) x, (SccStamp) y);
-            }
-
-            private static int Compare(SccStamp lhs, SccStamp rhs)
-            {
-                Debug.Assert(lhs != null);
-                Debug.Assert(rhs != null);
-                
-                return lhs.Revision.CompareTo(rhs.Revision);
-            }
+            Array.Sort(stamps, descending 
+                               ? ((lhs, rhs) => -comparer(lhs, rhs)) 
+                               : comparer);
         }
     }
 }

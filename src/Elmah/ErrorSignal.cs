@@ -28,7 +28,7 @@ namespace Elmah
     #region Imports
 
     using System;
-    using System.Collections;
+    using System.Collections.Generic;
     using System.Web;
 
     #endregion
@@ -37,7 +37,7 @@ namespace Elmah
     {
         public event ErrorSignalEventHandler Raised;
 
-        private static Hashtable _signalByApp;
+        private static Dictionary<HttpApplication, ErrorSignal> _signalByApp;
         private static readonly object _lock = new object();
 
         public void Raise(Exception e)
@@ -81,7 +81,7 @@ namespace Elmah
                 //
 
                 if (_signalByApp == null)
-                    _signalByApp = new Hashtable();
+                    _signalByApp = new Dictionary<HttpApplication, ErrorSignal>();
 
                 //
                 // Get the list of modules fot the application. If this is
@@ -89,7 +89,7 @@ namespace Elmah
                 // then setup a new and empty list.
                 //
 
-                ErrorSignal signal = (ErrorSignal) _signalByApp[application];
+                ErrorSignal signal = _signalByApp[application];
 
                 if (signal == null)
                 {

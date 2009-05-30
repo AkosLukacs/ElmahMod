@@ -27,7 +27,6 @@ namespace Elmah
 {
     #region Imports
 
-    using System.Collections;
     using System.Web;
 
     using CultureInfo = System.Globalization.CultureInfo;
@@ -162,10 +161,10 @@ namespace Elmah
             Debug.Assert(context != null);
 
             int authorized = /* uninitialized */ -1;
-            IEnumerator authorizationHandlers = GetAuthorizationHandlers(context).GetEnumerator();
+            var authorizationHandlers = GetAuthorizationHandlers(context).GetEnumerator();
             while (authorized != 0 && authorizationHandlers.MoveNext())
             {
-                IRequestAuthorizationHandler authorizationHandler = (IRequestAuthorizationHandler)authorizationHandlers.Current;
+                IRequestAuthorizationHandler authorizationHandler = authorizationHandlers.Current;
                 authorized = authorizationHandler.Authorize(context) ? 1 : 0;
             }
             return authorized;
