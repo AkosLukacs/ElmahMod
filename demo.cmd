@@ -38,25 +38,11 @@ if not "!DELAY_TEST!"=="test" (
 )
 pushd "%~dp0"
 
-set BIN_PATH=bin\net-2.0\Release
 set DEMO_PATH=samples\Demo
-set DEMO_BIN_PATH=%DEMO_PATH%\bin
 set DEMO_PORT=54321
 set TOOLS_PATH=tools
 
-if exist "%SystemRoot%\Microsoft.NET\Framework\v2.0.50727" goto go
-
-echo The .NET Framework 2.0 does not appear to be installed on this 
-echo machine, which is required to run the demo Web site.
-set /p answer=Proceed anyway?
-if "%answer%"=="y" goto go
-if "%answer%"=="Y" goto go
-exit /b 1
-
-:go
-if not exist "%BIN_PATH%" call build 2.0
-if not exist "%DEMO_BIN_PATH%" md "%DEMO_BIN_PATH%"
-copy /y "%BIN_PATH%" "%DEMO_BIN_PATH%"
+call build
 
 set MAIL_PATH=%DEMO_PATH%\Mails
 if not exist "%MAIL_PATH%" md "%MAIL_PATH%"
