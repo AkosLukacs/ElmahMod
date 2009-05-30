@@ -171,6 +171,7 @@
     <Compile Include="Debug.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DictionaryExtensions.cs" />
     <Compile Include="Error.cs">
       <SubType>Code</SubType>
     </Compile>
