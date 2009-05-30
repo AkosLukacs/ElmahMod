@@ -51,7 +51,7 @@ namespace Elmah.Assertions
     /// Holds factory methods for creating configured assertion objects.
     /// </summary>
 
-    public sealed class AssertionFactory
+    public static class AssertionFactory
     {
         public static IAssertion assert_is_null(IContextExpression binding)
         {
@@ -422,11 +422,6 @@ namespace Elmah.Assertions
             }
 
             return list.ToArray();
-        }
-
-        private AssertionFactory()
-        {
-            throw new NotSupportedException();
         }
     }
 }
