@@ -375,7 +375,7 @@ namespace Elmah
                 parameters.Add("@Source", SqlDbType.NVarChar, 60).Value = source;
                 parameters.Add("@Message", SqlDbType.NVarChar, 500).Value = message;
                 parameters.Add("@User", SqlDbType.NVarChar, 50).Value = user;
-                parameters.Add("@AllXml", SqlDbType.NText).Value = xml;
+                parameters.Add("@AllXml", SqlDbType.NVarChar, -1).Value = xml;
                 parameters.Add("@StatusCode", SqlDbType.Int).Value = statusCode;
                 parameters.Add("@TimeUtc", SqlDbType.DateTime).Value = time;
 

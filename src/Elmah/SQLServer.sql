@@ -37,7 +37,7 @@ FROM
 WHERE 
     name = DB_NAME()
 
-IF @DBCompatibilityLevel <> 80
+IF @DBCompatibilityLevel <> 90
 BEGIN
 
     SELECT @DBCompatibilityLevelMajor = @DBCompatibilityLevel / 10, 
@@ -48,7 +48,7 @@ BEGIN
     WARNING! 
     ---------------------------------------------------------------------------
     
-    This script is designed for Microsoft SQL Server 2000 (8.0) but your 
+    This script is designed for Microsoft SQL Server 2005 (9.0) but your 
     database is set up for compatibility with version ' 
     + CAST(@DBCompatibilityLevelMajor AS NVARCHAR(80)) 
     + N'.' 
@@ -60,7 +60,7 @@ BEGIN
     ALTER DATABASE [' 
     + DB_NAME() 
     + N'] 
-    SET COMPATIBILITY_LEVEL = 80
+    SET COMPATIBILITY_LEVEL = 90
 
     If you are hosting ELMAH in the same database as your application 
     database and do not wish to change the compatibility option then you 
@@ -93,7 +93,7 @@ CREATE TABLE [dbo].[ELMAH_Error]
     [StatusCode]  INT NOT NULL,
     [TimeUtc]     DATETIME NOT NULL,
     [Sequence]    INT IDENTITY (1, 1) NOT NULL,
-    [AllXml]      NTEXT COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
+    [AllXml]      NVARCHAR(MAX) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL 
 ) 
 ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
@@ -254,7 +254,7 @@ CREATE PROCEDURE [dbo].[ELMAH_LogError]
     @Source NVARCHAR(60),
     @Message NVARCHAR(500),
     @User NVARCHAR(50),
-    @AllXml NTEXT,
+    @AllXml NVARCHAR(MAX),
     @StatusCode INT,
     @TimeUtc DATETIME
 )
