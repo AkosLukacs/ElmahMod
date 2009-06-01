@@ -6,6 +6,7 @@
 //  Author(s):
 //
 //      Scott Wilson <sw@scratchstudio.net>
+//      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,8 +55,10 @@ namespace Elmah
         /// using a dictionary of configured settings.
         /// </summary>
         
-        public XmlFileErrorLog(IDictionary config) // TODO arg checking
+        public XmlFileErrorLog(IDictionary config)
         {
+            if (config == null) throw new ArgumentNullException("config");
+
             var logPath = config["logPath"] as string ?? string.Empty;
 
             if (logPath.Length == 0)
