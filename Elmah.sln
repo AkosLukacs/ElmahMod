@@ -29,6 +29,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Demo", "samples\Demo\", "{F
 		VWDPort = "51296"
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elmah.Tests", "tests\Elmah.Tests.csproj", "{8F619C74-74F2-48B5-A06B-780BD329DD43}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{FDA7116E-67C7-4F79-851A-446DDF54846F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FDA7116E-67C7-4F79-851A-446DDF54846F}.Release|Any CPU.ActiveCfg = Debug|Any CPU
 		{FDA7116E-67C7-4F79-851A-446DDF54846F}.Release|Any CPU.Build.0 = Debug|Any CPU
+		{8F619C74-74F2-48B5-A06B-780BD329DD43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F619C74-74F2-48B5-A06B-780BD329DD43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F619C74-74F2-48B5-A06B-780BD329DD43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F619C74-74F2-48B5-A06B-780BD329DD43}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
