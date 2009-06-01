@@ -70,9 +70,9 @@ namespace Elmah
 
             public Item(string text, string title, string href)
             {
-                _text = Mask.NullString(text);
-                _title = Mask.NullString(title);
-                _href = Mask.NullString(href);
+                _text = text ?? string.Empty;
+                _title = title ?? string.Empty;
+                _href = href ?? string.Empty;
             }
 
             public string Text  { get { return _text; } }

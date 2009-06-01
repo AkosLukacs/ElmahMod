@@ -425,9 +425,9 @@ namespace Elmah
             // MailSender and MailRecipient properties.
             //
 
-            string sender = Mask.NullString(this.MailSender);
-            string recipient = Mask.NullString(this.MailRecipient);
-            string copyRecipient = Mask.NullString(this.MailCopyRecipient);
+            string sender = this.MailSender ?? string.Empty;
+            string recipient = this.MailRecipient ?? string.Empty;
+            string copyRecipient = this.MailCopyRecipient ?? string.Empty;
 
             // TODO: Under 2.0, the sender can be defaulted via <network> configuration so consider only checking recipient here.
 
@@ -634,7 +634,7 @@ namespace Elmah
             Debug.Assert(config != null);
             Debug.AssertStringNotEmpty(name);
 
-            string value = Mask.NullString((string) config[name]);
+            string value = ((string) config[name]) ?? string.Empty;
 
             if (value.Length == 0)
             {

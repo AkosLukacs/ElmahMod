@@ -129,9 +129,9 @@ namespace Elmah
             error.Source = reader.GetAttribute("source");
             error.Detail = reader.GetAttribute("detail");
             error.User = reader.GetAttribute("user");
-            string timeString = Mask.NullString(reader.GetAttribute("time"));
+            string timeString = reader.GetAttribute("time") ?? string.Empty;
             error.Time = timeString.Length == 0 ? new DateTime() : XmlConvert.ToDateTime(timeString);
-            string statusCodeString = Mask.NullString(reader.GetAttribute("statusCode"));
+            string statusCodeString = reader.GetAttribute("statusCode") ?? string.Empty;
             error.StatusCode = statusCodeString.Length == 0 ? 0 : XmlConvert.ToInt32(statusCodeString);
             error.WebHostHtmlMessage = reader.GetAttribute("webHostHtmlMessage");
         }

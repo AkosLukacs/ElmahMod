@@ -75,7 +75,7 @@ namespace Elmah
             // string was given directly.
             //
 
-            string connectionString = Mask.NullString((string)config["connectionString"]);
+            string connectionString = ((string)config["connectionString"]) ?? string.Empty;
 
             if (connectionString.Length > 0)
                 return connectionString;
@@ -87,7 +87,7 @@ namespace Elmah
             // be used.
             //
 
-            string connectionStringAppKey = Mask.NullString((string)config["connectionStringAppKey"]);
+            string connectionStringAppKey = ((string)config["connectionStringAppKey"]) ?? string.Empty;
 
             if (connectionStringAppKey.Length == 0)
                 return string.Empty;
@@ -189,7 +189,7 @@ namespace Elmah
             // trailing backslashes into account to avoid duplication.
             //
 
-            return Mask.NullString(baseDirectory).TrimEnd(_dirSeparators) 
+            return (baseDirectory ?? string.Empty).TrimEnd(_dirSeparators) 
                  + Path.DirectorySeparatorChar
                  + path.Substring(dataDirectoryMacroString.Length).TrimStart(_dirSeparators);
         }

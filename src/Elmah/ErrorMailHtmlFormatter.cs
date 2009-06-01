@@ -355,7 +355,7 @@ namespace Elmah
                 
                 writer.RenderBeginTag(HtmlTextWriterTag.Td);
 
-                string value = Mask.NullString(collection[key]);
+                string value = collection[key] ?? string.Empty;
 
                 if (value.Length != 0)
                 {

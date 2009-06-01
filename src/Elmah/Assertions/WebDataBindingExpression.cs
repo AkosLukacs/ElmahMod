@@ -36,7 +36,7 @@ namespace Elmah.Assertions
 
         public string Expression
         {
-            get { return Mask.NullString(_expression); }
+            get { return _expression ?? string.Empty; }
         }
 
         public object Evaluate(object context)

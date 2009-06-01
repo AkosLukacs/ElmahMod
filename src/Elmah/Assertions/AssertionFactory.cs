@@ -119,7 +119,7 @@ namespace Elmah.Assertions
 
         public static IAssertion assert_regex(IContextExpression binding, string pattern, bool caseSensitive, bool dontCompile)
         {
-            if (Mask.NullString(pattern).Length == 0)
+            if ((pattern ?? string.Empty).Length == 0)
                 return StaticAssertion.False;
 
             //
@@ -255,7 +255,7 @@ namespace Elmah.Assertions
             
             Type factoryType;
 
-            var xmlns = Mask.NullString(config.NamespaceURI);
+            var xmlns = config.NamespaceURI ?? string.Empty;
 
             if (xmlns.Length > 0)
             {
@@ -415,7 +415,7 @@ namespace Elmah.Assertions
             var xpath = containerName + "/" + elementName + "/@" + valueName;
             foreach (XmlAttribute attribute in config.SelectNodes(xpath))
             {
-                var value = Mask.NullString(attribute.Value);
+                var value = attribute.Value ?? string.Empty;
                 if (value.Length > 0)
                     list.Add(attribute.Value);
             }

@@ -52,7 +52,7 @@ namespace Elmah
             // the store.
             //
 
-            string errorId = Mask.NullString(this.Request.QueryString["id"]);
+            string errorId = this.Request.QueryString["id"] ?? string.Empty;
 
             if (errorId.Length == 0)
                 return;

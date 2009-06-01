@@ -363,7 +363,7 @@ namespace Elmah
                 //
 
                 bodyRow.Cells.Add(FormatCell(new TableCell(), error.HostName, "host-col"));
-                bodyRow.Cells.Add(FormatCell(new TableCell(), error.StatusCode.ToString(), "code-col", Mask.NullString(HttpWorkerRequest.GetStatusDescription(error.StatusCode))));
+                bodyRow.Cells.Add(FormatCell(new TableCell(), error.StatusCode.ToString(), "code-col", HttpWorkerRequest.GetStatusDescription(error.StatusCode) ?? string.Empty));
                 bodyRow.Cells.Add(FormatCell(new TableCell(), ErrorDisplay.HumaneExceptionErrorType(error), "type-col", error.Type));
                     
                 //

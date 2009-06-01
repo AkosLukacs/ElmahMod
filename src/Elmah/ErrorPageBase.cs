@@ -62,7 +62,7 @@ namespace Elmah
 
         protected virtual string PageTitle
         {
-            get { return Mask.NullString(_title); }
+            get { return _title ?? string.Empty; }
             set { _title = value; }
         }
 

@@ -77,7 +77,7 @@ namespace Elmah
             _databasePath = ConnectionStringHelper.GetDataSourceFilePath(_connectionString);
             InitializeDatabase();
 
-            string appName = Mask.NullString((string)config["applicationName"]);
+            string appName = ((string)config["applicationName"]) ?? string.Empty;
 
             if (appName.Length > _maxAppNameLength)
             {

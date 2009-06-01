@@ -49,7 +49,7 @@ namespace Elmah
             // the store.
             //
 
-            string errorId = Mask.NullString(context.Request.QueryString["id"]);
+            string errorId = context.Request.QueryString["id"] ?? string.Empty;
 
             if (errorId.Length == 0)
                 throw new ApplicationException("Missing error identifier specification.");

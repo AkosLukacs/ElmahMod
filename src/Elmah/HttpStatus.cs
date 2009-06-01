@@ -68,7 +68,7 @@ namespace Elmah
 
         public string Reason
         {
-            get { return Mask.NullString(_reason); }
+            get { return _reason ?? string.Empty; }
         }
 
         public string StatusLine

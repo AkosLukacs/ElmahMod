@@ -71,7 +71,7 @@ namespace Elmah
 
             InitializeDatabase();
 
-            ApplicationName = Mask.NullString((string) config["applicationName"]);
+            ApplicationName = ((string) config["applicationName"]) ?? string.Empty;
         }
 
         /// <summary>

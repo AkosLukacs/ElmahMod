@@ -193,7 +193,7 @@ namespace Elmah
 
             public string Product
             {
-                get { return Mask.NullString(_product); }
+                get { return _product ?? string.Empty; }
                 set { _product = value; }
             }
 
@@ -221,7 +221,7 @@ namespace Elmah
 
             public string Copyright
             {
-                get { return Mask.NullString(_copyright); }
+                get { return _copyright ?? string.Empty; }
                 set { _copyright = value; }
             }
         }

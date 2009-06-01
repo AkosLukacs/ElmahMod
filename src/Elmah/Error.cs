@@ -97,7 +97,7 @@ namespace Elmah
             _message = baseException.Message;
             _source = baseException.Source;
             _detail = e.ToString();
-            _user = Mask.NullString(Thread.CurrentPrincipal.Identity.Name);
+            _user = Thread.CurrentPrincipal.Identity.Name ?? string.Empty;
             _time = DateTime.Now;
 
             //
@@ -110,7 +110,7 @@ namespace Elmah
             if (httpException != null)
             {
                 _statusCode = httpException.GetHttpCode();
-                _webHostHtmlMessage = Mask.NullString(httpException.GetHtmlErrorMessage());
+                _webHostHtmlMessage = httpException.GetHtmlErrorMessage() ?? string.Empty;
             }
 
             //
@@ -150,7 +150,7 @@ namespace Elmah
 
         public string ApplicationName
         { 
-            get { return Mask.NullString(_applicationName); }
+            get { return _applicationName ?? string.Empty; }
             set { _applicationName = value; }
         }
 
@@ -160,7 +160,7 @@ namespace Elmah
         
         public string HostName
         { 
-            get { return Mask.NullString(_hostName); }
+            get { return _hostName ?? string.Empty; }
             set { _hostName = value; }
         }
 
@@ -170,7 +170,7 @@ namespace Elmah
         
         public string Type
         { 
-            get { return Mask.NullString(_typeName); }
+            get { return _typeName ?? string.Empty; }
             set { _typeName = value; }
         }
 
@@ -180,7 +180,7 @@ namespace Elmah
         
         public string Source
         { 
-            get { return Mask.NullString(_source); }
+            get { return _source ?? string.Empty; }
             set { _source = value; }
         }
 
@@ -190,7 +190,7 @@ namespace Elmah
         
         public string Message 
         { 
-            get { return Mask.NullString(_message); }
+            get { return _message ?? string.Empty; }
             set { _message = value; }
         }
 
@@ -201,7 +201,7 @@ namespace Elmah
 
         public string Detail
         { 
-            get { return Mask.NullString(_detail); }
+            get { return _detail ?? string.Empty; }
             set { _detail = value; }
         }
 
@@ -212,7 +212,7 @@ namespace Elmah
         
         public string User 
         { 
-            get { return Mask.NullString(_user); }
+            get { return _user ?? string.Empty; }
             set { _user = value; }
         }
 
@@ -249,7 +249,7 @@ namespace Elmah
         
         public string WebHostHtmlMessage
         {
-            get { return Mask.NullString(_webHostHtmlMessage); }
+            get { return _webHostHtmlMessage ?? string.Empty; }
             set { _webHostHtmlMessage = value; }
         }
 

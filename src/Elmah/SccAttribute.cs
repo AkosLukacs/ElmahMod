@@ -44,7 +44,7 @@ namespace Elmah
 
         public string Id
         {
-            get { return Mask.NullString(_id); }
+            get { return _id ?? string.Empty; }
             set { _id = value; }
         }
 

@@ -37,14 +37,9 @@ namespace Elmah
     
     internal static class Mask
     {
-        public static string NullString(string s)
-        {
-            return s == null ? string.Empty : s;
-        }
-
         public static string EmptyString(string s, string filler)
         {
-            return Mask.NullString(s).Length == 0 ? filler : s;
+            return string.IsNullOrEmpty(s) ? filler : s;
         }
     }
 }

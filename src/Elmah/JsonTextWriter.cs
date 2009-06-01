@@ -222,7 +222,7 @@ namespace Elmah
         {
             Debug.Assert(writer != null);
 
-            int length = Mask.NullString(s).Length;
+            int length = (s ?? string.Empty).Length;
 
             writer.Write('"');
 

@@ -340,7 +340,7 @@ namespace Elmah
             Debug.Assert(config != null);
             Debug.AssertStringNotEmpty(name);
 
-            string value = Mask.NullString((string)config[name]);
+            string value = ((string)config[name]) ?? string.Empty;
 
             if (value.Length == 0)
             {

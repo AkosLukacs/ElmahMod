@@ -181,7 +181,7 @@ namespace Elmah
                 throw new FormatException(e.Message, e);
             }
 
-            return Mask.NullString(format).Length > 0
+            return (format ?? string.Empty).Length > 0
                  ? string.Format(provider, format, result)
                  : result.ToString();
         }

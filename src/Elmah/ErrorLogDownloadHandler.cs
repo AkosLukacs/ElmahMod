@@ -328,7 +328,8 @@ namespace Elmah
 
             public override void Header()
             {
-                string callback = Mask.NullString(Context.Request.QueryString[Mask.EmptyString(null, "callback")]);
+                string callback = Context.Request.QueryString[Mask.EmptyString(null, "callback")] 
+                                  ?? string.Empty;
                 
                 if (callback.Length == 0)
                     throw new Exception("The JSONP callback parameter is missing.");

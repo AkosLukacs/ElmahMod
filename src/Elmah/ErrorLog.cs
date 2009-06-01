@@ -146,7 +146,7 @@ namespace Elmah
         
         public string ApplicationName
         {
-            get { return Mask.NullString(_appName); }
+            get { return _appName ?? string.Empty; }
             
             set
             {
@@ -154,7 +154,7 @@ namespace Elmah
                     throw new InvalidOperationException("The application name cannot be reset once initialized.");
 
                 _appName = value;
-                _appNameInitialized = Mask.NullString(value).Length > 0;
+                _appNameInitialized = (value ?? string.Empty).Length > 0;
             }
         }
 

@@ -111,7 +111,7 @@ namespace Elmah
             }
             else
             {
-                string sizeString = Mask.NullString((string) config["size"]);
+                string sizeString = ((string) config["size"]) ?? string.Empty;
 
                 if (sizeString.Length == 0)
                 {

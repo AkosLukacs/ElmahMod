@@ -68,7 +68,7 @@ namespace Elmah
                 // implementation, we also try "LogPath".
                 //
 
-                logPath = Mask.NullString(config["LogPath"] as string);
+                logPath = (config["LogPath"] as string) ?? string.Empty;
 
                 if (logPath.Length == 0)
                     throw new ApplicationException("Log path is missing for the XML file-based error log.");
@@ -110,7 +110,7 @@ namespace Elmah
         
         public virtual string LogPath
         {
-            get { return Mask.NullString(_logPath); }
+            get { return _logPath; }
         }
 
         /// <summary>

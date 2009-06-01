@@ -76,7 +76,7 @@ namespace Elmah
             if (value == null)
                 return string.Empty;
 
-            return Mask.NullString(value.ToString());
+            return value.ToString() ?? string.Empty;
         }
     }
 }
