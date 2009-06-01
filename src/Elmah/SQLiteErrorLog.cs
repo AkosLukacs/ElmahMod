@@ -71,7 +71,7 @@ namespace Elmah
 
             InitializeDatabase();
 
-            ApplicationName = ((string) config["applicationName"]) ?? string.Empty;
+            ApplicationName = config.Find("applicationName", string.Empty);
         }
 
         /// <summary>

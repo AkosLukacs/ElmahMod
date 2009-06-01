@@ -78,7 +78,7 @@ namespace Elmah
             // per-application isolation over a single store.
             //
 
-            string appName = ((string)config["applicationName"]) ?? string.Empty;
+            var appName = config.Find("applicationName", string.Empty);
 
             if (appName.Length > _maxAppNameLength)
             {
@@ -89,7 +89,7 @@ namespace Elmah
 
             ApplicationName = appName;
 
-            _schemaOwner = ((string)config["schemaOwner"]) ?? string.Empty;
+            _schemaOwner = config.Find("schemaOwner", string.Empty);
 
             if(_schemaOwner.Length > _maxSchemaNameLength)
             {

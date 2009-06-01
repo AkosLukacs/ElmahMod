@@ -111,7 +111,7 @@ namespace Elmah
             }
             else
             {
-                string sizeString = ((string) config["size"]) ?? string.Empty;
+                var sizeString = config.Find("size", string.Empty);
 
                 if (sizeString.Length == 0)
                 {

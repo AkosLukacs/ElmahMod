@@ -78,7 +78,7 @@ namespace Elmah
             // per-application isolation over a single store.
             //
 
-            string appName = ((string) config["applicationName"]) ?? string.Empty;
+            var appName = config.Find("applicationName", string.Empty);
 
             if (appName.Length > _maxAppNameLength)
             {

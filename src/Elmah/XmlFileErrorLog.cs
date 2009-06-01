@@ -59,7 +59,7 @@ namespace Elmah
         {
             if (config == null) throw new ArgumentNullException("config");
 
-            var logPath = config["logPath"] as string ?? string.Empty;
+            var logPath = config.Find("logPath", string.Empty);
 
             if (logPath.Length == 0)
             {
@@ -68,7 +68,7 @@ namespace Elmah
                 // implementation, we also try "LogPath".
                 //
 
-                logPath = (config["LogPath"] as string) ?? string.Empty;
+                logPath = config.Find("LogPath", string.Empty);
 
                 if (logPath.Length == 0)
                     throw new ApplicationException("Log path is missing for the XML file-based error log.");

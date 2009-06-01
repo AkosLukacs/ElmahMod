@@ -3,6 +3,7 @@
     #region Imports
 
     using System;
+    using System.Collections;
     using System.Collections.Generic;
 
     #endregion
@@ -19,6 +20,12 @@
             if (dict == null) throw new ArgumentNullException("dict");
             V value;
             return dict.TryGetValue(key, out value) ? value : @default;
+        }
+
+        public static T Find<T>(this IDictionary dict, object key, T @default)
+        {
+            if (dict == null) throw new ArgumentNullException("dict");
+            return (T) (dict[key] ?? @default);
         }
     }
 }

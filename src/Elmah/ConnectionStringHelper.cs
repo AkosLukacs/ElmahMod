@@ -58,7 +58,7 @@ namespace Elmah
             // the configuration to get the actual connection string.
             //
 
-            string connectionStringName = (string)config["connectionStringName"] ?? string.Empty;
+            string connectionStringName = config.Find("connectionStringName", string.Empty);
 
             if (connectionStringName.Length > 0)
             {
@@ -75,8 +75,7 @@ namespace Elmah
             // string was given directly.
             //
 
-            string connectionString = ((string)config["connectionString"]) ?? string.Empty;
-
+            var connectionString = config.Find("connectionString", string.Empty);
             if (connectionString.Length > 0)
                 return connectionString;
 
@@ -87,12 +86,10 @@ namespace Elmah
             // be used.
             //
 
-            string connectionStringAppKey = ((string)config["connectionStringAppKey"]) ?? string.Empty;
-
-            if (connectionStringAppKey.Length == 0)
-                return string.Empty;
-
-            return ConfigurationManager.AppSettings[connectionStringAppKey];
+            var connectionStringAppKey = config.Find("connectionStringAppKey", string.Empty);
+            return connectionStringAppKey.Length > 0 
+                 ? ConfigurationManager.AppSettings[connectionStringAppKey] 
+                 : string.Empty;
         }
 
         /// <summary>
