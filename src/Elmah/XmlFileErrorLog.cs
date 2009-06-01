@@ -99,9 +99,11 @@ namespace Elmah
         
         public XmlFileErrorLog(string logPath)
         {
+            if (logPath == null) throw new ArgumentNullException("logPath");
+            if (logPath.Length == 0) throw new ArgumentException(null, "logPath");
             _logPath = logPath;
         }
-        
+
         /// <summary>
         /// Gets the path to where the log is stored.
         /// </summary>

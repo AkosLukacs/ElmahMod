@@ -38,5 +38,18 @@ namespace Elmah.Tests
         {
             Assert.Throws<ArgumentNullException>(() => new XmlFileErrorLog((IDictionary) null));
         }
+
+        [Fact]
+        public void InitializationThrowsWithNullLogPath()
+        {
+            Assert.Throws<ArgumentNullException>(() => new XmlFileErrorLog((string)null));
+        }
+
+        [Fact]
+        public void InitializationThrowsWithEmptyLogPath()
+        {
+            var e = Assert.Throws<ArgumentException>(() => new XmlFileErrorLog(string.Empty));
+            Assert.Equal("logPath", e.ParamName);
+        }
     }
 }
