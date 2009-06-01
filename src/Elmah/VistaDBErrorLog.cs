@@ -211,17 +211,19 @@ namespace Elmah
                     {
                         rowsProcessed++;
 
-                        string id = Convert.ToString(elmahTable.Get("ErrorId").Value, CultureInfo.InvariantCulture);
-                        Error error = new Error();
-
-                        error.ApplicationName = (string)elmahTable.Get("Application").Value;
-                        error.HostName = (string)elmahTable.Get("Host").Value;
-                        error.Type = (string)elmahTable.Get("Type").Value;
-                        error.Source = (string)elmahTable.Get("Source").Value;
-                        error.Message = (string)elmahTable.Get("Message").Value;
-                        error.User = (string)elmahTable.Get("User").Value;
-                        error.StatusCode = (int)elmahTable.Get("StatusCode").Value;
-                        error.Time = ((DateTime)elmahTable.Get("TimeUtc").Value).ToLocalTime();
+                        var id = Convert.ToString(elmahTable.Get("ErrorId").Value, CultureInfo.InvariantCulture);
+                        
+                        var error = new Error
+                        {
+                            ApplicationName = (string) elmahTable.Get("Application").Value,
+                            HostName = (string) elmahTable.Get("Host").Value,
+                            Type = (string) elmahTable.Get("Type").Value,
+                            Source = (string) elmahTable.Get("Source").Value,
+                            Message = (string) elmahTable.Get("Message").Value,
+                            User = (string) elmahTable.Get("User").Value,
+                            StatusCode = (int) elmahTable.Get("StatusCode").Value,
+                            Time = ((DateTime) elmahTable.Get("TimeUtc").Value).ToLocalTime()
+                        };
 
                         errorEntryList.Add(new ErrorLogEntry(this, id, error));
 

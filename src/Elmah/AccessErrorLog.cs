@@ -238,18 +238,19 @@ namespace Elmah
 
                         while (reader.Read())
                         {
-                            string id = Convert.ToString(reader["ErrorId"], CultureInfo.InvariantCulture);
+                            var id = Convert.ToString(reader["ErrorId"], CultureInfo.InvariantCulture);
 
-                            Error error = new Error();
-
-                            error.ApplicationName = reader["Application"].ToString();
-                            error.HostName = reader["Host"].ToString();
-                            error.Type = reader["Type"].ToString();
-                            error.Source = reader["Source"].ToString();
-                            error.Message = reader["Message"].ToString();
-                            error.User = reader["UserName"].ToString();
-                            error.StatusCode = Convert.ToInt32(reader["StatusCode"]);
-                            error.Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime();
+                            var error = new Error
+                            {
+                                ApplicationName = reader["Application"].ToString(),
+                                HostName = reader["Host"].ToString(),
+                                Type = reader["Type"].ToString(),
+                                Source = reader["Source"].ToString(),
+                                Message = reader["Message"].ToString(),
+                                User = reader["UserName"].ToString(),
+                                StatusCode = Convert.ToInt32(reader["StatusCode"]),
+                                Time = Convert.ToDateTime(reader["TimeUtc"]).ToLocalTime()
+                            };
 
                             errorEntryList.Add(new ErrorLogEntry(this, id, error));
                         }
