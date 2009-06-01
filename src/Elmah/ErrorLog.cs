@@ -137,7 +137,7 @@ namespace Elmah
 
         public virtual string Name
         {
-            get { return this.GetType().Name; }   
+            get { return GetType().Name; }   
         }
 
         /// <summary>
@@ -180,17 +180,13 @@ namespace Elmah
             // Determine the default store type from the configuration and 
             // create an instance of it.
             //
-
-            log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection(Configuration.GroupSlash + "errorLog");
-
-            //
             // If no object got created (probably because the right 
             // configuration settings are missing) then default to 
             // the in-memory log implementation.
             //
 
-            if (log == null)
-                log = new MemoryErrorLog();
+            log = (ErrorLog) SimpleServiceProviderFactory.CreateFromConfigSection(Configuration.GroupSlash + "errorLog") 
+                  ?? new MemoryErrorLog();
 
             if (context != null)
             {
@@ -264,7 +260,7 @@ namespace Elmah
             Debug.Assert(syncImpl != null);
 
             SynchronousAsyncResult asyncResult;
-            string syncMethodName = syncImpl.Method.Name;
+            var syncMethodName = syncImpl.Method.Name;
 
             try
             {
@@ -287,7 +283,7 @@ namespace Elmah
             if (asyncResult == null)
                 throw new ArgumentNullException("asyncResult");
 
-            SynchronousAsyncResult syncResult = asyncResult as SynchronousAsyncResult;
+            var syncResult = asyncResult as SynchronousAsyncResult;
 
             if (syncResult == null)
                 throw new ArgumentException("IAsyncResult object did not come from the corresponding async method on this type.", "asyncResult");

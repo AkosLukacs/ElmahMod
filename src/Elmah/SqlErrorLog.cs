@@ -49,8 +49,6 @@ namespace Elmah
 
         private const int _maxAppNameLength = 60;
 
-        private delegate RV Function<RV, A>(A a);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="SqlErrorLog"/> class
         /// using a dictionary of configured settings.
@@ -61,7 +59,7 @@ namespace Elmah
             if (config == null)
                 throw new ArgumentNullException("config");
 
-            string connectionString = ConnectionStringHelper.GetConnectionString(config);
+            var connectionString = ConnectionStringHelper.GetConnectionString(config);
 
             //
             // If there is no connection string to use then throw an 
@@ -138,12 +136,12 @@ namespace Elmah
             if (error == null)
                 throw new ArgumentNullException("error");
 
-            string errorXml = ErrorXml.EncodeString(error);
-            Guid id = Guid.NewGuid();
+            var errorXml = ErrorXml.EncodeString(error);
+            var id = Guid.NewGuid();
 
-            using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = Commands.LogError(
-                id, this.ApplicationName, 
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var command = Commands.LogError(
+                id, ApplicationName, 
                 error.HostName, error.Type, error.Source, error.Message, error.User,
                 error.StatusCode, error.Time.ToUniversalTime(), errorXml))
             {
@@ -161,28 +159,17 @@ namespace Elmah
 
         public override int GetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList)
         {
-            if (pageIndex < 0)
-                throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
+            if (pageIndex < 0) throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
+            if (pageSize < 0) throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 
-            if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
-
-            using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = Commands.GetErrorsXml(this.ApplicationName, pageIndex, pageSize))
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var command = Commands.GetErrorsXml(ApplicationName, pageIndex, pageSize))
             {
                 command.Connection = connection;
                 connection.Open();
 
-                XmlReader reader = command.ExecuteXmlReader();
-                
-                try
-                {
+                using (var reader = command.ExecuteXmlReader())
                     ErrorsXmlToList(reader, errorEntryList);
-                }
-                finally
-                {
-                    reader.Close();
-                }
                 
                 int total;
                 Commands.GetErrorsXmlOutputs(command, out total);
@@ -197,11 +184,8 @@ namespace Elmah
         public override IAsyncResult BeginGetErrors(int pageIndex, int pageSize, IList<ErrorLogEntry> errorEntryList,
             AsyncCallback asyncCallback, object asyncState)
         {
-            if (pageIndex < 0)
-                throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
-
-            if (pageSize < 0)
-                throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
+            if (pageIndex < 0) throw new ArgumentOutOfRangeException("pageIndex", pageIndex, null);
+            if (pageSize < 0) throw new ArgumentOutOfRangeException("pageSize", pageSize, null);
 
             //
             // Modify the connection string on the fly to support async 
@@ -211,16 +195,18 @@ namespace Elmah
             // connection string sets the Async option to true or not.
             //
 
-            SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(this.ConnectionString);
-            csb.AsynchronousProcessing = true;
-            SqlConnection connection = new SqlConnection(csb.ConnectionString);
+            var csb = new SqlConnectionStringBuilder(ConnectionString)
+            {
+                AsynchronousProcessing = true
+            };
+            var connection = new SqlConnection(csb.ConnectionString);
 
             //
             // Create the command object with input parameters initialized
             // and setup to call the stored procedure.
             //
 
-            SqlCommand command = Commands.GetErrorsXml(this.ApplicationName, pageIndex, pageSize);
+            var command = Commands.GetErrorsXml(ApplicationName, pageIndex, pageSize);
             command.Connection = connection;
 
             //
@@ -230,14 +216,14 @@ namespace Elmah
 
             AsyncResultWrapper asyncResult = null;
 
-            Function<int, IAsyncResult> endHandler = delegate
+            Func<IAsyncResult, int> endHandler = delegate
             {
                 Debug.Assert(asyncResult != null);
 
                 using (connection)
                 using (command)
                 {
-                    using (XmlReader reader = command.EndExecuteXmlReader(asyncResult.InnerResult))
+                    using (var reader = command.EndExecuteXmlReader(asyncResult.InnerResult))
                         ErrorsXmlToList(reader, errorEntryList);
 
                     int total;
@@ -282,16 +268,16 @@ namespace Elmah
             if (asyncResult == null)
                 throw new ArgumentNullException("asyncResult");
 
-            AsyncResultWrapper wrapper = asyncResult as AsyncResultWrapper;
+            var wrapper = asyncResult as AsyncResultWrapper;
 
             if (wrapper == null)
                 throw new ArgumentException("Unexepcted IAsyncResult type.", "asyncResult");
 
-            Function<int, IAsyncResult> endHandler = (Function<int, IAsyncResult>) wrapper.InnerResult.AsyncState;
+            var endHandler = (Func<IAsyncResult, int>) wrapper.InnerResult.AsyncState;
             return endHandler(wrapper.InnerResult);
         }
 
-        private void ErrorsXmlToList(XmlReader reader, IList<ErrorLogEntry> errorEntryList)
+        private void ErrorsXmlToList(XmlReader reader, ICollection<ErrorLogEntry> errorEntryList)
         {
             Debug.Assert(reader != null);
 
@@ -299,8 +285,8 @@ namespace Elmah
             {
                 while (reader.IsStartElement("error"))
                 {
-                    string id = reader.GetAttribute("errorId");
-                    Error error = ErrorXml.Decode(reader);
+                    var id = reader.GetAttribute("errorId");
+                    var error = ErrorXml.Decode(reader);
                     errorEntryList.Add(new ErrorLogEntry(this, id, error));
                 }
             }
@@ -313,11 +299,8 @@ namespace Elmah
 
         public override ErrorLogEntry GetError(string id)
         {
-            if (id == null)
-                throw new ArgumentNullException("id");
-
-            if (id.Length == 0)
-                throw new ArgumentException(null, "id");
+            if (id == null) throw new ArgumentNullException("id");
+            if (id.Length == 0) throw new ArgumentException(null, "id");
 
             Guid errorGuid;
 
@@ -332,8 +315,8 @@ namespace Elmah
 
             string errorXml;
 
-            using (SqlConnection connection = new SqlConnection(this.ConnectionString))
-            using (SqlCommand command = Commands.GetErrorXml(this.ApplicationName, errorGuid))
+            using (var connection = new SqlConnection(ConnectionString))
+            using (var command = Commands.GetErrorXml(ApplicationName, errorGuid))
             {
                 command.Connection = connection;
                 connection.Open();
@@ -343,14 +326,12 @@ namespace Elmah
             if (errorXml == null)
                 return null;
 
-            Error error = ErrorXml.DecodeString(errorXml);
+            var error = ErrorXml.DecodeString(errorXml);
             return new ErrorLogEntry(this, id, error);
         }
 
-        private sealed class Commands
+        private static class Commands
         {
-            private Commands() {}
-
             public static SqlCommand LogError(
                 Guid id,
                 string appName,
@@ -363,10 +344,10 @@ namespace Elmah
                 DateTime time,
                 string xml)
             {
-                SqlCommand command = new SqlCommand("ELMAH_LogError");
+                var command = new SqlCommand("ELMAH_LogError");
                 command.CommandType = CommandType.StoredProcedure;
 
-                SqlParameterCollection parameters = command.Parameters;
+                var parameters = command.Parameters;
 
                 parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
                 parameters.Add("@Application", SqlDbType.NVarChar, _maxAppNameLength).Value = appName;
@@ -384,10 +365,9 @@ namespace Elmah
 
             public static SqlCommand GetErrorXml(string appName, Guid id)
             {
-                SqlCommand command = new SqlCommand("ELMAH_GetErrorXml");
-                command.CommandType = CommandType.StoredProcedure;
+                var command = new SqlCommand("ELMAH_GetErrorXml") { CommandType = CommandType.StoredProcedure };
 
-                SqlParameterCollection parameters = command.Parameters;
+                var parameters = command.Parameters;
                 parameters.Add("@Application", SqlDbType.NVarChar, _maxAppNameLength).Value = appName;
                 parameters.Add("@ErrorId", SqlDbType.UniqueIdentifier).Value = id;
 
@@ -396,8 +376,7 @@ namespace Elmah
 
             public static SqlCommand GetErrorsXml(string appName, int pageIndex, int pageSize)
             {
-                SqlCommand command = new SqlCommand("ELMAH_GetErrorsXml");
-                command.CommandType = CommandType.StoredProcedure;
+                var command = new SqlCommand("ELMAH_GetErrorsXml") { CommandType = CommandType.StoredProcedure };
 
                 SqlParameterCollection parameters = command.Parameters;
 
@@ -423,38 +402,29 @@ namespace Elmah
 
         private sealed class AsyncResultWrapper : IAsyncResult
         {
-            private readonly IAsyncResult _inner;
-            private readonly object _asyncState;
-
             public AsyncResultWrapper(IAsyncResult inner, object asyncState)
             {
-                _inner = inner;
-                _asyncState = asyncState;
+                InnerResult = inner;
+                AsyncState = asyncState;
             }
 
-            public IAsyncResult InnerResult
-            {
-                get { return _inner; }
-            }
+            public IAsyncResult InnerResult { get; private set; }
 
             public bool IsCompleted
             {
-                get { return _inner.IsCompleted; }
+                get { return InnerResult.IsCompleted; }
             }
 
             public WaitHandle AsyncWaitHandle
             {
-                get { return _inner.AsyncWaitHandle; }
+                get { return InnerResult.AsyncWaitHandle; }
             }
 
-            public object AsyncState
-            {
-                get { return _asyncState; }
-            }
+            public object AsyncState { get; private set; }
 
             public bool CompletedSynchronously
             {
-                get { return _inner.CompletedSynchronously; }
+                get { return InnerResult.CompletedSynchronously; }
             }
         }
     }
