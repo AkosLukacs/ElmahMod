@@ -191,6 +191,7 @@ namespace Elmah
             settings.Indent = true;
             settings.NewLineOnAttributes = true;
             settings.CheckCharacters = false;
+            settings.OmitXmlDeclaration = true; // see issue #120: http://code.google.com/p/elmah/issues/detail?id=120
             
             using (XmlWriter writer = XmlWriter.Create(sw, settings))
             {
