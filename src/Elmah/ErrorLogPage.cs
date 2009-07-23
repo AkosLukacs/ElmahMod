@@ -97,7 +97,7 @@ namespace Elmah
             // Write a <link> tag to relate the RSS feed.
             //
 
-            writer.AddAttribute("rel", HtmlLinkType.Alternate);
+            writer.AddAttribute(HtmlTextWriterAttribute.Rel, HtmlLinkType.Alternate);
             writer.AddAttribute(HtmlTextWriterAttribute.Type, "application/rss+xml");
             writer.AddAttribute(HtmlTextWriterAttribute.Title, "RSS");
             writer.AddAttribute(HtmlTextWriterAttribute.Href, this.BasePageName + "/rss");
@@ -465,7 +465,7 @@ namespace Elmah
             writer.AddAttribute(HtmlTextWriterAttribute.Href, href);
 
             if (type != null && type.Length > 0)
-                writer.AddAttribute("rel", type);
+                writer.AddAttribute(HtmlTextWriterAttribute.Rel, type);
             
             writer.RenderBeginTag(HtmlTextWriterTag.A);
             this.Server.HtmlEncode(text, writer);

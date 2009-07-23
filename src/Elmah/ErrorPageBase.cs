@@ -115,7 +115,7 @@ namespace Elmah
             // Write a <link> tag to relate the style sheet.
             //
 
-            writer.AddAttribute("rel", "stylesheet");
+            writer.AddAttribute(HtmlTextWriterAttribute.Rel, "stylesheet");
             writer.AddAttribute(HtmlTextWriterAttribute.Type, "text/css");
             writer.AddAttribute(HtmlTextWriterAttribute.Href, this.BasePageName + "/stylesheet");
             writer.RenderBeginTag(HtmlTextWriterTag.Link);
