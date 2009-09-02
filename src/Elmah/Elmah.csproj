@@ -98,10 +98,6 @@
     <Reference Include="System.Xml">
       <Name>System.XML</Name>
     </Reference>
-    <Reference Include="VistaDB.NET20, Version=3.3.1.54, Culture=neutral, PublicKeyToken=dfc935afe2125461, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\VistaDB.NET20.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AboutPage.cs">
@@ -316,9 +312,6 @@
     <Compile Include="SQLiteErrorLog.cs">
     </Compile>
     <Compile Include="TestException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="VistaDBErrorLog.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="XmlFileErrorLog.cs">
