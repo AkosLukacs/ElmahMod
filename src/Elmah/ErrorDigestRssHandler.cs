@@ -93,7 +93,7 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Daily digest of errors in " + log.ApplicationName + " on " + Environment.MachineName;
+            channel.title = "Daily digest of errors in " + log.ApplicationName + " on " + EnvironmentHelper.GetMachineName(_context);
             channel.description = "Daily digest of application errors";
             channel.language = "en";
 

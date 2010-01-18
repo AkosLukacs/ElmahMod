@@ -92,7 +92,7 @@ namespace Elmah
             // Load the basic information.
             //
 
-            _hostName = Environment.MachineName;
+            _hostName = EnvironmentHelper.GetMachineName(context);
             _typeName = baseException.GetType().FullName;
             _message = baseException.Message;
             _source = baseException.Source;

@@ -68,7 +68,7 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Error log of " + log.ApplicationName + " on " + Environment.MachineName;
+            channel.title = "Error log of " + log.ApplicationName + " on " + EnvironmentHelper.GetMachineName(context);
             channel.description = "Log of recent errors";
             channel.language = "en";
             channel.link = context.Request.Url.GetLeftPart(UriPartial.Authority) + 

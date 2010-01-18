@@ -168,6 +168,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="EnvironmentHelper.cs" />
     <Compile Include="Error.cs">
       <SubType>Code</SubType>
     </Compile>
