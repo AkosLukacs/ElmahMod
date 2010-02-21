@@ -429,9 +429,7 @@ namespace Elmah
             string recipient = this.MailRecipient ?? string.Empty;
             string copyRecipient = this.MailCopyRecipient ?? string.Empty;
 
-            // TODO: Under 2.0, the sender can be defaulted via <network> configuration so consider only checking recipient here.
-
-            if (sender.Length == 0 || recipient.Length == 0)
+            if (recipient.Length == 0)
                 return;
 
             //
@@ -558,8 +556,6 @@ namespace Elmah
 
             string userName = AuthUserName ?? string.Empty;
             string password = AuthPassword ?? string.Empty;
-
-            // TODO: Allow use of default credentials?
 
             if (userName.Length > 0 && password.Length > 0)
                 client.Credentials = new NetworkCredential(userName, password);
