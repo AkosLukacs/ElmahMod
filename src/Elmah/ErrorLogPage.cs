@@ -79,9 +79,12 @@ namespace Elmah
             // Set the title of the page.
             //
 
-            this.PageTitle = string.Format("Error log for {0} on {1} (Page #{2})",
-                this.ApplicationName, EnvironmentHelper.GetMachineName(Context), 
-                (_pageIndex + 1).ToString("N0"));
+            string hostName = Environment.TryGetMachineName(Context);
+            this.PageTitle = string.Format(
+                hostName.Length > 0 
+                ? "Error log for {0} on {2} (Page #{1})" 
+                : "Error log for {0} (Page #{1})", 
+                this.ApplicationName, (_pageIndex + 1).ToString("N0"), hostName);
 
             base.OnLoad(e);
         }
@@ -286,8 +289,12 @@ namespace Elmah
             writer.AddAttribute(HtmlTextWriterAttribute.Title, this.Server.HtmlEncode(this.ApplicationName));
             writer.RenderBeginTag(HtmlTextWriterTag.Span);
             Server.HtmlEncode(simpleName, writer);
-            writer.Write(" on ");
-            Server.HtmlEncode(EnvironmentHelper.GetMachineName(Context), writer);
+            string hostName = Environment.TryGetMachineName(Context);
+            if (hostName.Length > 0)
+            {
+                writer.Write(" on ");
+                Server.HtmlEncode(hostName, writer);
+            }
             writer.RenderEndTag(); // </span>
 
             writer.RenderEndTag(); // </h1>

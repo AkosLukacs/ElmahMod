@@ -89,6 +89,8 @@ namespace Elmah
             if (!isEmpty)
             {
                 ReadInnerXml(reader, error);
+                while (reader.NodeType != XmlNodeType.EndElement)
+                    reader.Skip();
                 reader.ReadEndElement();
             }
 
@@ -143,13 +145,13 @@ namespace Elmah
 
                 NameValueCollection collection;
 
-                switch (reader.LocalName)
+                switch (reader.Name)
                 {
                     case "serverVariables" : collection = error.ServerVariables; break;
                     case "queryString"     : collection = error.QueryString; break;
                     case "form"            : collection = error.Form; break;
                     case "cookies"         : collection = error.Cookies; break;
-                    default                : return;
+                    default                : reader.Skip(); continue;
                 }
 
                 if (reader.IsEmptyElement)
@@ -320,6 +322,7 @@ namespace Elmah
             if (reader == null) throw new ArgumentNullException("reader");
             if (collection == null) throw new ArgumentNullException("collection");
 
+            Debug.Assert(!reader.IsEmptyElement);
             reader.Read();
 
             //
@@ -327,29 +330,56 @@ namespace Elmah
             // with child <value> elements are found.
             //
 
-            while (reader.IsStartElement("item"))
+            while (reader.NodeType != XmlNodeType.EndElement)
             {
-                var name = reader.GetAttribute("name");
-                var isNull = reader.IsEmptyElement;
-
-                reader.Read(); // <item>
-
-                if (!isNull)
+                if (reader.IsStartElement("item"))
                 {
+                    string name = reader.GetAttribute("name");
+                    bool isNull = reader.IsEmptyElement;
 
-                    while (reader.IsStartElement("value")) // <value ...>
+                    reader.Read(); // <item>
+
+                    if (!isNull)
                     {
-                        var value = reader.GetAttribute("string");
-                        collection.Add(name, value);
-                        reader.Read();
-                    }
+                        while (reader.NodeType != XmlNodeType.EndElement)
+                        {
+                            if (reader.IsStartElement("value")) // <value ...>
+                            {
+                                string value = reader.GetAttribute("string");
+                                collection.Add(name, value);
+                                if (reader.IsEmptyElement)
+                                {
+                                    reader.Read();
+                                }
+                                else
+                                {
+                                    reader.Read();
+                                    while (reader.NodeType != XmlNodeType.EndElement)
+                                        reader.Skip();
+                                    reader.ReadEndElement();
+                                }
+                            }
+                            else
+                            {
+                                reader.Skip();
+                            }
 
-                    reader.ReadEndElement(); // </item>
+                            reader.MoveToContent();
+                        }
+                        
+                        reader.ReadEndElement(); // </item>
+                    }
+                    else
+                    {
+                        collection.Add(name, null);
+                    }
                 }
                 else
                 {
-                    collection.Add(name, null);
+                    reader.Skip();
                 }
+
+                reader.MoveToContent();
             }
 
             reader.ReadEndElement();

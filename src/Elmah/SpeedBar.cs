@@ -20,6 +20,9 @@
 // limitations under the License.
 //
 #endregion
+
+[assembly: Elmah.Scc("$Id$")]
+
 namespace Elmah
 {
     #region Imports

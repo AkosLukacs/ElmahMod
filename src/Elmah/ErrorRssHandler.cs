@@ -31,7 +31,6 @@ namespace Elmah
     using System.Web;
     using ContentSyndication;
 
-    using XmlSerializer = System.Xml.Serialization.XmlSerializer;
     using System.Collections.Generic;
 
     #endregion
@@ -68,7 +67,9 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Error log of " + log.ApplicationName + " on " + EnvironmentHelper.GetMachineName(context);
+            string hostName = Environment.TryGetMachineName(context);
+            channel.title = "Error log of " + log.ApplicationName 
+                          + (hostName.Length > 0 ? " on " + hostName : null);
             channel.description = "Log of recent errors";
             channel.language = "en";
             channel.link = context.Request.Url.GetLeftPart(UriPartial.Authority) + 
@@ -102,8 +103,7 @@ namespace Elmah
             // Stream out the RSS XML.
             //
 
-            XmlSerializer serializer = new XmlSerializer(typeof(RichSiteSummary));
-            serializer.Serialize(context.Response.Output, rss);
+            context.Response.Write(XmlText.StripIllegalXmlCharacters(XmlSerializer.Serialize(rss)));
         }
 
         public bool IsReusable

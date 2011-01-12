@@ -104,6 +104,27 @@ th
     width: 100%;
 }
 
+.st-type, .st-param-type
+{
+    color: #00008B;
+}
+
+.st-param-name
+{
+    color: #666;
+}
+
+.st-method
+{
+    color: #008B8B;
+    font-weight: bolder;
+}
+
+.st-file, .st-line
+{
+    color: #8B008B;
+}
+
 @media screen
 {
     #ErrorDetail

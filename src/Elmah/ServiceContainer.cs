@@ -5,7 +5,7 @@
 //
 //  Author(s):
 //
-//      James Driscoll
+//      Atif Aziz, http://www.raboof.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,45 +21,33 @@
 //
 #endregion
 
-using System.Web;
-
 [assembly: Elmah.Scc("$Id$")]
 
 namespace Elmah
 {
     #region Imports
-
+    
     using System;
-    using System.Security;
+    using System.Web;
 
     #endregion
 
-    internal class EnvironmentHelper
+    internal sealed class ServiceContainer : IServiceProvider
     {
-        public static string GetMachineName(HttpContext context)
+        private readonly object _context;
+
+        public ServiceContainer(object context)
         {
-            try
-            {
-                // in certain Medium trust environments,
-                // permissions for this call are denied
-                return Environment.MachineName;
-            }
-            catch (SecurityException)
-            {
-            }
+            // NOTE: context is allowed to be null
 
-            if (context != null)
-            {
-                try
-                {
-                    return context.Server.MachineName;
-                }
-                catch (SecurityException)
-                {
-                }
-            }
+            _context = context;
+        }
 
-            return "Unknown";
+        public object GetService(Type serviceType)
+        {
+            return serviceType == typeof(ErrorLog) 
+                 ? ErrorLog.GetDefaultImpl(_context as HttpContext) 
+                 : null;
         }
     }
 }

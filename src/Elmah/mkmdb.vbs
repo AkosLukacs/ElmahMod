@@ -19,6 +19,10 @@
 
 ' $Id$
 
+' ---------------------------------------------------------------------------
+' Script for creating an empty MS Access database file (MDB) to be used with
+' Elmah.AccessErrorLog (Microsoft Access Error Log).
+
 ' enum KeyTypeEnum
 
 Const adKeyPrimary = 1

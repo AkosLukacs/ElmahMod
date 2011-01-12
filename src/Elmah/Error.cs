@@ -28,6 +28,7 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Security.Principal;
     using System.Web;
     using System.Xml;
     using Thread = System.Threading.Thread;
@@ -92,7 +93,7 @@ namespace Elmah
             // Load the basic information.
             //
 
-            _hostName = EnvironmentHelper.GetMachineName(context);
+            _hostName = Environment.TryGetMachineName(context);
             _typeName = baseException.GetType().FullName;
             _message = baseException.Message;
             _source = baseException.Source;
@@ -115,11 +116,19 @@ namespace Elmah
 
             //
             // If the HTTP context is available, then capture the
-            // collections that represent the state request.
+            // collections that represent the state request as well as
+            // the user.
             //
 
             if (context != null)
             {
+                IPrincipal webUser = context.User;
+                if (webUser != null 
+                    && (webUser.Identity.Name ?? string.Empty).Length > 0)
+                {
+                    _user = webUser.Identity.Name;
+                }
+
                 HttpRequest request = context.Request;
 
                 _serverVariables = CopyCollection(request.ServerVariables);

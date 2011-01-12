@@ -28,13 +28,15 @@ namespace Elmah
     #region Imports
 
     using System;
+    using System.Collections.Generic;
     using System.Data;
     using System.Data.SqlClient;
+    using System.IO;
+    using System.Text;
     using System.Threading;
     using System.Xml;
 
     using IDictionary = System.Collections.IDictionary;
-    using System.Collections.Generic;
 
     #endregion
 
@@ -168,12 +170,45 @@ namespace Elmah
                 command.Connection = connection;
                 connection.Open();
 
-                using (var reader = command.ExecuteXmlReader())
-                    ErrorsXmlToList(reader, errorEntryList);
-                
+                string xml = ReadSingleXmlStringResult(command.ExecuteReader());
+                ErrorsXmlToList(xml, errorEntryList);
+
                 int total;
                 Commands.GetErrorsXmlOutputs(command, out total);
                 return total;
+            }
+        }
+
+        private static string ReadSingleXmlStringResult(SqlDataReader reader)
+        {
+            using (reader)
+            {
+                if (!reader.Read())
+                    return null;
+
+                //
+                // See following MS KB article why the XML string is read 
+                // and reconstructed in chunks:
+                //
+                // The XML data row is truncated at 2,033 characters when you use the SqlDataReader object
+                // http://support.microsoft.com/kb/310378
+                // 
+                // When you read XML data from Microsoft SQL Server by using 
+                // the SqlDataReader object, the XML in the first column of 
+                // the first row is truncated at 2,033 characters. You 
+                // expect all of the contents of the XML data to be 
+                // contained in a single row and column. This behavior 
+                // occurs because, for XML results greater than 2,033 
+                // characters in length, SQL Server returns the XML in 
+                // multiple rows of 2,033 characters each. 
+                //
+                // See also comment 18 in issue 129:
+                // http://code.google.com/p/elmah/issues/detail?id=129#c18
+                //
+
+                StringBuilder sb = new StringBuilder(/* capacity */ 2033);
+                do { sb.Append(reader.GetString(0)); } while (reader.Read());
+                return sb.ToString();
             }
         }
 
@@ -223,9 +258,8 @@ namespace Elmah
                 using (connection)
                 using (command)
                 {
-                    using (var reader = command.EndExecuteXmlReader(asyncResult.InnerResult))
-                        ErrorsXmlToList(reader, errorEntryList);
-
+                    string xml = ReadSingleXmlStringResult(command.EndExecuteReader(asyncResult.InnerResult));
+                    ErrorsXmlToList(xml, errorEntryList);
                     int total;
                     Commands.GetErrorsXmlOutputs(command, out total);
                     return total;
@@ -257,6 +291,19 @@ namespace Elmah
                 connection.Dispose();
                 throw;
             }
+        }
+
+        private void ErrorsXmlToList(string xml, IList<ErrorLogEntry> errorEntryList)
+        {
+            if (xml == null || xml.Length == 0) 
+                return;
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.CheckCharacters = false;
+            settings.ConformanceLevel = ConformanceLevel.Fragment;
+
+            using (XmlReader reader = XmlReader.Create(new StringReader(xml), settings))
+                ErrorsXmlToList(reader, errorEntryList);
         }
 
         /// <summary>

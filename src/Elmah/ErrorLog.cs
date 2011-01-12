@@ -42,7 +42,6 @@ namespace Elmah
     {
         private string _appName;
         private bool _appNameInitialized;
-
         private static readonly object _contextKey = new object();
 
         /// <summary>
@@ -165,6 +164,11 @@ namespace Elmah
         /// </summary>
 
         public static ErrorLog GetDefault(HttpContext context)
+        {
+            return (ErrorLog) ServiceCenter.GetService(context, typeof(ErrorLog));
+        }
+
+        internal static ErrorLog GetDefaultImpl(HttpContext context)
         {
             ErrorLog log;
 

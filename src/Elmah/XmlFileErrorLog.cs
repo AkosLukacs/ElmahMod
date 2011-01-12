@@ -135,8 +135,14 @@ namespace Elmah
         {
             var errorId = Guid.NewGuid().ToString();
             
-            var timeStamp = DateTime.UtcNow.ToString("yyyy-MM-ddHHmmssZ", CultureInfo.InvariantCulture);
-            var path = Path.Combine(LogPath, string.Format(@"error-{0}-{1}.xml", timeStamp, errorId));
+            DateTime timeStamp = (error.Time > DateTime.MinValue ? error.Time : DateTime.Now);
+            
+            string fileName = string.Format(CultureInfo.InvariantCulture, 
+                                  @"error-{0:yyyy-MM-ddHHmmssZ}-{1}.xml", 
+                                  /* 0 */ timeStamp.ToUniversalTime(), 
+                                  /* 1 */ errorId);
+
+            string path = Path.Combine(LogPath, fileName);
 
             using (var writer = new XmlTextWriter(path, Encoding.UTF8))
             {

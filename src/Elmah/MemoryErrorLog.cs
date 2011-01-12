@@ -161,9 +161,7 @@ namespace Elmah
             try
             {
                 if (_entries == null)
-                {
                     _entries = new EntryCollection(_size);
-                }
 
                 _entries.Add(entry);
             }
@@ -230,7 +228,7 @@ namespace Elmah
             // internal versions since someone could change their state.
             //
 
-            ErrorLogEntry[] selectedEntries;
+            ErrorLogEntry[] selectedEntries = null;
             int totalCount;
 
             _lock.AcquireReaderLock(Timeout.Infinite);
@@ -240,25 +238,29 @@ namespace Elmah
                 if (_entries == null)
                     return 0;
 
-                int lastIndex = Math.Max(0, _entries.Count - (pageIndex * pageSize)) - 1;
-                selectedEntries = new ErrorLogEntry[lastIndex + 1];
-
-                int sourceIndex = lastIndex;
-                int targetIndex = 0;
-
-                while (sourceIndex >= 0)
-                {
-                    selectedEntries[targetIndex++] = _entries[sourceIndex--];
-                }
-
                 totalCount = _entries.Count;
+
+                int startIndex = pageIndex * pageSize;
+                int endIndex = Math.Min(startIndex + pageSize, totalCount);
+                int count = Math.Max(0, endIndex - startIndex);
+                
+                if (count > 0)
+                {
+                    selectedEntries = new ErrorLogEntry[count];
+
+                    int sourceIndex = endIndex;
+                    int targetIndex = 0;
+
+                    while (sourceIndex > startIndex)
+                        selectedEntries[targetIndex++] = _entries[--sourceIndex];
+                }
             }
             finally
             {
                 _lock.ReleaseReaderLock();
             }
 
-            if (errorEntryList != null)
+            if (errorEntryList != null && selectedEntries != null)
             {
                 //
                 // Return copies of fetched entries. If the Error class would 
@@ -271,6 +273,7 @@ namespace Elmah
                     errorEntryList.Add(new ErrorLogEntry(this, entry.Id, error));
                 }
             }
+
             return totalCount;
         }
 
@@ -306,9 +309,7 @@ namespace Elmah
                 Debug.Assert(this.Count <= _size);
 
                 if (this.Count == _size)
-                {
                     BaseRemoveAt(0);
-                }                    
 
                 BaseAdd(entry.Id, entry);
             }

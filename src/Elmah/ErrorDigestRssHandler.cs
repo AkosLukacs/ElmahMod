@@ -34,7 +34,6 @@ namespace Elmah
     using System.Web.UI;
     using ContentSyndication;
 
-    using XmlSerializer = System.Xml.Serialization.XmlSerializer;
     using System.Collections.Generic;
 
     #endregion
@@ -93,7 +92,10 @@ namespace Elmah
             //
             
             Channel channel = new Channel();
-            channel.title = "Daily digest of errors in " + log.ApplicationName + " on " + EnvironmentHelper.GetMachineName(_context);
+            string hostName = Environment.TryGetMachineName(_context);
+            channel.title = "Daily digest of errors in " 
+                          + log.ApplicationName
+                          + (hostName.Length > 0 ? " on " + hostName : null);
             channel.description = "Daily digest of application errors";
             channel.language = "en";
 
@@ -190,8 +192,7 @@ namespace Elmah
             // Stream out the RSS XML.
             //
 
-            XmlSerializer serializer = new XmlSerializer(typeof(RichSiteSummary));
-            serializer.Serialize(Response.Output, rss);
+            Response.Write(XmlText.StripIllegalXmlCharacters(XmlSerializer.Serialize(rss)));
         }
 
         private static void RenderStart(HtmlTextWriter writer) 

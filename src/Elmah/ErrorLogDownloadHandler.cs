@@ -252,7 +252,7 @@ namespace Elmah
                 HttpResponse response = Context.Response;
                 response.AppendHeader("Content-Type", "text/csv; header=present");
                 response.AppendHeader("Content-Disposition", "attachment; filename=errorlog.csv");
-                response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL\r\n");
+                response.Output.Write("Application,Host,Time,Unix Time,Type,Source,User,Status Code,Message,URL,XMLREF,JSONREF\r\n");
             }
 
             public override void Entries(IList<ErrorLogEntry> entries, int index, int count, int total)
@@ -284,7 +284,8 @@ namespace Elmah
                     ErrorLogEntry entry = entries[i];
                     Error error = entry.Error;
                     DateTime time = error.Time.ToUniversalTime();
-                    Uri url = new Uri(Context.Request.Url, "detail?id=" + HttpUtility.UrlEncode(entry.Id));
+                    string query = "?id=" + HttpUtility.UrlEncode(entry.Id);
+                    Uri requestUrl = Context.Request.Url;
 
                     csv.Field(error.ApplicationName)
                         .Field(error.HostName)
@@ -295,7 +296,9 @@ namespace Elmah
                         .Field(error.User)
                         .Field(error.StatusCode.ToString(culture))
                         .Field(error.Message)
-                        .Field(url.ToString())
+                        .Field(new Uri(requestUrl, "detail" + query).ToString())
+                        .Field(new Uri(requestUrl, "xml" + query).ToString())
+                        .Field(new Uri(requestUrl, "json" + query).ToString())
                         .Record();
                 }
 
