@@ -133,7 +133,11 @@ namespace Elmah
         
         public override string Log(Error error)
         {
-            var errorId = Guid.NewGuid().ToString();
+            string logPath = LogPath;
+            if (!Directory.Exists(logPath))
+                Directory.CreateDirectory(logPath);
+
+            string errorId = Guid.NewGuid().ToString();
             
             DateTime timeStamp = (error.Time > DateTime.MinValue ? error.Time : DateTime.Now);
             
@@ -142,7 +146,7 @@ namespace Elmah
                                   /* 0 */ timeStamp.ToUniversalTime(), 
                                   /* 1 */ errorId);
 
-            string path = Path.Combine(LogPath, fileName);
+            string path = Path.Combine(logPath, fileName);
 
             using (var writer = new XmlTextWriter(path, Encoding.UTF8))
             {
@@ -169,8 +173,10 @@ namespace Elmah
 
             var logPath = LogPath;
             var dir = new DirectoryInfo(logPath);
-            var infos = dir.GetFiles("error-*.xml");
+            if (!dir.Exists)
+                return 0;
 
+            var infos = dir.GetFiles("error-*.xml");
             if (!infos.Any())
                 return 0;
 
@@ -224,7 +230,7 @@ namespace Elmah
                                                  .FirstOrDefault();
             
             if (file == null)
-                throw new FileNotFoundException(string.Format("Cannot locate error file for error with ID {0}.", id));
+                return null;
 
             if (!IsUserFile(file.Attributes))
                 return null;
