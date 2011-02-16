@@ -180,12 +180,11 @@ namespace Elmah
             if (!infos.Any())
                 return 0;
 
-            var files = dir.GetFiles("error-*.xml")
-                           .Where(info => IsUserFile(info.Attributes))
-                           .OrderBy(info => info.Name, StringComparer.OrdinalIgnoreCase)
-                           .Select(info => Path.Combine(logPath, info.Name))
-                           .Reverse()
-                           .ToArray();
+            var files = infos.Where(info => IsUserFile(info.Attributes))
+                             .OrderBy(info => info.Name, StringComparer.OrdinalIgnoreCase)
+                             .Select(info => Path.Combine(logPath, info.Name))
+                             .Reverse()
+                             .ToArray();
 
             if (errorEntryList != null)
             {
