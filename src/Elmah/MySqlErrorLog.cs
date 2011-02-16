@@ -34,7 +34,7 @@ namespace Elmah
     using System;
     using System.Collections.Generic;
     using System.Data;
-    
+
     using MySql.Data.MySqlClient;
 
     using IDictionary = System.Collections.IDictionary;
@@ -292,8 +292,8 @@ namespace Elmah
                 command.CommandType = CommandType.StoredProcedure;
 
                 MySqlParameterCollection parameters = command.Parameters;
-                parameters.Add("Application", MySqlDbType.VarChar, _maxAppNameLength).Value = appName.Substring(0, Math.Min(_maxAppNameLength, appName.Length));
-                parameters.Add("ErrorId", MySqlDbType.String, 36).Value = id.ToString();
+                parameters.Add("Id", MySqlDbType.String, 36).Value = id.ToString();
+                parameters.Add("App", MySqlDbType.VarChar, _maxAppNameLength).Value = appName.Substring(0, Math.Min(_maxAppNameLength, appName.Length));
 
                 return command;
             }
@@ -304,7 +304,7 @@ namespace Elmah
                 command.CommandType = CommandType.StoredProcedure;
 
                 MySqlParameterCollection parameters = command.Parameters;
-                parameters.Add("Application", MySqlDbType.VarChar, _maxAppNameLength).Value = appName.Substring(0, Math.Min(_maxAppNameLength, appName.Length));
+                parameters.Add("App", MySqlDbType.VarChar, _maxAppNameLength).Value = appName.Substring(0, Math.Min(_maxAppNameLength, appName.Length));
                 parameters.Add("PageIndex", MySqlDbType.Int32).Value = pageIndex;
                 parameters.Add("PageSize", MySqlDbType.Int32).Value = pageSize;
                 parameters.Add("TotalCount", MySqlDbType.Int32).Direction = ParameterDirection.Output;

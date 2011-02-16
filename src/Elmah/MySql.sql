@@ -44,7 +44,7 @@ USE `elmah`;
 -- -----------------------------------------------------
 -- Table `elmah`.`elmah_error`
 -- -----------------------------------------------------
-CREATE  TABLE IF NOT EXISTS `elmah`.`elmah_error` (
+CREATE TABLE IF NOT EXISTS `elmah`.`elmah_error` (
   `ErrorId` CHAR(36) NOT NULL ,
   `Application` VARCHAR(60) NOT NULL ,
   `Host` VARCHAR(50) NOT NULL ,
@@ -57,9 +57,9 @@ CREATE  TABLE IF NOT EXISTS `elmah`.`elmah_error` (
   `Sequence` INT(10) NOT NULL AUTO_INCREMENT ,
   `AllXml` TEXT NOT NULL ,
   PRIMARY KEY (`Sequence`) ,
-  UNIQUE INDEX `IX_ErrorId` (`ErrorId` ASC) ,
-  INDEX `IX_ELMAH_Error_App_Time_Seql` (`Application` ASC, `TimeUtc` DESC, `Sequence` DESC) ,
-  INDEX `IX_ErrorId_App` (`ErrorId` ASC, `Application` ASC) )
+  UNIQUE INDEX `IX_ErrorId` (`ErrorId`(8) ASC) ,
+  INDEX `IX_ELMAH_Error_App_Time_Seql` (`Application`(10) ASC, `TimeUtc` DESC, `Sequence` DESC) ,
+  INDEX `IX_ErrorId_App` (`ErrorId`(8) ASC, `Application`(10) ASC) )
 ENGINE = MyISAM
 DEFAULT CHARACTER SET = utf8
 CHECKSUM = 1
@@ -72,8 +72,8 @@ DELIMITER //
 USE elmah//
 
 CREATE PROCEDURE `elmah`.`elmah_GetErrorXml` (
-  IN App VARCHAR(60),
-  IN Id CHAR(36)
+  IN Id CHAR(36),
+  IN App VARCHAR(60)
 )
 NOT DETERMINISTIC
 READS SQL DATA
