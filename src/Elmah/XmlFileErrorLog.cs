@@ -191,24 +191,26 @@ namespace Elmah
             {
                 var entries = files.Skip(pageIndex * pageSize)
                                    .Take(pageSize)
-                                   .Select(file =>
-                                   {
-                                       using (var reader = XmlReader.Create(file))
-                                       {
-                                           if (!reader.IsStartElement("error"))
-                                               return null;
-                                           
-                                           var id = reader.GetAttribute("errorId");
-                                           var error = ErrorXml.Decode(reader);
-                                           return new ErrorLogEntry(this, id, error);
-                                       }
-                                   });
+                                   .Select(LoadErrorLogEntry);
 
                 foreach (var entry in entries)
                     errorEntryList.Add(entry);
             }
 
             return files.Length; // Return total
+        }
+
+        private ErrorLogEntry LoadErrorLogEntry(string path)
+        {
+            using (var reader = XmlReader.Create(path))
+            {
+                if (!reader.IsStartElement("error"))
+                    return null;
+                                           
+                var id = reader.GetAttribute("errorId");
+                var error = ErrorXml.Decode(reader);
+                return new ErrorLogEntry(this, id, error);
+            }
         }
 
         /// <summary>
