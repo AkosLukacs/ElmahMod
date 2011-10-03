@@ -1,0 +1,13 @@
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Elmah.Tests.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Elmah.Tests.pdb
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Elmah.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\xunit.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Npgsql.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\MySql.Data.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\System.Data.SQLite.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Mono.Security.dll
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Elmah.pdb
+M:\Dev\GIT\ElmahMod\tests\bin\Release\Elmah.xml
+M:\Dev\GIT\ElmahMod\tests\obj\Release\ResolveAssemblyReference.cache
+M:\Dev\GIT\ElmahMod\tests\obj\Release\Elmah.Tests.dll
+M:\Dev\GIT\ElmahMod\tests\obj\Release\Elmah.Tests.pdb

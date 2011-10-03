@@ -1,0 +1,6 @@
+M:\Dev\GIT\ElmahMod\bin\net-3.5\Release\Elmah.dll
+M:\Dev\GIT\ElmahMod\bin\net-3.5\Release\Elmah.pdb
+M:\Dev\GIT\ElmahMod\bin\net-3.5\Release\Elmah.xml
+M:\Dev\GIT\ElmahMod\src\Elmah\obj\Release\ResolveAssemblyReference.cache
+M:\Dev\GIT\ElmahMod\src\Elmah\obj\Release\Elmah.dll
+M:\Dev\GIT\ElmahMod\src\Elmah\obj\Release\Elmah.pdb

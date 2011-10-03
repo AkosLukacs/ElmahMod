@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7C4DA8D1-0787-4B59-A7D8-20D6DE3A0625}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Elmah</RootNamespace>
+    <AssemblyName>ElmahMod</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.JScript" />
+    <Reference Include="Microsoft.Vsa" />
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AboutPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ApplicationException.cs" />
+    <Compile Include="Assertions\AssertionFactory.cs" />
+    <Compile Include="Assertions\ComparisonAssertion.cs" />
+    <Compile Include="Assertions\ComparisonResults.cs" />
+    <Compile Include="Assertions\CompositeAssertion.cs" />
+    <Compile Include="Assertions\DataBinder.cs" />
+    <Compile Include="Assertions\DataBoundAssertion.cs" />
+    <Compile Include="Assertions\DelegatedContextExpression.cs" />
+    <Compile Include="Assertions\IAssertion.cs" />
+    <Compile Include="Assertions\IContextExpression.cs" />
+    <Compile Include="Assertions\IsNullAssertion.cs" />
+    <Compile Include="Assertions\JScriptAssertion.cs" />
+    <Compile Include="Assertions\LogicalAssertion.cs" />
+    <Compile Include="Assertions\RegexMatchAssertion.cs" />
+    <Compile Include="Assertions\StaticAssertion.cs" />
+    <Compile Include="Assertions\TypeAssertion.cs" />
+    <Compile Include="Assertions\UnaryNotAssertion.cs" />
+    <Compile Include="Assertions\WebDataBindingExpression.cs" />
+    <Compile Include="Build.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="ConnectionStringHelper.cs" />
+    <Compile Include="Debug.cs" />
+    <Compile Include="DictionaryExtensions.cs" />
+    <Compile Include="Environment.cs" />
+    <Compile Include="Error.cs" />
+    <Compile Include="ErrorDetailPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorDigestRssHandler.cs" />
+    <Compile Include="ErrorDisplay.cs" />
+    <Compile Include="ErrorFilterConfiguration.cs" />
+    <Compile Include="ErrorFilterModule.cs" />
+    <Compile Include="ErrorFilterSectionHandler.cs" />
+    <Compile Include="ErrorHtmlPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorJson.cs" />
+    <Compile Include="ErrorJsonHandler.cs" />
+    <Compile Include="ErrorLog.cs" />
+    <Compile Include="ErrorLogDataSourceAdapter.cs" />
+    <Compile Include="ErrorLogDownloadHandler.cs" />
+    <Compile Include="ErrorLogEntry.cs" />
+    <Compile Include="ErrorLogModule.cs" />
+    <Compile Include="ErrorLogPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorLogPageFactory.cs" />
+    <Compile Include="ErrorLogSectionHandler.cs" />
+    <Compile Include="ErrorMailHtmlFormatter.cs" />
+    <Compile Include="ErrorMailModule.cs" />
+    <Compile Include="ErrorMailSectionHandler.cs" />
+    <Compile Include="ErrorPageBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ErrorRssHandler.cs" />
+    <Compile Include="ErrorSignal.cs" />
+    <Compile Include="ErrorTextFormatter.cs" />
+    <Compile Include="ErrorTweetModule.cs" />
+    <Compile Include="ErrorTweetSectionHandler.cs" />
+    <Compile Include="ErrorXml.cs" />
+    <Compile Include="ErrorXmlHandler.cs" />
+    <Compile Include="ExceptionFiltering.cs" />
+    <Compile Include="FixIIS5xWildcardMappingModule.cs" />
+    <Compile Include="HtmlLinkType.cs" />
+    <Compile Include="HttpModuleBase.cs" />
+    <Compile Include="HttpModuleRegistry.cs" />
+    <Compile Include="HttpStatus.cs" />
+    <Compile Include="JetBrains.Annotations.cs" />
+    <Compile Include="JsonTextWriter.cs" />
+    <Compile Include="ManifestResourceHandler.cs" />
+    <Compile Include="ManifestResourceHelper.cs" />
+    <Compile Include="Mask.cs" />
+    <Compile Include="MemoryErrorLog.cs" />
+    <Compile Include="MsAjaxDeltaErrorLogModule.cs" />
+    <Compile Include="PoweredBy.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReverseComparer.cs" />
+    <Compile Include="RichSiteSummary.cs" />
+    <Compile Include="SccAttribute.cs" />
+    <Compile Include="SccStamp.cs" />
+    <Compile Include="SecurityConfiguration.cs" />
+    <Compile Include="SecuritySectionHandler.cs" />
+    <Compile Include="ServiceCenter.cs" />
+    <Compile Include="ServiceContainer.cs" />
+    <Compile Include="SimpleServiceProviderFactory.cs" />
+    <Compile Include="SpeedBar.cs" />
+    <Compile Include="SqlErrorLog.cs" />
+    <Compile Include="StringFormatter.cs" />
+    <Compile Include="StringTranslation.cs" />
+    <Compile Include="SynchronousAsyncResult.cs" />
+    <Compile Include="TestException.cs" />
+    <Compile Include="XmlFileErrorLog.cs" />
+    <Compile Include="XmlSerializer.cs" />
+    <Compile Include="XmlText.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ErrorLog.css" />
+    <EmbeddedResource Include="RemoteAccessError.htm" />
+    <None Include="SQLServer.sql" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
