@@ -1,0 +1,5 @@
+A few samples to show ElmahMod's additional features, not meant to be a full Elmah sample, the official google code projects has one.
+
+Since Elmah is "Error Logging Modules and Handlers", and runs on any ASP.NET application, be it Webforms or MVC.
+
+ * SampleSite - sample in webforms for now, but will add MVC sample as well.
