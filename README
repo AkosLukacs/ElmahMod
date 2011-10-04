@@ -4,5 +4,6 @@ This is a fork of Elmah (http://code.google.com/p/elmah/) to include some additi
  * To (recursively) log inner exceptions.
  * To log Exception.Data (should handle IDictionary, IEnumerable)
  * Additional trace message can be added.
+ * Samples in the ElmahModSamples subdirectory
  
  Right now the library compiled to .NET 3.5, but works in .NET 4.0 as well. The solution itself is created using C# 2010 Express...

@@ -2,4 +2,9 @@ A few samples to show ElmahMod's additional features, not meant to be a full Elm
 
 Since Elmah is "Error Logging Modules and Handlers", and runs on any ASP.NET application, be it Webforms or MVC.
 
- * SampleSite - sample in webforms for now, but will add MVC sample as well.
+ * SampleSite - sample in webforms for now, but will add MVC sample as well. 
+ 
+ TODO: 
+ - Tested in cassini, test in IIS
+ - add <system.webServer> to run it under IIS7
+ - add authentication/authorization
